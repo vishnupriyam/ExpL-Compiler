@@ -22,7 +22,7 @@ div 					[/]
 gt						[>]
 lt 						[<]
 
-	 
+
 %%
 <<EOF>>  				{return ENDOFFILE;}
 "read"  				{return READ;}
@@ -47,6 +47,8 @@ lt 						[<]
 "continue"				{return CONTINUE;}
 "begin"					{return BEGINC;}
 "end"					{return END;}
+"alloc"					{return ALLOC;}
+"dealloc"				{return DEALLOC;}
 {gt}    				{return GT;}
 {lt}    				{return LT;}
 ">="					{return GE;}
@@ -95,6 +97,3 @@ yyerror(char const *s)
 {
 	printf("yyerror - line %d : character %s",yylineno,s);
 }
-
-
-
