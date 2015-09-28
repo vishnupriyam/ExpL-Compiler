@@ -47,8 +47,6 @@ lt 						[<]
 "continue"				{return CONTINUE;}
 "begin"					{return BEGINC;}
 "end"					{return END;}
-"alloc"					{return ALLOC;}
-"dealloc"				{return DEALLOC;}
 {gt}    				{return GT;}
 {lt}    				{return LT;}
 ">="					{return GE;}
