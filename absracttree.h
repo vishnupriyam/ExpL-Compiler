@@ -11,7 +11,7 @@ struct ASTNode{
        struct LSymbol *Lentry;
 }AST;
 
-//strval must be a string of char*
+//strval must be a string or char* ?
 union Constant {
 	int intval;
 	string strval;
