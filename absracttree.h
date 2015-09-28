@@ -1,3 +1,5 @@
+#include <string.h>
+
 struct ASTNode{
        struct TypeTable *Type;
        int Nodetype;
@@ -9,6 +11,7 @@ struct ASTNode{
        struct LSymbol *Lentry;
 }AST;
 
+//strval must be a string of char*
 union Constant {
 	int intval;
 	string strval;
