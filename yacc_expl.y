@@ -1,4 +1,33 @@
+%{
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    int yylex(void);
+    extern FILE *yyin;
+    #include "abstracttree.h"
+    #include "symboltable.h"
+    #include "symboltable.c"
+    #include "abstracttree.c" 
+    struct Tnode *root;
+    int decl_type,arg_type,local_type;
+%}
 
+%union{
+    struct Tnode * nptr;
+    struct ArgStruct * arg;
+    char c;
+};
+
+%token ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEGINC END GT LT GE LE NE EQ DIV DELIM MUL ASGN PLUS MINUS MOD AND NOT OR DOT NUM ID STRING
+
+%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEGINC END GT LT GE LE NE EQ DIV DELIM MUL ASGN PLUS MINUS MOD AND NOT OR DOT NUM ID STRING
+
+%nonassoc GT LT EQ GE LE NE 
+%left PLUS MINUS
+%left MUL DIV MOD
+%right AND OR
+
+%%
 
 Prog: TypeDeclBlock GDecblock Fdefblock Mainblock
  	;
@@ -169,3 +198,16 @@ param : param ',' E //Creates a statement node and its Ptr1 field is set to the 
 
 retstmt : RETURN E ';' //Appends expression to the return statement.
     ;
+
+%%
+
+int main(int argc,char* argv[]) {
+    if(argc>1)
+    {
+        FILE *file = fopen(argv[1],"r");
+        if(file)
+            yyin = file;
+    }
+    yyparse();
+    return 0;
+}

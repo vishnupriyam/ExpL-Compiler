@@ -43,7 +43,7 @@ lt 						[<]
 "main"					{return MAIN;}
 "type"					{return TYPE;}
 "endtype"				{return ENDTYPE;}
-"NULL"					{return NULL;}
+"NULL"					{return NULLC;}
 "continue"				{return CONTINUE;}
 "begin"					{return BEGINC;}
 "end"					{return END;}
