@@ -1,7 +1,7 @@
 typedef struct fieldList
 {
 	char *name;				//name of the field
-	struct TypeTable *type;	//pointer to type table entry
+	TypeTable *type;	//pointer to type table entry
 	struct fieldList *next;
 }fieldList;
 
@@ -13,42 +13,42 @@ typedef struct TypeTable
 }TypeTable;
 
 void TTableCreate();
-struct TypeTable* TLookUp(char *name);
-struct TypeTable* TInstall(char *name,struct fieldList *fields);
-struct TypeTable* TAppend(struct TypeTable *t1);
+TypeTable* TLookUp(char *name);
+TypeTable* TInstall(char *name, fieldList *fields);
+TypeTable* TAppend(TypeTable *t1);
 
-struct ArgStruct {
-	struct TypeTable *type;
+typedef struct ArgStruct {
+	TypeTable *type;
 	char *name;
 	int passType;
 	struct ArgStruct *next;
-};
+}ArgStruct;
 
-struct ArgStruct *Arginstall(char* name,struct TypeTable *type,int passType);
+ArgStruct *Arginstall(char* name, TypeTable *type,int passType);
 
 typedef struct GSymbol{
     char *name;
 	TypeTable *type;
 	int size;
 	int BINDING;
-	struct ArgStruct *ARGLIST;
-    struct AST *FBINDING;
-struct GSymbol *next;
-}gsymbol;
+	ArgStruct *ARGLIST;
+    ASTNode *FBINDING;
+	struct GSymbol *next;
+}GSymbol;
 
-struct GSymbol* GInstall(char*name,struct TypeTable *type, int size,struct Argstuct *arglist);
-struct GSymbol* Glookup(char *name);
-void GAppend(struct GSymbol *g1);
-void AddGType(struct TypeTable *gtype,struct GSymbol *g);
+GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist);
+GSymbol* Glookup(char *name);
+void GAppend(GSymbol *g1);
+void AddGType(TypeTable *gtype, GSymbol *g);
 
 typedef struct LSymbol{
 	char *NAME;
-	struct TypeTable *Type;
+	TypeTable *Type;
 	int BINDING;
 	struct LSymbol *NEXT;
-}lsymbol;
+}LSymbol;
 
-struct LSymbol* LInstall(char*name,struct TypeTable *type, int size);
-struct LSymbol* Llookup(char *name);
-void LAppend(struct LSymbol *l1);
-void AddLType(struct TypeTable *ltype,struct LSymbol *l);
+LSymbol* LInstall(char*name, TypeTable *type, int size);
+LSymbol* Llookup(char *name);
+void LAppend(LSymbol *l1);
+void AddLType(TypeTable *ltype, LSymbol *l);
