@@ -1,0 +1,4 @@
+1. why does typetable contain a null type ? - because return type can be NULL ?
+2. Is it necessary to have two differnt functions - TInstall and TAppend ?
+3. Is it necessary to return the TypeTable again for TAppend ?
+4. GAppend and GInstall - required ?
