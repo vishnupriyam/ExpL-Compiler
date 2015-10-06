@@ -2,3 +2,5 @@
 2. Is it necessary to have two differnt functions - TInstall and TAppend ?
 3. Is it necessary to return the TypeTable again for TAppend ?
 4. GAppend and GInstall - required ?
+5. While putting arguments into local symbol table - how to check if it is pass by ref or pass by value ?
+6. Did we implement functions for interpreter ?
