@@ -1,6 +1,6 @@
 
 void TTableCreate(){
-    struct TypeTable *temp = new TypeTable();
+    struct TypeTable *temp;
     temp = TInstall("int",NULL);
     TAppend(temp);
     temp = TInstall("str",NULL);
@@ -15,7 +15,8 @@ void TTableCreate(){
 
 struct TypeTable* TLookUp(char *name){
     if(name == NULL){
-        printf("Error : Cannot look up for an identifier with type NULL in type table\n");
+        yyerror("Cannot look up for an identifier with type NULL in type table ");
+        printf(" %s",name);
         exit(1);
     }
     struct TypeTable *temp;
@@ -27,7 +28,12 @@ struct TypeTable* TLookUp(char *name){
 }
 
 struct TypeTable* TInstall(char *name,struct fieldList *fields){
-    struct TypeTable *temp = new TypeTable();
+    struct TypeTable *temp = (TypeTable *)malloc(sizeof(TypeTable));
+    if(TLookUp(name) != NULL){
+        yyerror("type redefined ");
+        printf(" %s",name);
+        exit(1);
+    }
     temp->name =  (char *)malloc(sizeof(name));
     strcpy(temp->name,name);
     temp->fieldList = fields;
@@ -40,26 +46,25 @@ struct TypeTable* TAppend(TypeTable *t1){
     TypeTableHead = t1;
 }
 
-struct ArgStruct* Arginstall(char* name, struct TypeTable *type,int passType){
-    struct ArgStruct *temp = new ArgStruct();
+struct ArgStruct* ArgInstall(char* name, struct TypeTable *type,int passType){
+    struct ArgStruct *temp = (ArgStruct *)malloc(sizeof(ArgStruct));
+    //TODO check multiple arg with same name
     temp->type = type;
     temp->name =  (char *)malloc(sizeof(name));
     strcpy(temp->name,name);
     temp->passType = passType;
     temp->next = NULL;
-    //install the argument in local symbol table also
+    //TODO install the argument in local symbol table also
     return temp;
 }
 struct GSymbol* GInstall(char*name, struct TypeTable *type, int size, Argstuct *arglist){
-    struct GSymbol *check;
-    check = Glookup(name);
-    if(check != NULL)	//error on redefining the variable
+    if(Glookup(name) != NULL)	//error on redefining the variable
 	  {
-        yyerror("variable redefined ");
+        yyerror("Global variable redefined ");
         printf(" %s",name);
-        exit(0);
+        exit(1);
     }
-    struct GSymbol *temp = new GSymbol();
+    struct GSymbol *temp = (GSymbol *)malloc(sizeof(GSymbol));
     temp->name =  (char *)malloc(sizeof(name));
     strcpy(temp->name,name);
     temp->type = type;
@@ -76,7 +81,8 @@ void GAppend(GSymbol *g1){
 
 struct GSymbol* Glookup(char *name){
     if(name == NULL){
-        printf("Error : Cannot look up for an identifier with name NULL in global symbol table\n");
+        yyerror("Cannot look up for an identifier with name NULL in global symbol table ");
+        printf(" %s",name);
         exit(1);
     }
     struct GSymbol *temp;
@@ -92,13 +98,11 @@ void AddGType(struct TypeTable *gtype, struct GSymbol *g){
 }
 
 struct LSymbol* LInstall(char*name, struct TypeTable *type){
-    struct LSymbol *check;
-    check = Llookup(name);
-    if(check != NULL)	//error on redefining the variable
+    if(Llookup(name) != NULL)	//error on redefining the variable
 	  {
-        yyerror("variable redefined ");
+        yyerror("Local variable redefined ");
         printf(" %s",name);
-        exit(0);
+        exit(1);
     }
     struct LSymbol *temp = new LSymbol();
     temp->name =  (char *)malloc(sizeof(name));
@@ -110,7 +114,8 @@ struct LSymbol* LInstall(char*name, struct TypeTable *type){
 
 struct LSymbol* Llookup(char *name){
     if(name == NULL){
-        printf("Error : Cannot look up for an identifier with name NULL in global symbol table\n");
+        yyerror("Cannot look up for an identifier with name NULL in global symbol table ");
+        printf(" %s",name);
         exit(1);
     }
     struct LSymbol *temp;

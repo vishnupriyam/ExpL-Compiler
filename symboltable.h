@@ -26,7 +26,7 @@ typedef struct ArgStruct {
 	struct ArgStruct *next;
 }*ArgStructHead;
 
-struct ArgStruct* Arginstall(char* name, struct TypeTable *type,int passType);
+struct ArgStruct* ArgInstall(char* name, struct TypeTable *type,int passType);
 
 typedef struct GSymbol{
     char *name;
