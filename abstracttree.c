@@ -1,5 +1,5 @@
-ASTNode* Treecreate(TypeTable *type, int nodetype, char *name, Constant value, ASTNode *arglist, ASTNode *t1, ASTNode *t2, ASTNode *t3) {
-	ASTNode *temp = (ASTNode *)malloc(sizeof(ASTNode));
+AST* Treecreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3) {
+	AST *temp = (AST *)malloc(sizeof(AST));
 	//TODO All type checking conditions goes here
 	temp->Type = type;
 	temp->Nodetype = nodetype;
@@ -21,7 +21,7 @@ ASTNode* Treecreate(TypeTable *type, int nodetype, char *name, Constant value, A
     return temp;
 }
 
-ASTNode* TreeAppend(ASTNode *t, ASTNode *t1, ASTNode *t2, ASTNode *t3) {
+AST* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3) {
 	if(t == NULL){
 		return NULL;
 	}
@@ -31,6 +31,6 @@ ASTNode* TreeAppend(ASTNode *t, ASTNode *t1, ASTNode *t2, ASTNode *t3) {
 	return t;
 }
 
-memstruct interpret(ASTNode *t) {
+memstruct interpret(AST *t) {
 
 }
