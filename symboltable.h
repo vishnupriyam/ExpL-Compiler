@@ -5,52 +5,62 @@ typedef struct fieldList
 	char *name;				//name of the field
 	TypeTable *type;	//pointer to type table entry
 	struct fieldList *next;
-}*fieldListHead;
+}fieldList;
+
+fieldList *fieldListHead;
 
 typedef struct TypeTable
 {
 	char *name;			 // type name
 	fieldList *fields;	 	 // pointer to the head of the fieldlist
 	struct TypeTable *next;
-}*TypeTableHead;
+}TypeTable;
+
+TypeTable *TypeTableHead;
 
 void TTableCreate();
-struct TypeTable* TLookUp(char *name);
-struct TypeTable* TInstall(char *name, fieldList *fields);
-struct TypeTable* TAppend(struct TypeTable *t1);
+TypeTable* TLookUp(char *name);
+TypeTable* TInstall(char *name, fieldList *fields);
+TypeTable* TAppend(TypeTable *t1);
 
 typedef struct ArgStruct {
 	TypeTable *type;
 	char *name;
 	int passType;
 	struct ArgStruct *next;
-}*ArgStructHead;
+}ArgStruct;
 
-struct ArgStruct* ArgInstall(char* name, struct TypeTable *type,int passType);
+ArgStruct *ArgStructHead;
+
+ArgStruct* ArgInstall(char* name, TypeTable *type, int passType);
 
 typedef struct GSymbol{
     char *name;
-	struct TypeTable *type;
+	TypeTable *type;
 	int size;
 	int BINDING;
 	ArgStruct *arglist;
-    ASTNode *fbinding;
+    AST *fbinding;
 	struct GSymbol *next;
-}*GSymbolHead;
+}GSymbol;
 
-struct GSymbol* GInstall(char*name, struct TypeTable *type, int size, Argstuct *arglist);
-struct GSymbol* Glookup(char *name);
+GSymbol *GSymbolHead;
+
+GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist);
+GSymbol* Glookup(char *name);
 void GAppend(GSymbol *g1);
-void AddGType(struct TypeTable *gtype, struct GSymbol *g);
+void AddGType(TypeTable *gtype, GSymbol *g);
 
 typedef struct LSymbol{
 	char *NAME;
 	TypeTable *Type;
 	int BINDING;
 	struct LSymbol *NEXT;
-}*LSymbolHead;
+}LSymbol;
 
-struct LSymbol* LInstall(char*name, struct TypeTable *type);
-struct LSymbol* Llookup(char *name);
-void LAppend(struct LSymbol *l1);
-void AddLType(struct TypeTable *ltype,struct LSymbol *l);
+LSymbol *LSymbolHead;
+
+LSymbol* LInstall(char*name, TypeTable *type);
+LSymbol* Llookup(char *name);
+void LAppend(LSymbol *l1);
+void AddLType(TypeTable *ltype, LSymbol *l);

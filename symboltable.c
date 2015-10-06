@@ -1,6 +1,5 @@
-
 void TTableCreate(){
-    struct TypeTable *temp;
+    TypeTable *temp;
     temp = TInstall("int",NULL);
     TAppend(temp);
     temp = TInstall("str",NULL);
@@ -13,13 +12,13 @@ void TTableCreate(){
     TAppend(temp);
 }
 
-struct TypeTable* TLookUp(char *name){
+TypeTable* TLookUp(char *name){
     if(name == NULL){
         yyerror("Cannot look up for an identifier with type NULL in type table ");
         printf(" %s",name);
         exit(1);
     }
-    struct TypeTable *temp;
+    TypeTable *temp;
     temp = TypeTableHead;
     while(temp != NULL && strcmp(temp->name,name) != 0){
    	 temp = temp->next;
@@ -27,8 +26,8 @@ struct TypeTable* TLookUp(char *name){
     return temp;
 }
 
-struct TypeTable* TInstall(char *name,struct fieldList *fields){
-    struct TypeTable *temp = (TypeTable *)malloc(sizeof(TypeTable));
+TypeTable* TInstall(char *name, fieldList *fields){
+    TypeTable *temp = (TypeTable *)malloc(sizeof(TypeTable));
     if(TLookUp(name) != NULL){
         yyerror("type redefined ");
         printf(" %s",name);
@@ -41,13 +40,13 @@ struct TypeTable* TInstall(char *name,struct fieldList *fields){
     return temp;
 }
 
-struct TypeTable* TAppend(TypeTable *t1){
+TypeTable* TAppend(TypeTable *t1){
     t1->next = TypeTableHead;
     TypeTableHead = t1;
 }
 
-struct ArgStruct* ArgInstall(char* name, struct TypeTable *type,int passType){
-    struct ArgStruct *temp = (ArgStruct *)malloc(sizeof(ArgStruct));
+ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
+    ArgStruct *temp = (ArgStruct *)malloc(sizeof(ArgStruct));
     //TODO check multiple arg with same name
     temp->type = type;
     temp->name =  (char *)malloc(sizeof(name));
@@ -57,14 +56,14 @@ struct ArgStruct* ArgInstall(char* name, struct TypeTable *type,int passType){
     //TODO install the argument in local symbol table also
     return temp;
 }
-struct GSymbol* GInstall(char*name, struct TypeTable *type, int size, Argstuct *arglist){
+GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist){
     if(Glookup(name) != NULL)	//error on redefining the variable
 	  {
         yyerror("Global variable redefined ");
         printf(" %s",name);
         exit(1);
     }
-    struct GSymbol *temp = (GSymbol *)malloc(sizeof(GSymbol));
+    GSymbol *temp = (GSymbol *)malloc(sizeof(GSymbol));
     temp->name =  (char *)malloc(sizeof(name));
     strcpy(temp->name,name);
     temp->type = type;
@@ -79,13 +78,13 @@ void GAppend(GSymbol *g1){
     GSymbolHead = g1;
 }
 
-struct GSymbol* Glookup(char *name){
+GSymbol* Glookup(char *name){
     if(name == NULL){
         yyerror("Cannot look up for an identifier with name NULL in global symbol table ");
         printf(" %s",name);
         exit(1);
     }
-    struct GSymbol *temp;
+    GSymbol *temp;
     temp = GSymbolHead;
     while(temp != NULL && strcmp(temp->name,name) != 0){
    	 temp = temp->next;
@@ -93,18 +92,18 @@ struct GSymbol* Glookup(char *name){
     return temp;
 }
 
-void AddGType(struct TypeTable *gtype, struct GSymbol *g){
+void AddGType(TypeTable *gtype, GSymbol *g){
     g->type = gtype;
 }
 
-struct LSymbol* LInstall(char*name, struct TypeTable *type){
+LSymbol* LInstall(char *name, TypeTable *type){
     if(Llookup(name) != NULL)	//error on redefining the variable
 	  {
         yyerror("Local variable redefined ");
         printf(" %s",name);
         exit(1);
     }
-    struct LSymbol *temp = new LSymbol();
+    LSymbol *temp = (LSymbol *)malloc(sizeof(LSymbol));
     temp->name =  (char *)malloc(sizeof(name));
     strcpy(temp->name,name);
     temp->type = type;
@@ -112,13 +111,13 @@ struct LSymbol* LInstall(char*name, struct TypeTable *type){
     return temp;
 }
 
-struct LSymbol* Llookup(char *name){
+LSymbol* Llookup(char *name){
     if(name == NULL){
         yyerror("Cannot look up for an identifier with name NULL in global symbol table ");
         printf(" %s",name);
         exit(1);
     }
-    struct LSymbol *temp;
+    LSymbol *temp;
     temp = LSymbolHead;
     while(temp != NULL && strcmp(temp->name,name) != 0){
    	 temp = temp->next;
@@ -126,11 +125,11 @@ struct LSymbol* Llookup(char *name){
     return temp;
 }
 
-void LAppend(struct LSymbol *l1){
+void LAppend(LSymbol *l1){
     l1->next = LSymbolHead;
     LSymbolHead = l1;
 }
 
-void AddLType(struct TypeTable *ltype,struct LSymbol *l){
+void AddLType(TypeTable *ltype, LSymbol *l){
     l->type = ltype;
 }
