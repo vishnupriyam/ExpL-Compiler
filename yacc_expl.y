@@ -8,19 +8,19 @@
     #include "symboltable.h"
     #include "symboltable.c"
     #include "abstracttree.c" 
-    struct Tnode *root;
+    AST *root;
     int decl_type,arg_type,local_type;
 %}
 
 %union{
-    struct Tnode * nptr;
-    struct ArgStruct * arg;
+    AST * nptr;
+    ArgStruct * arg;
     char c;
 };
 
-%token ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEGINC END GT LT GE LE NE EQ DIV DELIM MUL ASGN PLUS MINUS MOD AND NOT OR DOT NUM ID STRING
+%token ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END GT LT GE LE NE EQ DIV DELIM MUL ASGN PLUS MINUS MOD AND NOT OR DOT NUM ID STRING FIELD ALLOC DEALLOC
 
-%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEGINC END GT LT GE LE NE EQ DIV DELIM MUL ASGN PLUS MINUS MOD AND NOT OR DOT NUM ID STRING
+%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END GT LT GE LE NE EQ DIV DELIM MUL ASGN PLUS MINUS MOD AND NOT OR DOT NUM ID STRING FIELD ALLOC DEALLOC Prog TypeDeclBlock GDecblock Fdefblock Mainblock TypeDefList TypeDef TypeDeclList TypeDecl IDList GDecblock GDecList GDecl GIdList GId  ArgList FArgList ArgType Args Arg Fdef Ldecblock Body LdecList Ldecl LIdList LId slist retstmt stmt E param
 
 %nonassoc GT LT EQ GE LE NE 
 %left PLUS MINUS
@@ -29,82 +29,134 @@
 
 %%
 
-Prog: TypeDeclBlock GDecblock Fdefblock Mainblock
+Prog: TypeDeclBlock GDecblock Fdefblock Mainblock   {}
  	;
 
-TypeDeclBlock: TYPE TypeDefList ENDTYPE
+TypeDeclBlock: TYPE TypeDefList ENDTYPE             {}
     |
     ;
 
-TypeDefList: TypeDefList TypeDef //Appends the newly created TypeTable to the existing.
-    |TypeDef                     //The globally maintained TypeTable TTable is set to $1.
+TypeDefList: TypeDefList TypeDef                    {
+                                                        //Appends the newly created TypeTable to the existing
+                                                    }
+    |TypeDef                                        {
+                                                        //The globally maintained TypeTable TTable is set to $1
+                                                    }
     ;
 
-TypeDef: ID '{' TypeDeclList '}' //Creates a 'TypeTable' out of the intermediate list.
-                                 //Verifies for multiple declaration of variables.
-                                 //Verfifies if the type assigned to the used defined variables are declared before or is the current one under definition
+TypeDef: ID '{' TypeDeclList '}'                    {
+                                                        //Creates a 'TypeTable' out of the intermediate list.
+                                                        //Verifies for multiple declaration of variables.
+                                                        //Verfifies if the type assigned to the used defined variables are declared before or is the current one under definition
+                                                    }
     ;
 
-TypeDeclList: TypeDeclList TypeDecl
-    |TypeDecl
+TypeDeclList: TypeDeclList TypeDecl                 {}
+    |TypeDecl                                       {}
     ;
 
-TypeDecl: INT IDList ';' //Fills the Type pointer in the intermediate list with integer
-    |STR IDList ';' //Fills the Type pointer in the intermediate list with string
-    |ID IDList ';' //Fills the Type pointer in the intermediate list(IntermList) with the name of the given identifier($1)
+TypeDecl: INT IDList DELIM                            {
+                                                        //Fills the Type pointer in the intermediate list with integer
+                                                    }
+    |STR IDList DELIM                                 {
+                                                        //Fills the Type pointer in the intermediate list with string
+                                                    }
+    |ID IDList DELIM                                  {
+                                                        //Fills the Type pointer in the intermediate list(IntermList) with the name of the given identifier($1)
+                                                    }
     ;
 
-IDList : IDList ',' ID //Creates an intermediate list(IntermList) containing the name of the given identifier.
-    |ID //Creates an intermediate list(IntermList) containing the name of the given identifier.
+IDList : IDList ',' ID                              {
+                                                        //Creates an intermediate list(IntermList) containing the name of the given identifier
+                                                    }
+    |ID                                             {
+                                                        //Creates an intermediate list(IntermList) containing the name of the given identifier
+                                                    }
     ;
 
-GDecblock : DECL GDecList ENDDECL
+GDecblock : DECL GDecList ENDDECL                   {}
     ;
 
-GDecList : GDecList GDecl //Appends the newly created entries to the GST.
-    |GDecl
+GDecList : GDecList GDecl                           {
+                                                        //Appends the newly created entries to the GST
+                                                    }
+    |GDecl                                          {}
     ;
 
-GDecl : INT GIdList ';'   //The Type field of the global symbol table entry is set to integer.
-    |STR GIdList ';'      //The type field of the global symbol table entry is set to string
-    |ID GIdList ';'       //Type field of the global symbol table entry is set to the specified type.
-                          //The specified type for used defined type is obtained from a call to
-                          //TypeTableLookUp function.
+GDecl : INT GIdList DELIM                             {
+                                                        //The Type field of the global symbol table entry is set to integer
+                                                    }
+    |STR GIdList DELIM                                {
+                                                        //The type field of the global symbol table entry is set to string
+                                                    }
+    |ID GIdList DELIM                                 {
+                                                        //Type field of the global symbol table entry is set to the specified type.
+                                                        //The specified type for used defined type is obtained from a call to
+                                                        //TypeTableLookUp function.
+                                                    }
     ;
 
-GIdList : GIdList ',' GId    //Binds together the global symbol tabe entries.
-    |GId
+GIdList : GIdList ',' GId                           {
+                                                        //Binds together the global symbol tabe entries.
+                                                    }
+    |GId                                            {}
     ;
 
-GId : ID '[' NUM ']'         //Creats a global symbol table entry
-    |ID //Creates a global symbol table entry
-    |ID '(' ArgList ')' //Creates a global symbol table entry
+GId : ID '[' NUM ']'                                {
+                                                        //Creats a global symbol table entry
+                                                    }
+    |ID                                             {
+                                                        //Creates a global symbol table entry
+                                                    }
+    |ID '(' ArgList ')'                             {
+                                                        //Creates a global symbol table entry
+                                                    }
     ;
 
-FArgList : ArgList //A Local Symbol Table is created out the entries made.
+FArgList : ArgList                                  {
+                                                        //A Local Symbol Table is created out the entries made.
+                                                    }
     ;
 
-ArgList : ArgList ArgType //Appends newly created entries to the existing
-    |ArgType
+ArgList : ArgList ArgType                           {
+                                                        //Appends newly created entries to the existing    
+                                                    }
+    |ArgType                                        {}
     ;
 
-ArgType : INT Args ';'     //The Type field in the ArgStruct entry is set to the specified type.
-    |STR Args ';'          //The Type field in the ArgStruct entry is set to the specified type.
-    |ID Args ';'           //The Type field in the ArgStruct entry is set to the specified type.
-    |INT Args          //The Type field in the ArgStruct entry is set to the specified type.
-    |STR Args           //The Type field in the ArgStruct entry is set to the specified type.
-    |ID Args               //The Type field in the ArgStruct entry is set to the specified type.
+ArgType : INT Args DELIM                              {
+                                                        //The Type field in the ArgStruct entry is set to the specified type.    
+                                                    }
+    |STR Args DELIM                                   {
+                                                        //The Type field in the ArgStruct entry is set to the specified type.        
+                                                    }
+    |ID Args DELIM                                    {
+                                                        //The Type field in the ArgStruct entry is set to the specified type.        
+                                                    }
+    |INT Args                                       {
+                                                        //The Type field in the ArgStruct entry is set to the specified type.    
+                                                    }
+    |STR Args                                       {
+                                                        //The Type field in the ArgStruct entry is set to the specified type.    
+                                                    }
+    |ID Args                                        {
+                                                        //The Type field in the ArgStruct entry is set to the specified type.    
+                                                    }
     ;
 
-Args : Args ',' Arg        //Appends newly created entries to the existing.
-    |Arg
+Args : Args ',' Arg                                 {
+                                                        //Appends newly created entries to the existing.    
+                                                    }
+    |Arg                                            {}
     ;
 
-Arg : ID //Creates an ArgStruct entry containing name of the identifier.
+Arg : ID                                            {
+                                                        //Creates an ArgStruct entry containing name of the identifier.    
+                                                    }
     ;
 
-Fdefblock : Fdefblock Fdef
-    |
+Fdefblock : Fdefblock Fdef                          {}
+    |                                               {}
     ;
 
 Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}' //Function definition is compared with their declarartion earlier for compatibility
@@ -125,9 +177,9 @@ LdecList : LdecList Ldecl //Appends newly created local symbol table entries to 
     |Ldecl //$$=$1;
     ;
 
-Ldecl : INT LIdList ';' //Fills the Type field of the local symbol table entry with integer.
-    |STR LIdList ';' //Fills the Type field of the local symbol table entry with string.
-    |ID LIdList ';' //Fills the Type field of the Local symbol table with the specified user defined type.
+Ldecl : INT LIdList DELIM //Fills the Type field of the local symbol table entry with integer.
+    |STR LIdList DELIM //Fills the Type field of the local symbol table entry with string.
+    |ID LIdList DELIM //Fills the Type field of the Local symbol table with the specified user defined type.
     ;
 
 LIdList : LIdList ',' LId //Appends newly created local symbol table entries to the existing.
@@ -148,22 +200,22 @@ slist: slist stmt //Appends newly created statement node to the existing.
     |stmt //$$=$1;
     ;
 
-stmt: ID ASGN E ';' //Verifies if the LHS and RHS of the assignment node is of the same type.
-    |ID '[' E ']' ASGN E ';' //Verifies if the LHS and RHS of the Assignment node is of the same type.
+stmt: ID ASGN E DELIM //Verifies if the LHS and RHS of the assignment node is of the same type.
+    |ID '[' E ']' ASGN E DELIM //Verifies if the LHS and RHS of the Assignment node is of the same type.
                            //Also type checks for array
-    |READ '(' ID ')' ';' //Verifies if the identifier is of type integer or string
-    |READ '(' FIELD ')' ';' //Verifies if the FIELD is of type integer or string
-    |READ '(' ID '[' E ']' ')' ';' //Verifies if the identifier is of type integer or string. //Being an array, Expression node has to be of type integer.
-    |WRITE '(' E ')' ';' //Verifies if the Expression node is of type integer or string
-    |IF '(' E ')' THEN slist ENDIF ';'
-    |IF '(' E ')' THEN slist ELSE slist ENDIF ';' //Verifies if the Conditional Expression node is of boolean type.
+    |READ '(' ID ')' DELIM //Verifies if the identifier is of type integer or string
+    |READ '(' FIELD ')' DELIM //Verifies if the FIELD is of type integer or string
+    |READ '(' ID '[' E ']' ')' DELIM //Verifies if the identifier is of type integer or string. //Being an array, Expression node has to be of type integer.
+    |WRITE '(' E ')' DELIM //Verifies if the Expression node is of type integer or string
+    |IF '(' E ')' THEN slist ENDIF DELIM
+    |IF '(' E ')' THEN slist ELSE slist ENDIF DELIM //Verifies if the Conditional Expression node is of boolean type.
                                                   //Verifies if the Conditional Expression node is of boolean type
-    |WHILE '(' E ')' DO slist ENDWHILE ';' //Verifies if the Conditional Expression node is of boolean type.
-    |ID ASGN ALLOC '(' ')' ';' //Verifies if the identifier is of user defined type.
-    |FIELD ASGN ALLOC '(' ')' ';' //Verifies if the FIELD is of user defined type.
-    |FIELD ASGN E ';' //Verifies if the left hand side and right hand side of the Assignment statement is of same type.
-    |DEALLOC '(' ID ')' ';' //Verifies if the field is of user defined type.
-    |DEALLOC '(' FIELD ')' ';' //Verifies if the FIELD is of user defined type.
+    |WHILE '(' E ')' DO slist ENDWHILE DELIM //Verifies if the Conditional Expression node is of boolean type.
+    |ID ASGN ALLOC '(' ')' DELIM //Verifies if the identifier is of user defined type.
+    |FIELD ASGN ALLOC '(' ')' DELIM //Verifies if the FIELD is of user defined type.
+    |FIELD ASGN E DELIM //Verifies if the left hand side and right hand side of the Assignment statement is of same type.
+    |DEALLOC '(' ID ')' DELIM //Verifies if the field is of user defined type.
+    |DEALLOC '(' FIELD ')' DELIM //Verifies if the FIELD is of user defined type.
     ;
 
 FIELD :ID DOT ID //The Type field for the identifiers are set.
@@ -196,7 +248,7 @@ param : param ',' E //Creates a statement node and its Ptr1 field is set to the 
     |E //Creates a statement node and its Ptr1 field is set to the expression node.
     ;
 
-retstmt : RETURN E ';' //Appends expression to the return statement.
+retstmt : RETURN E DELIM //Appends expression to the return statement.
     ;
 
 %%

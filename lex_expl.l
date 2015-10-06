@@ -45,7 +45,7 @@ lt 						[<]
 "endtype"				{return ENDTYPE;}
 "NULL"					{return NULLC;}
 "continue"				{return CONTINUE;}
-"begin"					{return BEGINC;}
+"begin"					{return BEG;}
 "end"					{return END;}
 {gt}    				{return GT;}
 {lt}    				{return LT;}
