@@ -34,6 +34,8 @@
 #define NODETYPE_AND 32
 #define NODETYPE_OR 33
 #define NODETYPE_TYPE 34
+#define NODETYPE_NULL 35
+#define NODETYPE_NOT 36
 
 typedef union Constant {
        int intval;

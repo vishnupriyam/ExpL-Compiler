@@ -221,26 +221,50 @@ stmt: ID ASGN E DELIM //Verifies if the LHS and RHS of the assignment node is of
 FIELD :ID DOT ID //The Type field for the identifiers are set.
                  //Example: In the reduction of a.b, the Type field of a is set based on the symbol table entry.
                  //The Type field of b is set to that specified in the fieldlist of the Typetable entry for a
-    |FIELD DOT ID
+    |FIELD DOT ID       
     ;
 
-E: E AROP1 E   //Verifies if both the expression is of type integer.
-    |E AROP2 E //Verifies if both the expression is of type integer.
-    |'(' E ')' //$$=$2;
-    |E RELOP E //Both the expression has to be of either integer or string.
-               //User defined variables are allowed only for the relational operators '==' and '!='
-    |E LOGOP E //Verifies if both the expression is of type boolean
-    |NOT E //Verifies if the expression is of type boolean or null
-    |NUM //$$=$1;
-    |STRCONST //$$=$1;
-    |ID //type field of the identifier is set to that specified in the symbol table.
-    |ID '[' E ']' //Type field in the Tnode is set to that specified in the symbol table.
-                 //Verifies if the expression node is an integer
-    |FIELD //$$=$1 //The Type field of the identifier is from the fieldlist entry of the TypeTable. //Verifies for the parameter compatibility in function declaration and calling.
-    |NULLC //$$=$1
-    |ID '(' param ')'
- //Type of the identifier is set to that specified in the global symbol table during declaration.
- //The Argument list created before is set to the Arglist field.
+E: E AROP1 E            {
+                            //Verifies if both the expression is of type integer
+                            $$ = TreeCreate(TLookUp("int"), $2->Nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
+                        }
+    |E AROP2 E          {
+                            //Verifies if both the expression is of type integer
+                            $$ = TreeCreate(TLookUp("int"), $2->Nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
+                        }
+    |'(' E ')'          {$$=$2;}
+    |E RELOP E          {
+                            $$ = TreeCreate(TLookUp("boolean"), $2->Nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
+                        }
+    |E LOGOP E          {
+                            //Verifies if both the expression is of type boolean
+                            $$ = TreeCreate(TLookUp("boolean"), $2->Nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
+                        }
+    |NOT E              {
+                            //Verifies if the expression is of type boolean or null
+                            $$ = TreeCreate(TLookUp("boolean"), NODETYPE_NOT, NULL, (Constant){}, NULL, $2, NULL, NULL);
+                        }
+    |NUM                {$$ = $1;}
+    |STRCONST           {$$ = $1;}
+    |ID                 {
+                            //type field of the identifier is set to that specified in the symbol table.
+                            $$ = $1;
+                        }
+    |ID '[' E ']'       {
+                            //Type field in the ASTnode is set to that specified in the symbol table.
+                            //Verifies if the expression node is an integer
+                            $$ = TreeCreate($1->Type, NODETYPE_ARR_ID, NULL, (Constant){}, NULL, $1, $3, NULL);
+                        }
+    |FIELD              {
+                            //The Type field of the identifier is from the fieldlist entry of the TypeTable. 
+                            //Verifies for the parameter compatibility in function declaration and calling.
+                            $$ = $1;
+                        }
+    |NULLC              {$$ = $1;}
+    |ID '(' param ')'   {
+                            //Type of the identifier is set to that specified in the global symbol table during declaration.
+                            //The Argument list created before is set to the Arglist field.
+                        }
  ;
 
 param : param ',' E //Creates a statement node and its Ptr1 field is set to the expression node.
