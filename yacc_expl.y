@@ -7,7 +7,7 @@
     #include "abstracttree.h"
     #include "symboltable.h"
     #include "symboltable.c"
-    #include "abstracttree.c" 
+    #include "abstracttree.c"
     AST *root;
     int decl_type,arg_type,local_type;
 %}
@@ -22,15 +22,15 @@
 
 %type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM AROP2 ASGN AROP1 NOT LOGOP DOT NUM ID STRCONST FIELD ALLOC DEALLOC Prog TypeDeclBlock GDecblock Fdefblock Mainblock TypeDefList TypeDef TypeDeclList TypeDecl IDList GDecblock GDecList GDecl GIdList GId  ArgList FArgList ArgType Args Arg Fdef Ldecblock Body LdecList Ldecl LIdList LId slist retstmt stmt E param
 
-%nonassoc RELOP 
+%nonassoc RELOP
 %left AROP1
 %left AROP2
 %right LOGOP
 
 %%
 
-Prog: TypeDeclBlock GDecblock Fdefblock Mainblock   {}
- 	;
+Prog: TypeDeclBlock GDecblock Fdefblock Mainblock       {}
+    ;
 
 TypeDeclBlock: TYPE TypeDefList ENDTYPE             {}
     |
@@ -186,42 +186,109 @@ LIdList : LIdList ',' LId //Appends newly created local symbol table entries to 
     |LId //$$=$1;
     ;
 
-LId : ID //Creates a Local Symbol Table entry containing the name of the identifier
+LId : ID    {
+                //Creates a Local Symbol Table entry containing the name of the identifier
+
+            }
     ;
 
-Mainblock : INT MAIN '(' ')' '{' Ldecblock Body '}' //Verifies if the type of the return statemnt is of type integer
-                                                        //calls interpreter;
+Mainblock : INT MAIN '(' ')' '{' Ldecblock Body '}' {
+                                                        //Verifies if the type of the return statemnt is of type integer
+                                                        //calls interpreter
+                                                        $$ = TreeCreate(TLookUp("void"), NODETYPE_MAIN, NULL, (Constant){}, NULL, $7, NULL, NULL);
+                                                    }
     ;
 
-Body : BEG slist retstmt END //Return statement is set as Ptr2 of slist
+Body : BEG slist retstmt END    {
+                                    //Return statement is set as Ptr2 of slist
+                                    $$ = TreeCreate(TLookUp("void"), NODETYPE_BODY, NULL, (Constant){}, NULL, $2, $3, NULL);
+                                }
     ;
 
-slist: slist stmt //Appends newly created statement node to the existing.
-    |stmt //$$=$1;
+slist: slist stmt           {
+                                //Appends newly created statement node to the existing.
+                                $$ = TreeCreate(TLookUp("void"), NODETYPE_NONE, NULL, (Constant){}, NULL, $1, $2, NULL);
+                            }
+    |stmt                 { $$ = $1; }
     ;
 
-stmt: ID ASGN E DELIM //Verifies if the LHS and RHS of the assignment node is of the same type.
-    |ID '[' E ']' ASGN E DELIM //Verifies if the LHS and RHS of the Assignment node is of the same type.
-                           //Also type checks for array
-    |READ '(' ID ')' DELIM //Verifies if the identifier is of type integer or string
-    |READ '(' FIELD ')' DELIM //Verifies if the FIELD is of type integer or string
-    |READ '(' ID '[' E ']' ')' DELIM //Verifies if the identifier is of type integer or string. //Being an array, Expression node has to be of type integer.
-    |WRITE '(' E ')' DELIM //Verifies if the Expression node is of type integer or string
-    |IF '(' E ')' THEN slist ENDIF DELIM
-    |IF '(' E ')' THEN slist ELSE slist ENDIF DELIM //Verifies if the Conditional Expression node is of boolean type.
-                                                  //Verifies if the Conditional Expression node is of boolean type
-    |WHILE '(' E ')' DO slist ENDWHILE DELIM //Verifies if the Conditional Expression node is of boolean type.
-    |ID ASGN ALLOC '(' ')' DELIM //Verifies if the identifier is of user defined type.
-    |FIELD ASGN ALLOC '(' ')' DELIM //Verifies if the FIELD is of user defined type.
-    |FIELD ASGN E DELIM //Verifies if the left hand side and right hand side of the Assignment statement is of same type.
-    |DEALLOC '(' ID ')' DELIM //Verifies if the field is of user defined type.
-    |DEALLOC '(' FIELD ')' DELIM //Verifies if the FIELD is of user defined type.
+stmt: ID ASGN E DELIM       {
+                                //Verifies if the LHS and RHS of the assignment node is of the same type.
+                                $$ = TreeCreate(TLookUp("void"), NODETYPE_ASGN, NULL, (Constant){}, NULL, $1, $3, NULL);
+                            }
+    |ID '[' E ']' ASGN E DELIM      {
+                                        //Verifies if the LHS and RHS of the Assignment node is of the same type.
+                                        //Also type checks for array
+                                        $$ = TreeCreate(TLookup("void"), NODETYPE_ARR_ASGN, NULL, (Constant){}, NULL, $1, $3, $6);
+                                    }
+                           
+    |READ '(' ID ')' DELIM      {
+                                    //Verifies if the identifier is of type integer or string
+                                    $$ = TreeCreate(TLookUp("void"), NODETYPE_READ, NULL, (Constant){}, NULL, $3, NULL, NULL);
+                                }
+    |READ '(' FIELD ')' DELIM   {
+                                    //Verifies if the FIELD is of type integer or string
+                                    $$ = TreeCreate(TLookup("void"), NODETYPE_FIELD_READ, NULL, (Constant){}, NULL, $3, NULL, NULL);
+                                }
+    |READ '(' ID '[' E ']' ')' DELIM    {
+                                            //Verifies if the identifier is of type integer or string. //Being an array, Expression node has to be of type integer.
+                                            $$ = TreeCreate(TLookUp("void"), NODETYPE_ARR_READ, NULL, (Constant){}, NULL, $3, $5, NULL);
+                                        }
+    |WRITE '(' E ')' DELIM         {
+                                        //Verifies if the Expression node is of type integer or string
+                                        $$ = TreeCreate(TLookUp("void"), NODETYPE_WRITE, NULL, (Constant){}, NULL, $3, NULL, NULL);
+                                    }
+    |IF '(' E ')' THEN slist ENDIF DELIM    {
+                                                $$ = TreeCreate(TLookUp("void"), NODETYPE_IF, NULL, (Constant){},NULL, $3, $6, NULL);  
+                                            }
+    |IF '(' E ')' THEN slist ELSE slist ENDIF DELIM     {
+                                                            //Verifies if the Conditional Expression node is of boolean type.
+                                                            //Verifies if the Conditional Expression node is of boolean type
+                                                            $$ = TreeCreate(TLookUp("void"), NODETYPE_IF, NULL, (Constant){},NULL, $3, $6, $8);  
+                                                        }
+    |WHILE '(' E ')' DO slist ENDWHILE DELIM    {
+                                                    //Verifies if the Conditional Expression node is of boolean type.
+                                                    $$ = TreeCreate(TLookUp("void"), NODETYPE_WHILE, NULL, (Constant){}, NULL, $3, $6, NULL);
+                                                }   
+    |ID ASGN ALLOC '(' ')' DELIM                {
+                                                    //Verifies if the identifier is of user defined type
+                                                }
+    |FIELD ASGN ALLOC '(' ')' DELIM             {
+                                                    //Verifies if the FIELD is of user defined type.
+                                                }
+    |FIELD ASGN E DELIM                 {
+                                            //Verifies if the left hand side and right hand side of the Assignment statement is of same type.
+                                            $$ = TreeCreate(TLookup("void"), NODETYPE_FIELD_ASGN, NULL, (Constant){}, NULL, $1, $3, NULL);
+                                        }
+    |DEALLOC '(' ID ')' DELIM           {
+                                            //Verifies if the field is of user defined type.
+                                        }
+    |DEALLOC '(' FIELD ')' DELIM        {
+                                            //Verifies if the FIELD is of user defined type.
+                                        }
     ;
 
-FIELD :ID DOT ID //The Type field for the identifiers are set.
-                 //Example: In the reduction of a.b, the Type field of a is set based on the symbol table entry.
-                 //The Type field of b is set to that specified in the fieldlist of the Typetable entry for a
-    |FIELD DOT ID       
+FIELD :ID DOT ID         {
+                            //The Type field for the identifiers are set.
+                            //Example: In the reduction of a.b, the Type field of a is set based on the symbol table entry.
+                            //The Type field of b is set to that specified in the fieldlist of the Typetable entry for a
+                            fieldList *temp = FLookUp($1->Name, $3->Name);
+                            if(temp == NULL){
+                                yyerror("Undefined user defined variable");
+                                printf(" %s.%s\n",$1->Name, $3->Name);
+                                exit(1);
+                            }
+                            $$ = TreeCreate(temp->type, NODETYPE_FIELD, NULL, (Constant){}, NULL, $1, $3, NULL);    
+                        }
+    |FIELD DOT ID       {
+                            fieldList *temp = FLookUp($1->Type->name, $3->Name);
+                            if(temp == NULL){
+                                yyerror("Undefined user defined variable");
+                                printf(" %s.%s\n",$1->Type->name, $3->Name);
+                                exit(1);
+                            }
+                            $$ = TreeCreate(temp->type, NODETYPE_FIELD, NULL, (Constant){}, NULL, $1, $3, NULL);
+                        }
     ;
 
 E: E AROP1 E            {
@@ -256,7 +323,7 @@ E: E AROP1 E            {
                             $$ = TreeCreate($1->Type, NODETYPE_ARR_ID, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |FIELD              {
-                            //The Type field of the identifier is from the fieldlist entry of the TypeTable. 
+                            //The Type field of the identifier is from the fieldlist entry of the TypeTable.
                             //Verifies for the parameter compatibility in function declaration and calling.
                             $$ = $1;
                         }

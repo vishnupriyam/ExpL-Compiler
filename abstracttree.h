@@ -36,6 +36,9 @@
 #define NODETYPE_TYPE 34
 #define NODETYPE_NULL 35
 #define NODETYPE_NOT 36
+#define NODETYPE_FIELD_READ 37
+#define NODETYPE_FIELD_ASGN 38
+#define NODETYPE_FIELD 39
 
 typedef union Constant {
        int intval;

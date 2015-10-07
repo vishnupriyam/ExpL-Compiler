@@ -26,6 +26,18 @@ TypeTable* TLookUp(char *name){
     return temp;
 }
 
+fieldList* FLookUp(char *name, char* fieldname){
+    TypeTable *temp = TLookUp(name);
+    if(temp == NULL){
+        return NULL;
+    }
+    fieldList *list = temp->fields;
+    while(list != NULL && strcmp(list->name,name) != 0){
+        list = list->next;
+    }
+    return list;
+}
+
 TypeTable* TInstall(char *name, fieldList *fields){
     TypeTable *temp = (TypeTable *)malloc(sizeof(TypeTable));
     if(TLookUp(name) != NULL){

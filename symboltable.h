@@ -22,6 +22,7 @@ void TTableCreate();
 TypeTable* TLookUp(char *name);
 TypeTable* TInstall(char *name, fieldList *fields);
 TypeTable* TAppend(TypeTable *t1);
+fieldList* FLookUp(char* name, char* fieldname)
 
 typedef struct ArgStruct {
 	TypeTable *type;
