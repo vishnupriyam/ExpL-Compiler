@@ -18,14 +18,14 @@
     char c;
 };
 
-%token ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END GT LT GE LE NE EQ DIV DELIM MUL ASGN PLUS MINUS MOD AND NOT OR DOT NUM ID STRING FIELD ALLOC DEALLOC
+%token ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM ASGN AROP2 AROP1 NOT LOGOP DOT NUM ID STRCONST ALLOC DEALLOC
 
-%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END GT LT GE LE NE EQ DIV DELIM MUL ASGN PLUS MINUS MOD AND NOT OR DOT NUM ID STRING FIELD ALLOC DEALLOC Prog TypeDeclBlock GDecblock Fdefblock Mainblock TypeDefList TypeDef TypeDeclList TypeDecl IDList GDecblock GDecList GDecl GIdList GId  ArgList FArgList ArgType Args Arg Fdef Ldecblock Body LdecList Ldecl LIdList LId slist retstmt stmt E param
+%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM AROP2 ASGN AROP1 NOT LOGOP DOT NUM ID STRCONST FIELD ALLOC DEALLOC Prog TypeDeclBlock GDecblock Fdefblock Mainblock TypeDefList TypeDef TypeDeclList TypeDecl IDList GDecblock GDecList GDecl GIdList GId  ArgList FArgList ArgType Args Arg Fdef Ldecblock Body LdecList Ldecl LIdList LId slist retstmt stmt E param
 
-%nonassoc GT LT EQ GE LE NE 
-%left PLUS MINUS
-%left MUL DIV MOD
-%right AND OR
+%nonassoc RELOP 
+%left AROP1
+%left AROP2
+%right LOGOP
 
 %%
 
@@ -230,14 +230,14 @@ E: E AROP1 E   //Verifies if both the expression is of type integer.
     |E RELOP E //Both the expression has to be of either integer or string.
                //User defined variables are allowed only for the relational operators '==' and '!='
     |E LOGOP E //Verifies if both the expression is of type boolean
-    |NOTOP E //Verifies if the expression is of type boolean or null
+    |NOT E //Verifies if the expression is of type boolean or null
     |NUM //$$=$1;
     |STRCONST //$$=$1;
     |ID //type field of the identifier is set to that specified in the symbol table.
     |ID '[' E ']' //Type field in the Tnode is set to that specified in the symbol table.
                  //Verifies if the expression node is an integer
     |FIELD //$$=$1 //The Type field of the identifier is from the fieldlist entry of the TypeTable. //Verifies for the parameter compatibility in function declaration and calling.
-    |null //$$=$1
+    |NULLC //$$=$1
     |ID '(' param ')'
  //Type of the identifier is set to that specified in the global symbol table during declaration.
  //The Argument list created before is set to the Arglist field.
