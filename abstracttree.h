@@ -57,6 +57,6 @@ typedef union memstruct{
 	int Bind;
 }memstruct;
 
-AST* Treecreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3);
+AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3);
 AST* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3);
 memstruct interpret(AST *t);

@@ -1,4 +1,4 @@
-AST* Treecreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3) {
+AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3) {
 	AST *temp = (AST *)malloc(sizeof(AST));
 	//TODO All type checking conditions goes here
 	temp->Type = type;

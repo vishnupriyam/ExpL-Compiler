@@ -48,33 +48,33 @@ lt 						[<]
 "begin"					{return BEG;}
 "end"					{return END;}
 {gt}    				{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_BOOLEAN,NODETYPE_GT,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_GT,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
 {lt}    				{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_BOOLEAN,NODETYPE_LT,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_LT,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
 ">="					{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_BOOLEAN,NODETYPE_GE,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_GE,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
 "<="					{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_BOOLEAN,NODETYPE_LE,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_LE,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
 "!="					{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_BOOLEAN,NODETYPE_NE,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_NE,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
 "=="   					{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_BOOLEAN,NODETYPE_EQ,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_EQ,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
 [()]    				{return *yytext;}
@@ -83,61 +83,61 @@ lt 						[<]
 "["    					{return *yytext;}
 "]"    					{return *yytext;}
 {div}					{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_INT,NODETYPE_DIV,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("int"),NODETYPE_DIV,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return AROP2;
 						}
 [;]   					{return DELIM;}
 {mul}   				{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_INT,NODETYPE_MUL,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("int"),NODETYPE_MUL,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return AROP2;
 						}
 "="    	 				{return ASGN;}
 {plus}  				{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_INT,NODETYPE_PLUS,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("int"),NODETYPE_PLUS,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return AROP1;
 						}
 {minus}					{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_INT,NODETYPE_MINUS,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("int"),NODETYPE_MINUS,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return AROP1;
 						}
 {mod}					{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_INT,NODETYPE_MOD,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("int"),NODETYPE_MOD,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return AROP2;
 						}
 "AND"					{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_BOOLEAN,NODETYPE_AND,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_AND,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return LOGOP;
 						}
 "NOT"					{return NOT;}
 "OR"					{
-							//change the type to boolean type - typetable pointer
-							yylval.nptr = TreeCreate(TYPE_BOOLEAN,NODETYPE_OR,NULL,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_OR,NULL,NULL,NULL,NULL,NULL,NULL);
 						 	return LOGOP;
 						}
 "."						{return DOT;}
 {digit}+				{
 							number=atoi(yytext);
-							yylval.nptr = TreeCreate(TYPE_INT,NODETYPE_LEAF,number,NULL,NULL,NULL,NULL,NULL);
+							yylval.nptr = TreeCreate(TLookUp("int"),NODETYPE_LEAF,number,NULL,NULL,NULL,NULL,NULL);
 							return NUM;
 						}
 [a-zA-Z][a-zA-Z0-9]* 	{
-							yylval.nptr = TreeCreate(TYPE_VOID,NODETYPE_ID,0,yytext,NULL,NULL,NULL,NULL);
+							yylval.nptr = TreeCreate(TLookUp("void"),NODETYPE_ID,0,yytext,NULL,NULL,NULL,NULL);
 							return ID;
 						}
 \"(\\.|[^\\"])*\"		{
-							//handle string constant
-							yylval.nptr = TreeCreate(TYPE_STR,NODETYPE_LEAF,yytext,NULL,NULL,NULL,NULL,NULL);
+							
+							yylval.nptr = TreeCreate(TLookUp("str"),NODETYPE_LEAF,yytext,NULL,NULL,NULL,NULL,NULL);
 							return STRCONST;
 						}
 {NL}    				;
 {whitespaces} 			;
-.   		 			{printf("INVALID CHARACTER");exit(0);}
+.   		 			{printf("INVALID CHARACTER");exit(1);}
 %%
 
 int yywrap(){
