@@ -14,7 +14,7 @@ void TTableCreate(){
 
 TypeTable* TLookUp(char *name){
     if(name == NULL){
-        yyerror("Cannot look up for an identifier with type NULL in type table ");
+        yyerror("Tlookup : Cannot look up for an identifier with type NULL in type table ");
         printf(" %s",name);
         exit(1);
     }
@@ -41,7 +41,7 @@ fieldList* FLookUp(char *name, char* fieldname){
 TypeTable* TInstall(char *name, fieldList *fields){
     TypeTable *temp = (TypeTable *)malloc(sizeof(TypeTable));
     if(TLookUp(name) != NULL){
-        yyerror("type redefined ");
+        yyerror("Tinstall : type redefined ");
         printf(" %s",name);
         exit(1);
     }
@@ -71,7 +71,7 @@ ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
 GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist){
     if(Glookup(name) != NULL)	//error on redefining the variable
 	  {
-        yyerror("Global variable redefined ");
+        yyerror("GInstall : Global variable redefined ");
         printf(" %s",name);
         exit(1);
     }
@@ -92,7 +92,7 @@ void GAppend(GSymbol *g1){
 
 GSymbol* Glookup(char *name){
     if(name == NULL){
-        yyerror("Cannot look up for an identifier with name NULL in global symbol table ");
+        yyerror("Glookup : Cannot look up for an identifier with name NULL in global symbol table ");
         printf(" %s",name);
         exit(1);
     }
@@ -105,13 +105,17 @@ GSymbol* Glookup(char *name){
 }
 
 void AddGType(TypeTable *gtype, GSymbol *g){
-    g->type = gtype;
+    GSymbol *temp = g;
+    while(temp != NULL){
+        temp->type = gtype;
+        temp = temp->next;
+    }
 }
 
 LSymbol* LInstall(char *name, TypeTable *type){
     if(Llookup(name) != NULL)	//error on redefining the variable
 	  {
-        yyerror("Local variable redefined ");
+        yyerror("LInstall : Local variable redefined ");
         printf(" %s",name);
         exit(1);
     }
@@ -125,7 +129,7 @@ LSymbol* LInstall(char *name, TypeTable *type){
 
 LSymbol* Llookup(char *name){
     if(name == NULL){
-        yyerror("Cannot look up for an identifier with name NULL in global symbol table ");
+        yyerror("Llookup : Cannot look up for an identifier with name NULL in local symbol table ");
         printf(" %s",name);
         exit(1);
     }
@@ -137,11 +141,64 @@ LSymbol* Llookup(char *name){
     return temp;
 }
 
-void LAppend(LSymbol *l1){
+LSymbol* LAppend(LSymbol *l1){
     l1->next = LSymbolHead;
     LSymbolHead = l1;
+    return LSymbolHead;
 }
 
 void AddLType(TypeTable *ltype, LSymbol *l){
-    l->type = ltype;
+    LSymbol *temp = l;
+    while( temp != NULL){
+        temp->type = ltype;
+        temp = temp->next;
+    }
+}
+
+void validate_funtion(char *fname,Typetable *rtype, ArgStruct *arglist, ASTNode *body){
+    //check function is declared
+    Gtemp = Glookup(fname);
+    if(Gtemp == NULL){
+        yyerror("validate_function : function has not been declared");
+        printf(" %s",fname);
+        exit(1);
+    }
+
+    //compare the return type as declared and as from the body of the function
+    if(!(Gtemp->type == rtype && body->Type == rtype)){
+        yyerror("validate_function : return type doesnot match with definition or with return type of body");
+        printf("%s\n",fname);
+        exit(1);
+    }
+
+    //compare the type and names of the arguments as in the sequence of declaration
+    ArgStruct *temp1,*temp2;
+    temp1 = Gtemp->arglist;
+    temp2 = arglist;
+    while(temp1 != NULL && temp2 != NULL){
+        if(strcmp(temp1->name,temp2->name) != 0){
+            yyerror("validate_function : argument names donot match");
+            printf("%s\n",fname);
+            exit(1);
+        }
+
+        if(strcmp(temp1->type->name,temp2->type->name) != 0){
+            yyerror("validate_function : type of arguments donot match");
+            printf("%s\n",fname);
+            exit(1);
+        }
+
+        if(temp1->passType != temp2->passType){
+            yyerror("validate_function : passType of arguments donot match");
+            printf("%s\n",fname);
+            exit(1);
+        }
+        temp1 = temp1->next;
+        temp2 = temp2->next;
+    }
+    if(temp1 != NULL || temp2 != NULL ){
+        yyerror("validate_function: no of arguments donot match");
+        printf("%s\n",fname);
+        exit(1);
+    }
 }

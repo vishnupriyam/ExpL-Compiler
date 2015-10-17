@@ -9,7 +9,7 @@
     #include "symboltable.c"
     #include "abstracttree.c"
     AST *root;
-    int decl_type,arg_type,local_type;
+    TypeTable decl_type,arg_type,local_type;
 %}
 
 %union{
@@ -29,15 +29,18 @@
 
 %%
 
-Prog: TypeDeclBlock GDecblock Fdefblock Mainblock       {}
+Prog: TypeDeclBlock GDecblock Fdefblock Mainblock   {
+                                                        interpret($4);
+                                                    }
     ;
 
 TypeDeclBlock: TYPE TypeDefList ENDTYPE             {}
-    |
+    |                                               {}
     ;
 
 TypeDefList: TypeDefList TypeDef                    {
                                                         //Appends the newly created TypeTable to the existing
+
                                                     }
     |TypeDef                                        {
                                                         //The globally maintained TypeTable TTable is set to $1
@@ -119,39 +122,39 @@ FArgList : ArgList                                  {
     ;
 
 ArgList : ArgList ArgType                           {
-                                                        //Appends newly created entries to the existing    
+                                                        //Appends newly created entries to the existing
                                                     }
     |ArgType                                        {}
     ;
 
 ArgType : INT Args DELIM                              {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.    
+                                                        //The Type field in the ArgStruct entry is set to the specified type.
                                                     }
     |STR Args DELIM                                   {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.        
+                                                        //The Type field in the ArgStruct entry is set to the specified type.
                                                     }
     |ID Args DELIM                                    {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.        
+                                                        //The Type field in the ArgStruct entry is set to the specified type.
                                                     }
     |INT Args                                       {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.    
+                                                        //The Type field in the ArgStruct entry is set to the specified type.
                                                     }
     |STR Args                                       {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.    
+                                                        //The Type field in the ArgStruct entry is set to the specified type.
                                                     }
     |ID Args                                        {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.    
+                                                        //The Type field in the ArgStruct entry is set to the specified type.
                                                     }
     ;
 
 Args : Args ',' Arg                                 {
-                                                        //Appends newly created entries to the existing.    
+                                                        //Appends newly created entries to the existing.
                                                     }
     |Arg                                            {}
     ;
 
 Arg : ID                                            {
-                                                        //Creates an ArgStruct entry containing name of the identifier.    
+                                                        //Creates an ArgStruct entry containing name of the identifier.
                                                     }
     ;
 
@@ -159,36 +162,68 @@ Fdefblock : Fdefblock Fdef                          {}
     |                                               {}
     ;
 
-Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}' //Function definition is compared with their declarartion earlier for compatibility
+Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
+                                                          //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
-    |STR ID '(' FArgList ')' '{' Ldecblock Body '}'    //Function definition is compared with their declarartion earlier for compatibility
+                                                          validate_function($2->Name,TLookUp("int"),$4,$8);
+                                                          $2->Lentry = LSymbolHead;
+                                                          interpret($7);
+                                                          LSymbolHead = NULL;
+                                                        }
+    |STR ID '(' FArgList ')' '{' Ldecblock Body '}'     {
+                                                          //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
-    |ID ID '(' FArgList ')' '{' Ldecblock Body '}'        //Function definition is compared with their declarartion earlier for compatibility
+                                                          validate_function($2->Name,TLookUp("str"),$4,$8);
+                                                          $2->Lentry = LSymbolHead;
+                                                          interpret($7);
+                                                          LSymbolHead = NULL;
+                                                        }
+    |ID ID '(' FArgList ')' '{' Ldecblock Body '}'      {
+                                                          //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
+                                                          validate_function($2->Name,TLookUp($2->Name),$4,$8);
+                                                          $2->Lentry = LSymbolHead;
+                                                          interpret($7);
+                                                          LSymbolHead = NULL;
+                                                        }
     ;
 
-Ldecblock : DECL LdecList ENDDECL //Appends the local symbol table to the LST(with parameters)
+Ldecblock : DECL LdecList ENDDECL {}
     ;
 
-LdecList : LdecList Ldecl //Appends newly created local symbol table entries to the existing.
-    |Ldecl //$$=$1;
+LdecList : LdecList Ldecl {}
+    |Ldecl {}
     ;
 
-Ldecl : INT LIdList DELIM //Fills the Type field of the local symbol table entry with integer.
-    |STR LIdList DELIM //Fills the Type field of the local symbol table entry with string.
-    |ID LIdList DELIM //Fills the Type field of the Local symbol table with the specified user defined type.
+Ldecl : INT LIdList DELIM {
+                            //Fills the Type field of the local symbol table entry with integer.
+                            AddLType($2,TLookUp("int"));
+                          }
+    |STR LIdList DELIM  {
+                            //Fills the Type field of the local symbol table entry with string.
+                            AddLType($2,TLookUp("str"));
+                        }
+    |ID LIdList DELIM {
+                        //Fills the Type field of the Local symbol table with the specified user defined type.
+                        AddLType($2,TLookUp($1->Name));
+                      }
     ;
 
-LIdList : LIdList ',' LId //Appends newly created local symbol table entries to the existing.
-    |LId //$$=$1;
+LIdList : LIdList ',' LId {
+                            //Appends newly created local symbol table entries to the existing.
+                            $$ = LAppend($3);
+                          }
+    |LId                  {
+                            $$ = LAppend($1);
+                          }
     ;
 
 LId : ID    {
                 //Creates a Local Symbol Table entry containing the name of the identifier
-
+                LInstall($1->Name,decl_type);
             }
     ;
 
@@ -209,7 +244,7 @@ slist: slist stmt           {
                                 //Appends newly created statement node to the existing.
                                 $$ = TreeCreate(TLookUp("void"), NODETYPE_NONE, NULL, (Constant){}, NULL, $1, $2, NULL);
                             }
-    |stmt                 { $$ = $1; }
+    |stmt                   { $$ = $1; }
     ;
 
 stmt: ID ASGN E DELIM       {
@@ -221,7 +256,7 @@ stmt: ID ASGN E DELIM       {
                                         //Also type checks for array
                                         $$ = TreeCreate(TLookup("void"), NODETYPE_ARR_ASGN, NULL, (Constant){}, NULL, $1, $3, $6);
                                     }
-                           
+
     |READ '(' ID ')' DELIM      {
                                     //Verifies if the identifier is of type integer or string
                                     $$ = TreeCreate(TLookUp("void"), NODETYPE_READ, NULL, (Constant){}, NULL, $3, NULL, NULL);
@@ -239,17 +274,17 @@ stmt: ID ASGN E DELIM       {
                                         $$ = TreeCreate(TLookUp("void"), NODETYPE_WRITE, NULL, (Constant){}, NULL, $3, NULL, NULL);
                                     }
     |IF '(' E ')' THEN slist ENDIF DELIM    {
-                                                $$ = TreeCreate(TLookUp("void"), NODETYPE_IF, NULL, (Constant){},NULL, $3, $6, NULL);  
+                                                $$ = TreeCreate(TLookUp("void"), NODETYPE_IF, NULL, (Constant){},NULL, $3, $6, NULL);
                                             }
     |IF '(' E ')' THEN slist ELSE slist ENDIF DELIM     {
                                                             //Verifies if the Conditional Expression node is of boolean type.
                                                             //Verifies if the Conditional Expression node is of boolean type
-                                                            $$ = TreeCreate(TLookUp("void"), NODETYPE_IF, NULL, (Constant){},NULL, $3, $6, $8);  
+                                                            $$ = TreeCreate(TLookUp("void"), NODETYPE_IF, NULL, (Constant){},NULL, $3, $6, $8);
                                                         }
     |WHILE '(' E ')' DO slist ENDWHILE DELIM    {
                                                     //Verifies if the Conditional Expression node is of boolean type.
                                                     $$ = TreeCreate(TLookUp("void"), NODETYPE_WHILE, NULL, (Constant){}, NULL, $3, $6, NULL);
-                                                }   
+                                                }
     |ID ASGN ALLOC '(' ')' DELIM                {
                                                     //Verifies if the identifier is of user defined type
                                                 }
@@ -278,7 +313,7 @@ FIELD :ID DOT ID         {
                                 printf(" %s.%s\n",$1->Name, $3->Name);
                                 exit(1);
                             }
-                            $$ = TreeCreate(temp->type, NODETYPE_FIELD, NULL, (Constant){}, NULL, $1, $3, NULL);    
+                            $$ = TreeCreate(temp->type, NODETYPE_FIELD, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |FIELD DOT ID       {
                             fieldList *temp = FLookUp($1->Type->name, $3->Name);

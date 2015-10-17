@@ -31,7 +31,7 @@ typedef struct ArgStruct {
 	struct ArgStruct *next;
 }ArgStruct;
 
-ArgStruct *ArgStructHead;
+ArgStruct *ArgStructHead,*Argtemp;
 
 ArgStruct* ArgInstall(char* name, TypeTable *type, int passType);
 
@@ -45,11 +45,11 @@ typedef struct GSymbol{
 	struct GSymbol *next;
 }GSymbol;
 
-GSymbol *GSymbolHead;
+GSymbol *GSymbolHead,*Gtemp;
 
 GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist);
 GSymbol* Glookup(char *name);
-void GAppend(GSymbol *g1);
+GSymbol* GAppend(GSymbol *g1);
 void AddGType(TypeTable *gtype, GSymbol *g);
 
 typedef struct LSymbol{
@@ -59,9 +59,11 @@ typedef struct LSymbol{
 	struct LSymbol *NEXT;
 }LSymbol;
 
-LSymbol *LSymbolHead;
+LSymbol *LSymbolHead,*Ltemp;
 
 LSymbol* LInstall(char*name, TypeTable *type);
 LSymbol* Llookup(char *name);
 void LAppend(LSymbol *l1);
-void AddLType(TypeTable *ltype, LSymbol *l);
+LSymbol* AddLType(TypeTable *ltype, LSymbol *l);
+
+void validate_funtion(char *fname,Typetable *rtype, ArgStruct *arglist, ASTNode *body);
