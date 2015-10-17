@@ -38,123 +38,147 @@ TypeDeclBlock: TYPE TypeDefList ENDTYPE             {}
     |                                               {}
     ;
 
-TypeDefList: TypeDefList TypeDef                    {
-                                                        //Appends the newly created TypeTable to the existing
-
-                                                    }
-    |TypeDef                                        {
-                                                        //The globally maintained TypeTable TTable is set to $1
-                                                    }
+TypeDefList: TypeDefList TypeDef                    {}                                                    }
+    |TypeDef                                        {}
     ;
 
-TypeDef: ID '{' TypeDeclList '}'                    {
-                                                        //Creates a 'TypeTable' out of the intermediate list.
+TypeDef: NewType '{' TypeDeclList '}'               {
+                                                        //Creates a 'fieldlist' out of the intermediate list.
                                                         //Verifies for multiple declaration of variables.
                                                         //Verfifies if the type assigned to the used defined variables are declared before or is the current one under definition
+                                                        Type_field_list_validate();
+                                                        $1->fields = fieldListHead;
+                                                        fieldListHead = NULL;
                                                     }
     ;
+
+NewType : ID    { $$ = TInstall($1->Name,NULL);}
 
 TypeDeclList: TypeDeclList TypeDecl                 {}
     |TypeDecl                                       {}
     ;
 
-TypeDecl: INT IDList DELIM                            {
+TypeDecl: INT IDList DELIM                          {
                                                         //Fills the Type pointer in the intermediate list with integer
+                                                        AddFType(TLookUp("int"),$2);
                                                     }
-    |STR IDList DELIM                                 {
+    |STR IDList DELIM                               {
                                                         //Fills the Type pointer in the intermediate list with string
+                                                        AddFType(TLookUp("str"),$2);
                                                     }
-    |ID IDList DELIM                                  {
+    |ID IDList DELIM                                {
                                                         //Fills the Type pointer in the intermediate list(IntermList) with the name of the given identifier($1)
+                                                        AddFType(TLookUp($1->Name),$2);
                                                     }
     ;
 
-IDList : IDList ',' ID                              {
+IDList : IDList ',' TId                            {
                                                         //Creates an intermediate list(IntermList) containing the name of the given identifier
+                                                        $$ = FAppend($3);
                                                     }
-    |ID                                             {
+    |TId                                            {
                                                         //Creates an intermediate list(IntermList) containing the name of the given identifier
+                                                        $$ = FAppend($1);
                                                     }
     ;
+
+TId : ID                                            { $$ = FInstall($1->Name);}
 
 GDecblock : DECL GDecList ENDDECL                   {}
     ;
 
-GDecList : GDecList GDecl                           {
-                                                        //Appends the newly created entries to the GST
-                                                    }
+GDecList : GDecList GDecl                           {}
     |GDecl                                          {}
     ;
 
-GDecl : INT GIdList DELIM                             {
+GDecl : INT GIdList DELIM                           {
                                                         //The Type field of the global symbol table entry is set to integer
+                                                        AddGType(TLookUp("int"),$2);
                                                     }
-    |STR GIdList DELIM                                {
+    |STR GIdList DELIM                              {
                                                         //The type field of the global symbol table entry is set to string
+                                                        AddGType(TLookUp("str"),$2);
                                                     }
     |ID GIdList DELIM                                 {
                                                         //Type field of the global symbol table entry is set to the specified type.
                                                         //The specified type for used defined type is obtained from a call to
                                                         //TypeTableLookUp function.
+                                                        AddGType(TLookUp($1->Name),$2);
                                                     }
     ;
 
 GIdList : GIdList ',' GId                           {
                                                         //Binds together the global symbol tabe entries.
+                                                        $$ = GAppend($3);
                                                     }
-    |GId                                            {}
+    |GId                                            {
+                                                        $$ = GAppend($1);
+                                                    }
     ;
 
 GId : ID '[' NUM ']'                                {
                                                         //Creats a global symbol table entry
+                                                        $$ = GInstall($1->Name,NULL,$3->value,$3);
                                                     }
     |ID                                             {
                                                         //Creates a global symbol table entry
+                                                        $$ = GInstall($1->Name,NULL,1,$3);
                                                     }
     |ID '(' ArgList ')'                             {
                                                         //Creates a global symbol table entry
+                                                        $$ = GInstall($1->Name,NULL,1,$3);
                                                     }
     ;
 
 FArgList : ArgList                                  {
                                                         //A Local Symbol Table is created out the entries made.
+                                                         AddArgsToLTable($1);
+                                                         $$ = $1;
                                                     }
     ;
 
-ArgList : ArgList ArgType                           {
-                                                        //Appends newly created entries to the existing
-                                                    }
+ArgList : ArgList ArgType                           {}
     |ArgType                                        {}
     ;
 
-ArgType : INT Args DELIM                              {
+ArgType : INT Args DELIM                            {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
+                                                        AddArgType(TLookup("int"),$2);
                                                     }
-    |STR Args DELIM                                   {
+    |STR Args DELIM                                 {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
+                                                        AddArgType(TLookup("str"),$2);
                                                     }
-    |ID Args DELIM                                    {
+    |ID Args DELIM                                   {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
+                                                        AddArgType(TLookup($1->Name),$2);
                                                     }
     |INT Args                                       {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
+                                                        AddArgType(TLookup("int"),$2);
                                                     }
     |STR Args                                       {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
+                                                        AddArgType(TLookup("str"),$2);
                                                     }
     |ID Args                                        {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
+                                                        AddArgType(TLookUp($1->Name),$2);
                                                     }
     ;
 
 Args : Args ',' Arg                                 {
                                                         //Appends newly created entries to the existing.
+                                                        $$ = ArgAppend($3);
                                                     }
-    |Arg                                            {}
+    |Arg                                            {
+                                                        $$ = ArgAppend($1);
+                                                    }
     ;
 
 Arg : ID                                            {
                                                         //Creates an ArgStruct entry containing name of the identifier.
+                                                        $$ = ArgInstall($1->Name,NULL,0);
                                                     }
     ;
 
@@ -223,7 +247,7 @@ LIdList : LIdList ',' LId {
 
 LId : ID    {
                 //Creates a Local Symbol Table entry containing the name of the identifier
-                LInstall($1->Name,decl_type);
+                $$ = LInstall($1->Name,decl_type);
             }
     ;
 

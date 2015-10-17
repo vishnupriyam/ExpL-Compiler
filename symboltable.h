@@ -7,7 +7,13 @@ typedef struct fieldList
 	struct fieldList *next;
 }fieldList;
 
-fieldList *fieldListHead;
+fieldList *fieldListHead,*ftemp;
+
+fieldList* FInstall(char *name);
+void AddFType(TypeTable *type, fieldList *f);
+fieldList* FAppend(fieldList *f);
+fieldList* FieldLookup(char *name);
+void Type_field_list_validate();
 
 typedef struct TypeTable
 {
@@ -34,6 +40,8 @@ typedef struct ArgStruct {
 ArgStruct *ArgStructHead,*Argtemp;
 
 ArgStruct* ArgInstall(char* name, TypeTable *type, int passType);
+ArgStruct* ArgAppend(ArgStruct *arg);
+void AddArgType(TypeTable *type, Argstruct *arg);
 
 typedef struct GSymbol{
     char *name;
@@ -53,10 +61,10 @@ GSymbol* GAppend(GSymbol *g1);
 void AddGType(TypeTable *gtype, GSymbol *g);
 
 typedef struct LSymbol{
-	char *NAME;
+	char *Name;
 	TypeTable *Type;
-	int BINDING;
-	struct LSymbol *NEXT;
+	int Binding;
+	struct LSymbol *Next;
 }LSymbol;
 
 LSymbol *LSymbolHead,*Ltemp;
@@ -67,3 +75,4 @@ void LAppend(LSymbol *l1);
 LSymbol* AddLType(TypeTable *ltype, LSymbol *l);
 
 void validate_funtion(char *fname,Typetable *rtype, ArgStruct *arglist, ASTNode *body);
+void AddArgsToLTable(ArgStruct *a);

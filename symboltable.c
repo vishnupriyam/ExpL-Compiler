@@ -68,6 +68,21 @@ ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
     //TODO install the argument in local symbol table also
     return temp;
 }
+
+ArgStruct* ArgAppend(ArgStruct *arg){
+    arg->next = ArgStructHead;
+    ArgStructHead = arg;
+    return ArgStructHead;
+}
+
+void AddArgType(TypeTable *type, Argstruct *arg){
+    ArgStruct *temp = arg;
+    while(temp != NULL){
+        temp->type = type;
+        temp = temp->next;
+    }
+}
+
 GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist){
     if(Glookup(name) != NULL)	//error on redefining the variable
 	  {
@@ -200,5 +215,63 @@ void validate_funtion(char *fname,Typetable *rtype, ArgStruct *arglist, ASTNode 
         yyerror("validate_function: no of arguments donot match");
         printf("%s\n",fname);
         exit(1);
+    }
+}
+
+void AddArgsToLTable(ArgStruct *a){
+    while(a != NULL){
+        LInstall(a->name,a->type);
+        a = a->next;
+    }
+}
+
+fieldList* FInstall(char *name){
+    if(FieldLookup(name) != NULL){
+        yyerror("FInstall : multiple declarations of same field");
+        printf(" %s",name);
+        exit(1);
+    }
+    fieldList *temp = (fieldList *)malloc(sizeof(fieldList));
+    temp->name =  (char *)malloc(sizeof(name));
+    strcpy(temp->name,name);
+    return temp;
+}
+
+void AddFType(TypeTable *type, fieldList *f){
+    fieldList temp = f;
+    while(temp != NULL){
+        temp->type = type;
+        f = f->next;
+    }
+}
+
+fieldList* FAppend(fieldList *f){
+    f->next = fieldListHead;
+    fieldListHead = f;
+    return fieldListHead;
+}
+
+fieldList* FieldLookup(char *name){
+    if(name == NULL){
+        yyerror("Flookup : Cannot look up for an identifier with name NULL in local symbol table ");
+        printf(" %s",name);
+        exit(1);
+    }
+    fieldList *temp;
+    temp = fieldListHead;
+    while(temp != NULL && strcmp(temp->name,name) != 0){
+   	    temp = temp->next;
+    }
+    return temp;
+}
+
+void Type_field_list_validate(){
+    fieldList *ftemp1 = fieldListHead;
+    while(ftemp != NULL){
+        if(TLookUp(ftemp->type) == NULL){
+            yyerror("Type_field_list_validate : the field type has not been declared previously");
+            printf(" %s",name);
+            exit(1);
+        }
     }
 }
