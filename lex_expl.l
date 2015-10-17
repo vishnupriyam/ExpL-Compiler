@@ -43,7 +43,7 @@ lt 						[<]
 "main"					{return MAIN;}
 "type"					{return TYPE;}
 "endtype"				{return ENDTYPE;}
-"NULL"					{	
+"NULL"					{
 							yylval.nptr = TreeCreate(TLookUp("null"),NODETYPE_NULL,NULL,(Constant){},NULL,NULL,NULL,NULL);
 							return NULLC;
 						}
@@ -51,31 +51,31 @@ lt 						[<]
 "begin"					{return BEG;}
 "end"					{return END;}
 {gt}    				{
-							
+
 							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_GT,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
 {lt}    				{
-							
+
 							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_LT,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
 ">="					{
-							
+
 							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_GE,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
-"<="					{					
+"<="					{
 							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_LE,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
 "!="					{
-							
+
 							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_NE,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
 "=="   					{
-							
+
 							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_EQ,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return RELOP;
 						}
@@ -85,13 +85,13 @@ lt 						[<]
 "["    					{return *yytext;}
 "]"    					{return *yytext;}
 {div}					{
-							
+
 							yylval.nptr = TreeCreate(TLookUp("int"),NODETYPE_DIV,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return AROP2;
 						}
 [;]   					{return DELIM;}
 {mul}   				{
-							
+
 							yylval.nptr = TreeCreate(TLookUp("int"),NODETYPE_MUL,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return AROP2;
 						}
@@ -100,17 +100,17 @@ lt 						[<]
 							yylval.nptr = TreeCreate(TLookUp("int"),NODETYPE_PLUS,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return AROP1;
 						}
-{minus}					{	
+{minus}					{
 							yylval.nptr = TreeCreate(TLookUp("int"),NODETYPE_MINUS,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return AROP1;
 						}
 {mod}					{
-							
+
 							yylval.nptr = TreeCreate(TLookUp("int"),NODETYPE_MOD,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return AROP2;
 						}
 "AND"					{
-							
+
 							yylval.nptr = TreeCreate(TLookUp("boolean"),NODETYPE_AND,NULL,(Constant){},NULL,NULL,NULL,NULL);
 						 	return LOGOP;
 						}
@@ -133,8 +133,8 @@ lt 						[<]
 							yylval.nptr = TreeCreate(TLookUp("str"),NODETYPE_LEAF,NULL,(Constant){yytext},NULL,NULL,NULL,NULL);
 							return STRCONST;
 						}
-{NL}    				;
-{whitespaces} 			;
+{NL}    				{}
+{whitespaces} 			{}
 .   		 			{printf("INVALID CHARACTER");exit(1);}
 %%
 
