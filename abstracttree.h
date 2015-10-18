@@ -59,7 +59,7 @@ typedef struct ASTNode{
 typedef union memstruct{
 	int value;
 	char *str;
-	int Bind;
+	int bind;
 }memstruct;
 
 AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3);
