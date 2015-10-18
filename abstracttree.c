@@ -41,8 +41,22 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 								  if( Gtemp == NULL){
 									yyerror("TreeCreate : undefined array variable");exit(0);
 								  }
+								  type = Gtemp->type;
 								  break;
-
+		case NODETYPE_ID 	   : Gtemp = Glookup(name);
+								 if(Gtemp == NULL){
+									 Ltemp = Llookup(name);
+									 if(Ltemp == NULL){
+										 yyerror("TreeCreate : variable undefined !");exit(0);
+									 }
+									 else{
+										 type = Ltemp->type;
+									 }
+								 }
+								 else{
+									 type = Gtemp->type;
+								 }
+								 break;
 		case NODETYPE_IF 	: if(t1->type != TLookUp("boolean")){
 								yyerror(" TreeCreate : unexpected type of expression in if");exit(0);
 							  }
@@ -51,6 +65,11 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 								yyerror(" TreeCreate : unexpected type of expression in while");exit(0);
 							  }
 							  break;
+		case NODETYPE_FUNCTION :
+								break;
+		case NODETYPE_MAIN :
+							  break;
+							  
 
 	}
 
