@@ -1,6 +1,5 @@
 AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3) {
 	AST *temp = (AST *)malloc(sizeof(AST));
-	//TODO All type checking conditions goes here
 	switch(nodetype){
 		case NODETYPE_PLUS	:
 		case NODETYPE_MINUS :
@@ -66,10 +65,29 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 							  }
 							  break;
 		case NODETYPE_FUNCTION :
-								break;
-		case NODETYPE_MAIN :
+							  Gtemp = Glookup(name);
+							  ArgStruct *temp1,*temp2;
+							  temp1 = Gtemp->arglist;
+							  temp2 = arglist;
+							  while(temp1 != NULL && temp2 != NULL){
+								  if(strcmp(temp1->type->name,temp2->type->name) != 0){
+									  yyerror("TreeCreate : types of arguments passed to function donot match ");exit(0);
+								  }
+								  //TODO check for passType
+
+								  temp1 = temp1->next;
+								  temp2 = temp2->t1;
+							  }
+							  if(temp1 != NULL || temp2 != NULL){
+								  yyerror("TreeCreate : mismatch in the number of arguments given");exit(0);
+							  }
 							  break;
-							  
+
+		case NODETYPE_MAIN :  if(strcmp(t1->t2->type->name,"int") != 0){
+								yyerror("TreeCreate : the return type of main is not int type !");exit(0);
+							  }
+							  break;
+
 
 	}
 
