@@ -3,6 +3,8 @@
 #include <string.h>
 
 #define HEAP_SIZE 1024
+#define MIN_BLOCK_SIZE 8
+#define MAX_BLOCK_SIZE HEAP_SIZE/2
 
 memstruct heap[HEAP_SIZE];
 

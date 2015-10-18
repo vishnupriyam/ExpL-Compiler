@@ -41,11 +41,15 @@
 #define NODETYPE_FIELD 39
 #define NODETYPE_ALLOC 40
 #define NODETYPE_DEALLOC 41
+#define MEMSTRUCT_EMPTY -1
+#define MEMSTRUCT_INT 1
+#define MEMSTRUCT_STR 2
+#define MEMSTRUCT_BIND 3
 
 typedef union Constant {
        int intval;
        char* strval;
-};
+}Constant;
 
 typedef struct ASTNode{
        TypeTable *Type;
@@ -58,10 +62,9 @@ typedef struct ASTNode{
        LSymbol *Lentry;
 }AST;
 
-typedef union memstruct{
-	int value;
-	char *str;
-	int bind;
+typedef struct memstruct{
+	int type;
+	Constant value;
 }memstruct;
 
 AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3);

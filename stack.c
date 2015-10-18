@@ -1,6 +1,10 @@
 void initialise_stack(){
 	stack_top = -1;
-	memset(stack, (memstruct){-1}, sizeof(stack));
+	int i = 0;
+	for (i = 0; i < STACK_SIZE; ++i)
+	{
+		stack[i] = (memstruct){MEMSTRUCT_EMPTY};
+	}
 }
 
 void push(memstruct value){
@@ -18,5 +22,5 @@ memstruct pop(){
 		stack_top--;
 		return temp;
 	}
-	return (memstruct){};
+	return (memstruct){MEMSTRUCT_EMPTY};
 }
