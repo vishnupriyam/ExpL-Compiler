@@ -45,22 +45,48 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 								  temp->Gentry = Gtemp;
 								  type = Gtemp->type;
 								  break;
-		case NODETYPE_ID 	   : Gtemp = Glookup(name);
-								 if(Gtemp == NULL){
-									 Ltemp = Llookup(name);
-									 if(Ltemp == NULL){
-										 yyerror("TreeCreate : variable undefined !");exit(0);
+		case NODETYPE_ID 	   : Ltemp = Glookup(name);
+								 if(Ltemp == NULL){
+									 Gtemp = Llookup(name);
+									 if(Gtemp == NULL){
+										 yyerror("TreeCreate : variable undefined !");exit(1);
 									 }
 									 else{
-										 temp->Lentry = Ltemp;
-										 type = Ltemp->type;
+										 temp->Gentry = Gtemp;
+										 type = Gtemp->type;
 									 }
 								 }
 								 else{
-									 temp->Gentry = Gtemp;
-									 type = Gtemp->type;
+									 temp->Lentry = Ltemp;
+									 type = Ltemp->type;
 								 }
 								 break;
+		case NODETYPE_FIELD	:	if(t1->Nodetype == NODETYPE_ID){
+									Ltemp = Llookup(t1->Name);
+									if(Ltemp == NULL){
+										Gtemp = Glookup(t1->Name);
+										if(Gtemp == NULL){
+											 yyerror("TreeCreate : variable undefined !");exit(1);
+										}
+										else{
+											t1->Gentry = Gtemp;
+											t1->Type = Gtemp->type;
+											ftemp = FLookUp(Gtemp->type->name, t2->Name);
+										}
+									}
+									else{
+										t1->Lentry = Ltemp;
+										t1->Type = Ltemp->type;
+										ftemp = FLookUp(Ltemp->type->Name, t2->Name);
+									}
+								}
+								else if(t1->Nodetype == NODETYPE_FIELD)
+									ftemp = FLookUp(t1->Type->name, t2->Name);
+	                            if(ftemp == NULL){
+	                                yyerror("Undefined user defined variable");exit(1);
+	                            }
+	                            type = ftemp->type;
+								break;
 		case NODETYPE_IF 	: if(t1->type != TLookUp("boolean")){
 								yyerror(" TreeCreate : unexpected type of expression in if");exit(0);
 							  }

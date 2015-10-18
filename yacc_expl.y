@@ -365,22 +365,10 @@ FIELD :ID DOT ID         {
                             //The Type field for the identifiers are set.
                             //Example: In the reduction of a.b, the Type field of a is set based on the symbol table entry.
                             //The Type field of b is set to that specified in the fieldlist of the Typetable entry for a
-                            fieldList *temp = FLookUp($1->Name, $3->Name);
-                            if(temp == NULL){
-                                yyerror("Undefined user defined variable");
-                                printf(" %s.%s\n",$1->Name, $3->Name);
-                                exit(1);
-                            }
-                            $$ = TreeCreate(temp->type, NODETYPE_FIELD, NULL, (Constant){}, NULL, $1, $3, NULL);
+                            $$ = TreeCreate(TLookUp("void"), NODETYPE_FIELD, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |FIELD DOT ID       {
-                            fieldList *temp = FLookUp($1->Type->name, $3->Name);
-                            if(temp == NULL){
-                                yyerror("Undefined user defined variable");
-                                printf(" %s.%s\n",$1->Type->name, $3->Name);
-                                exit(1);
-                            }
-                            $$ = TreeCreate(temp->type, NODETYPE_FIELD, NULL, (Constant){}, NULL, $1, $3, NULL);
+                            $$ = TreeCreate(TLookUp("void"), NODETYPE_FIELD, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     ;
 
