@@ -68,7 +68,13 @@ TypeDecl: INT IDList DELIM                          {
                                                     }
     |ID IDList DELIM                                {
                                                         //Fills the Type pointer in the intermediate list(IntermList) with the name of the given identifier($1)
-                                                        AddFType(TLookUp($1->Name),$2);
+                                                        Ttemp = TLookUp($1->Name);
+                                                        if(Ttemp == NULL){
+                                                            yyerror("yacc : the type has not been defined");
+                                                            printf(" %s",$1->Name);
+                                                            exit(1);
+                                                        }
+                                                        AddFType(Ttemp,$2);
                                                     }
     ;
 
@@ -103,7 +109,13 @@ GDecl : INT GIdList DELIM                           {
                                                         //Type field of the global symbol table entry is set to the specified type.
                                                         //The specified type for used defined type is obtained from a call to
                                                         //TypeTableLookUp function.
-                                                        AddGType(TLookUp($1->Name),$2);
+                                                        Ttemp = TLookUp($1->Name);
+                                                        if(Ttemp == NULL){
+                                                            yyerror("yacc : the type has not been defined");
+                                                            printf(" %s",$1->Name);
+                                                            exit(1);
+                                                        }
+                                                        AddGType(Ttemp,$2);
                                                     }
     ;
 
@@ -151,7 +163,13 @@ ArgType : INT Args DELIM                            {
                                                     }
     |ID Args DELIM                                   {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
-                                                        AddArgType(TLookup($1->Name),$2);
+                                                        Ttemp = TLookUp($1->Name);
+                                                        if(Ttemp == NULL){
+                                                            yyerror("yacc (argType) : the type has not been defined");
+                                                            printf(" %s",$1->Name);
+                                                            exit(1);
+                                                        }
+                                                        AddArgType(Ttemp,$2);
                                                     }
     |INT Args                                       {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
@@ -163,7 +181,13 @@ ArgType : INT Args DELIM                            {
                                                     }
     |ID Args                                        {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
-                                                        AddArgType(TLookUp($1->Name),$2);
+                                                        Ttemp = TLookUp($1->Name);
+                                                        if(Ttemp == NULL){
+                                                            yyerror("yacc (argType 2): the type has not been defined");
+                                                            printf(" %s",$1->Name);
+                                                            exit(1);
+                                                        }
+                                                        AddArgType(Ttemp,$2);
                                                     }
     ;
 
@@ -208,7 +232,13 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
-                                                          validate_function($2->Name,TLookUp($2->Name),$4,$8);
+                                                          Ttemp = TLookUp($1->Name);
+                                                          if(Ttemp == NULL){
+                                                              yyerror("yacc(Fdef) : the return type has not been defined");
+                                                              printf(" %s",$1->Name);
+                                                              exit(1);
+                                                          }
+                                                          validate_function($2->Name,Ttemp,$4,$8);
                                                           $2->Lentry = LSymbolHead;
                                                           interpret($7);
                                                           LSymbolHead = NULL;

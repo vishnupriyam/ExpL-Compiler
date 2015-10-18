@@ -22,7 +22,7 @@ typedef struct TypeTable
 	struct TypeTable *next;
 }TypeTable;
 
-TypeTable *TypeTableHead;
+TypeTable *TypeTableHead,*Ttemp;
 
 void TTableCreate();
 TypeTable* TLookUp(char *name);
