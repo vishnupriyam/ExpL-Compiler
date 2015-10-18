@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int heap[1024];
+memstruct heap[1024];
 
 void initialise_memory();
 void print_memory_freelist();
