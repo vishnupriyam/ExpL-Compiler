@@ -99,6 +99,10 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 							  	yyerror("TreeCreate : variable is not user defined type");exit(0);
 							  }
 							  break;
+		case NODETYPE_DEALLOC : if(!isUserDefinedtype(t1->Type)){
+							  	yyerror("TreeCreate : variable is not user defined type");exit(0);
+							  }
+							  break;
 		case NODETYPE_FUNCTION :
 							  Gtemp = Glookup(name);
 							  ArgStruct *temp1,*temp2;

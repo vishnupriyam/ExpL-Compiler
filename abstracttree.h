@@ -39,6 +39,8 @@
 #define NODETYPE_FIELD_READ 37
 #define NODETYPE_FIELD_ASGN 38
 #define NODETYPE_FIELD 39
+#define NODETYPE_ALLOC 40
+#define NODETYPE_DEALLOC 41
 
 typedef union Constant {
        int intval;

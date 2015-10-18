@@ -345,11 +345,11 @@ stmt: ID ASGN E DELIM       {
                                                 }
     |ID ASGN ALLOC '(' ')' DELIM                {
                                                     //Verifies if the identifier is of user defined type
-                                                    TreeCreate(TLookup("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,$1,NULL,NULL);
+                                                    $$ = TreeCreate(TLookup("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,$1,NULL,NULL);
                                                 }
     |FIELD ASGN ALLOC '(' ')' DELIM             {
                                                     //Verifies if the FIELD is of user defined type.
-                                                    TreeCreate(TLookup("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,$1,NULL,NULL);
+                                                    $$ = TreeCreate(TLookup("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,$1,NULL,NULL);
                                                 }
     |FIELD ASGN E DELIM                 {
                                             //Verifies if the left hand side and right hand side of the Assignment statement is of same type.
@@ -357,9 +357,11 @@ stmt: ID ASGN E DELIM       {
                                         }
     |DEALLOC '(' ID ')' DELIM           {
                                             //Verifies if the field is of user defined type.
+                                            $$ = TreeCreate(TLookUp("void"),NODETYPE_DEALLOC,NULL,(Constant){},NULL,$3,NULL,NULL);
                                         }
     |DEALLOC '(' FIELD ')' DELIM        {
                                             //Verifies if the FIELD is of user defined type.
+                                            $$ = TreeCreate(TLookUp("void"),NODETYPE_DEALLOC,NULL,(Constant){},NULL,$3,NULL,NULL);
                                         }
     ;
 
