@@ -70,7 +70,7 @@ TypeDecl: INT IDList DELIM                          {
                                                         //Fills the Type pointer in the intermediate list(IntermList) with the name of the given identifier($1)
                                                         Ttemp = TLookUp($1->Name);
                                                         if(Ttemp == NULL){
-                                                            yyerror("yacc : the type has not been defined");
+                                                            yyerror("yacc (TypeDecl) : the type has not been defined");
                                                             printf(" %s",$1->Name);
                                                             exit(1);
                                                         }
@@ -88,7 +88,7 @@ IDList : IDList ',' TId                            {
                                                     }
     ;
 
-TId : ID                                            { $$ = FInstall($1->Name);}
+TId : ID                                            {   $$ = FInstall($1->Name); }
 
 GDecblock : DECL GDecList ENDDECL                   {}
     ;
@@ -144,8 +144,9 @@ GId : ID '[' NUM ']'                                {
 
 FArgList : ArgList                                  {
                                                         //A Local Symbol Table is created out the entries made.
-                                                         AddArgsToLTable($1);
-                                                         $$ = $1;
+                                                         AddArgsToLTable(ArgStructHead);
+                                                         $$ = ArgStructHead;
+
                                                     }
     ;
 
@@ -218,6 +219,7 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           $2->Lentry = LSymbolHead;
                                                           interpret($7);
                                                           LSymbolHead = NULL;
+                                                          ArgStructHead = NULL;
                                                         }
     |STR ID '(' FArgList ')' '{' Ldecblock Body '}'     {
                                                           //Function definition is compared with their declarartion earlier for compatibility
@@ -227,6 +229,7 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           $2->Lentry = LSymbolHead;
                                                           interpret($7);
                                                           LSymbolHead = NULL;
+                                                          ArgStructHead = NULL;
                                                         }
     |ID ID '(' FArgList ')' '{' Ldecblock Body '}'      {
                                                           //Function definition is compared with their declarartion earlier for compatibility
@@ -242,6 +245,7 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           $2->Lentry = LSymbolHead;
                                                           interpret($7);
                                                           LSymbolHead = NULL;
+                                                          ArgStructHead = NULL;
                                                         }
     ;
 
@@ -444,7 +448,7 @@ param : param ',' E {
 
 retstmt : RETURN E DELIM {
                             //Appends expression to the return statement.
-                            $$ = TreeCreate($2->type, NODETYPE_RET,NULL,(Constant){},NULL,$2,NULL,NULL)
+                            $$ = TreeCreate($2->type, NODETYPE_RET,NULL,(Constant){},NULL,$2,NULL,NULL);
                          }
     ;
 

@@ -9,13 +9,13 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
    		strcpy(temp->Name,name);
     }else
     {
-   		temp->Name = NULL;     
+   		temp->Name = NULL;
     }
     temp->ArgList = arglist;
     temp->Ptr1 = t1;
     temp->Ptr2 = t2;
     temp->Ptr3 = t3;
-    
+
     temp->Gentry = NULL;
     temp->Lentry = NULL;
     return temp;
