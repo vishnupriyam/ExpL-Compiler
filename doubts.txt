@@ -7,3 +7,4 @@
 7. Add functions for Type dervations in IDs in expressions and statements
 8. check that a function or identifier should not be same as a type
 9. what is nodeype do for ?
+10. passtype check for NODETYPE_FUNCTION

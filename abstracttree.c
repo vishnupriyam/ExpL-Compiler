@@ -1,5 +1,7 @@
 AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3) {
 	AST *temp = (AST *)malloc(sizeof(AST));
+	temp->Gentry = NULL;
+    temp->Lentry = NULL;
 	switch(nodetype){
 		case NODETYPE_PLUS	:
 		case NODETYPE_MINUS :
@@ -40,6 +42,7 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 								  if( Gtemp == NULL){
 									yyerror("TreeCreate : undefined array variable");exit(0);
 								  }
+								  temp->Gentry = Gtemp;
 								  type = Gtemp->type;
 								  break;
 		case NODETYPE_ID 	   : Gtemp = Glookup(name);
@@ -49,10 +52,12 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 										 yyerror("TreeCreate : variable undefined !");exit(0);
 									 }
 									 else{
+										 temp->Lentry = Ltemp;
 										 type = Ltemp->type;
 									 }
 								 }
 								 else{
+									 temp->Gentry = Gtemp;
 									 type = Gtemp->type;
 								 }
 								 break;
@@ -105,9 +110,6 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
     temp->Ptr1 = t1;
     temp->Ptr2 = t2;
     temp->Ptr3 = t3;
-
-    temp->Gentry = NULL;
-    temp->Lentry = NULL;
     return temp;
 }
 
