@@ -226,14 +226,14 @@ Ldecl : INT LIdList DELIM {
                             //Fills the Type field of the local symbol table entry with integer.
                             AddLType($2,TLookUp("int"));
                           }
-    |STR LIdList DELIM  {
+    |STR LIdList DELIM    {
                             //Fills the Type field of the local symbol table entry with string.
                             AddLType($2,TLookUp("str"));
-                        }
-    |ID LIdList DELIM {
-                        //Fills the Type field of the Local symbol table with the specified user defined type.
-                        AddLType($2,TLookUp($1->Name));
-                      }
+                          }
+    |ID LIdList DELIM     {
+                            //Fills the Type field of the Local symbol table with the specified user defined type.
+                            AddLType($2,TLookUp($1->Name));
+                          }
     ;
 
 LIdList : LIdList ',' LId {
@@ -258,10 +258,10 @@ Mainblock : INT MAIN '(' ')' '{' Ldecblock Body '}' {
                                                     }
     ;
 
-Body : BEG slist retstmt END    {
-                                    //Return statement is set as Ptr2 of slist
-                                    $$ = TreeCreate(TLookUp("void"), NODETYPE_BODY, NULL, (Constant){}, NULL, $2, $3, NULL);
-                                }
+Body : BEG slist retstmt END{
+                                //Return statement is set as Ptr2 of slist
+                                $$ = TreeCreate(TLookUp("void"), NODETYPE_BODY, NULL, (Constant){}, NULL, $2, $3, NULL);
+                            }
     ;
 
 slist: slist stmt           {
@@ -390,15 +390,32 @@ E: E AROP1 E            {
     |ID '(' param ')'   {
                             //Type of the identifier is set to that specified in the global symbol table during declaration.
                             //The Argument list created before is set to the Arglist field.
+                            Gtemp = Glookup($1->Name);
+                            if(Gtemp == NULL){
+                                yyerror("Yacc : Undefined function");
+                                printf(" %s\n" $3->Name);
+                                exit(1);
+                            }
+                            $$ = TreeCreate(Gtemp->type,NODETYPE_FUNCTION,$1->Name,(Constant){},$3,NULL,NULL,NULL)
                         }
  ;
 
-param : param ',' E //Creates a statement node and its Ptr1 field is set to the expression node.
-                    //Appends the newly created parameter list to the existing.
-    |E //Creates a statement node and its Ptr1 field is set to the expression node.
+param : param ',' E {
+                        //Creates a statement node and its Ptr1 field is set to the expression node.
+                        //Appends the newly created parameter list to the existing.
+                        $$ = TreeCreate(TLookUp("void"),NODETYPE_PARAM,NULL,(Constant){},NULL,$1,$3,NULL);
+
+                    }
+    |E              {
+                        //Creates a statement node and its Ptr1 field is set to the expression node.
+                        $$ = TreeCreate(TLookUp("void"),NODETYPE_PARAM,NULL,(Constant){},NULL,$1,NULL,NULL);
+                    }
     ;
 
-retstmt : RETURN E DELIM //Appends expression to the return statement.
+retstmt : RETURN E DELIM {
+                            //Appends expression to the return statement.
+                            $$ = TreeCreate($2->type, NODETYPE_RET,NULL,(Constant){},NULL,$2,NULL,NULL)
+                         }
     ;
 
 %%
