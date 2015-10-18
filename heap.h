@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-memstruct heap[1024];
+#define HEAP_SIZE 1024
+
+memstruct heap[HEAP_SIZE];
 
 void initialise_memory();
 void print_memory_freelist();
