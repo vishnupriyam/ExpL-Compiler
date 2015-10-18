@@ -14,6 +14,7 @@ void AddFType(TypeTable *type, fieldList *f);
 fieldList* FAppend(fieldList *f);
 fieldList* FieldLookup(char *name);
 void Type_field_list_validate();
+int isUserDefinedtype(TypeTable *t);
 
 typedef struct TypeTable
 {
