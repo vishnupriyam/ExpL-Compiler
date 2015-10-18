@@ -95,6 +95,18 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 								yyerror(" TreeCreate : unexpected type of expression in while");exit(0);
 							  }
 							  break;
+		case NODETYPE_ALLOC : if(t1->Nodetype == NODETYPE_ID){
+								if(!isUserDefinedtype(t1->Type)){
+									yyerror("TreeCreate : The variable is not user defined type");exit(0);
+								}
+							  }
+							  else if(t1->Nodetype == NODETYPE_FIELD){
+								ftemp = FLookUp(t1->Type->name, t2->Name);
+								if(!isUserDefinedtype(ftemp->type)){
+									yyerror("TreeCreate : The varable is not a user defined type");exit(0);
+								}
+							  }
+							  break;
 		case NODETYPE_FUNCTION :
 							  Gtemp = Glookup(name);
 							  ArgStruct *temp1,*temp2;
@@ -118,8 +130,6 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 								yyerror("TreeCreate : the return type of main is not int type !");exit(0);
 							  }
 							  break;
-
-
 	}
 
 	temp->Type = type;
@@ -150,5 +160,14 @@ AST* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3) {
 }
 
 memstruct interpret(AST *t) {
+	switch(t->Nodetype){
+		case NODETYPE_PLUS : return interpret(t->Ptr1) + interpret(t->Ptr2);
+							 break;
+		case NODETYPE_MINUS : return interpret(t->Ptr1) - interpret(t->Ptr2);
+							  break;
+		case NODETYPE_MUL	: return interpret(t->Ptr1) * interpret(t->Ptr2);
+							  break;
+		case NODETYPE_MOD	: return interpret(t->Ptr1) / interpret(t->Ptr2);
+	}
 
 }

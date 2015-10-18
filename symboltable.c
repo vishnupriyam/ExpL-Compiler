@@ -275,3 +275,11 @@ void Type_field_list_validate(){
         }
     }
 }
+
+int isUserDefinedtype(TypeTable *t){
+    if(strcmp(t->name,"int") == 0 || strcmp(t->name,"str")==0)){
+        return 0;
+    }
+    else
+        return 1;
+}
