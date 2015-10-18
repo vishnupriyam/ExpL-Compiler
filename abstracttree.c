@@ -7,35 +7,35 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 		case NODETYPE_MINUS :
 		case NODETYPE_MUL	:
 		case NODETYPE_DIV	:
-		case NODETYPE_MOD	: if(strcmp(t1->type->name,t2->type->name) != 0 || strcmp(t1->type->name,"int") != 0){
+		case NODETYPE_MOD	: if(strcmp(t1->Type->name,t2->Type->name) != 0 || strcmp(t1->Type->name,"int") != 0){
 								 yyerror( "TreeCreate : unexpected operand types for nodetype plus/minus/div/mod/mul");exit(0);
 							  }
 							  break;
 		case NODETYPE_GT	:
 		case NODETYPE_LT	:
 		case NODETYPE_GE	:
-		case NODETYPE_LE	: if(strcmp(t1->type->name,t2->type->name) != 0 || strcmp(t1->type->name,"int") != 0){
+		case NODETYPE_LE	: if(strcmp(t1->Type->name,t2->Type->name) != 0 || strcmp(t1->Type->name,"int") != 0){
 								yyerror("TreeCreate : unexpected operand types for nodetype gt/lt/ge/le");exit(0);
 							  }
 							  break;
 		case NODETYPE_EQ	:
-		case NODETYPE_NE	: if(!(strcmp(t1->type->name,t2->type->name) == 0 && (strcmp(t1->type->name,"int") == 0 || strcmp(t1->type->name,"boolean") == 0) || strcmp(t1->type->name,"str") != 0)){
+		case NODETYPE_NE	: if(!(strcmp(t1->Type->name,t2->Type->name) == 0 && (strcmp(t1->Type->name,"int") == 0 || strcmp(t1->Type->name,"boolean") == 0) || strcmp(t1->Type->name,"str") != 0)){
 								yyerror("TreeCreate : unexpected operand types for nodetype eq/le");exit(0);
 							  }
 							  break;
-		case NODETYPE_ASGN	: if(strcmp(t1->type->name,t2->type->name) != 0){
+		case NODETYPE_ASGN	: if(strcmp(t1->Type->name,t2->Type->name) != 0){
 								yyerror("TreeCreate : unexpected operand types for nodetype assignment");exit(0);
 							  }
 							  break;
-		case NODETYPE_ARR_ASGN : if(strcmp(t2->type->name,"int") != 0 || strcmp(t1->type->name,t3->type,name) != 0){
+		case NODETYPE_ARR_ASGN : if(strcmp(t2->Type->name,"int") != 0 || strcmp(t1->Type->name,t3->Type,name) != 0){
 									yyerror("TreeCreate : unexpected types for node type array assignment");exit(0);
 							     }
 								 break;
-		case NODETYPE_ARR_READ : if(strcmp(t2->type->name,"int") != 0 ){
+		case NODETYPE_ARR_READ : if(strcmp(t2->Type->name,"int") != 0 ){
 									yyerror("TreeCreate : unexpected types for node type array read");exit(0);
 							     }
 								 break;
-		case NODETYPE_ARR_ID 	: if(strcmp(t2->type->name,"int") != 0){
+		case NODETYPE_ARR_ID 	: if(strcmp(t2->Type->name,"int") != 0){
 									yyerror("TreeCreate : unexpected operand type for node type arr_id");exit(0);
 								  }
 								  Gtemp = Glookup(t1->name);
@@ -87,24 +87,16 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 	                            }
 	                            type = ftemp->type;
 								break;
-		case NODETYPE_IF 	: if(t1->type != TLookUp("boolean")){
+		case NODETYPE_IF 	: if(t1->Type != TLookUp("boolean")){
 								yyerror(" TreeCreate : unexpected type of expression in if");exit(0);
 							  }
 							  break;
-		case NODETYPE_WHILE : if(t1->type != TLookUp("boolean")){
+		case NODETYPE_WHILE : if(t1->Type != TLookUp("boolean")){
 								yyerror(" TreeCreate : unexpected type of expression in while");exit(0);
 							  }
 							  break;
-		case NODETYPE_ALLOC : if(t1->Nodetype == NODETYPE_ID){
-								if(!isUserDefinedtype(t1->Type)){
-									yyerror("TreeCreate : The variable is not user defined type");exit(0);
-								}
-							  }
-							  else if(t1->Nodetype == NODETYPE_FIELD){
-								ftemp = FLookUp(t1->Type->name, t2->Name);
-								if(!isUserDefinedtype(ftemp->type)){
-									yyerror("TreeCreate : The varable is not a user defined type");exit(0);
-								}
+		case NODETYPE_ALLOC : if(!isUserDefinedtype(t1->Type)){
+							  	yyerror("TreeCreate : variable is not user defined type");exit(0);
 							  }
 							  break;
 		case NODETYPE_FUNCTION :
@@ -126,7 +118,7 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 							  }
 							  break;
 
-		case NODETYPE_MAIN :  if(strcmp(t1->t2->type->name,"int") != 0){
+		case NODETYPE_MAIN :  if(strcmp(t1->t2->Type->name,"int") != 0){
 								yyerror("TreeCreate : the return type of main is not int type !");exit(0);
 							  }
 							  break;
