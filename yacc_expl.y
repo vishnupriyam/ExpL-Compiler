@@ -413,7 +413,7 @@ E: E AROP1 E            {
     |ID '[' E ']'       {
                             //Type field in the ASTnode is set to that specified in the symbol table.
                             //Verifies if the expression node is an integer
-                            $$ = TreeCreate($1->Type, NODETYPE_ARR_ID, NULL, (Constant){}, NULL, $1, $3, NULL);
+                            $$ = TreeCreate(NULL, NODETYPE_ARR_ID, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |FIELD              {
                             //The Type field of the identifier is from the fieldlist entry of the TypeTable.
