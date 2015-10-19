@@ -54,12 +54,12 @@ typedef union Constant {
 }Constant;
 
 typedef struct ASTNode{
-       TypeTable *Type;
-       int Nodetype;
-       char *Name;
-       Constant Value;
-       struct ASTNode *Arglist;
-       struct ASTNode *Ptr1,*Ptr2,*Ptr3;
+       TypeTable *type;
+       int nodetype;
+       char *name;
+       Constant value;
+       struct ASTNode *arglist;
+       struct ASTNode *ptr1,*ptr2,*ptr3;
        GSymbol *Gentry;
        LSymbol *Lentry;
 }AST;

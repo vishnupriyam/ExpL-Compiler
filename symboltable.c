@@ -180,7 +180,7 @@ void validate_funtion(char *fname,Typetable *rtype, ArgStruct *arglist, ASTNode 
     }
 
     //compare the return type as declared and as from the body of the function
-    if(!(Gtemp->type == rtype && body->Type == rtype)){
+    if(!(Gtemp->type == rtype && body->type == rtype)){
         yyerror("validate_function : return type doesnot match with definition or with return type of body");
         printf("%s\n",fname);
         exit(1);
@@ -274,6 +274,16 @@ void Type_field_list_validate(){
             exit(1);
         }
     }
+}
+
+int fieldRelativeAddress(TypeTable *t, char *name) {
+    ftemp = t->fields;
+    int relBind = 0;
+    while(strcmp(ftemp->name,name) != 0){
+      relBind++;
+      ftemp = ftemp->next;
+    }
+    return relBind;
 }
 
 int isUserDefinedtype(TypeTable *t){

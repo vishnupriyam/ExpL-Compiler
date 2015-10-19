@@ -15,6 +15,7 @@ fieldList* FAppend(fieldList *f);
 fieldList* FieldLookup(char *name);
 void Type_field_list_validate();
 int isUserDefinedtype(TypeTable *t);
+int fieldRelativeAddress(TypeTable *t, char *name);
 
 typedef struct TypeTable
 {
@@ -45,32 +46,32 @@ ArgStruct* ArgAppend(ArgStruct *arg);
 void AddArgType(TypeTable *type, Argstruct *arg);
 
 typedef struct GSymbol{
-    char *name;
+  char *name;
 	TypeTable *type;
 	int size;
-	int BINDING;
+	int binding;
 	ArgStruct *arglist;
-    AST *fbinding;
+  AST *fbinding;
 	struct GSymbol *next;
 }GSymbol;
 
 GSymbol *GSymbolHead,*Gtemp;
 
-GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist);
+GSymbol* GInstall(char *name, TypeTable *type, int size, Argstuct *arglist);
 GSymbol* Glookup(char *name);
 GSymbol* GAppend(GSymbol *g1);
 void AddGType(TypeTable *gtype, GSymbol *g);
 
 typedef struct LSymbol{
-	char *Name;
-	TypeTable *Type;
-	int Binding;
-	struct LSymbol *Next;
+	char *name;
+	TypeTable *type;
+	int binding;
+	struct LSymbol *next;
 }LSymbol;
 
 LSymbol *LSymbolHead,*Ltemp;
 
-LSymbol* LInstall(char*name, TypeTable *type);
+LSymbol* LInstall(char *name, TypeTable *type);
 LSymbol* Llookup(char *name);
 void LAppend(LSymbol *l1);
 LSymbol* AddLType(TypeTable *ltype, LSymbol *l);
