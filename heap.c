@@ -1,6 +1,6 @@
 
 void initialise_memory(){
-	//Filling all entries with -1 initially	
+	//Filling all entries with -1 initially
 	int i = 0; 		//root index
 	for (i = 0; i < HEAP_SIZE; ++i)
 	{
@@ -73,7 +73,7 @@ void remove_from_list(int free_list, int free_list_size, int addr) {
 			heap[temp - 1].value.intval = heap[temp].value.intval;
 			temp++;
 		}
-		heap[temp - 1].value.intval = -1;	
+		heap[temp - 1].value.intval = -1;
 	}
 }
 
@@ -105,7 +105,7 @@ int split_rec(int current_list, int list_size, int current_size, int required_si
 }
 
 int allocate(int size){
-	
+
 	if(size + 1 > 512){
 		return -1;
 	}
@@ -120,7 +120,7 @@ int allocate(int size){
 		temp = split_rec(req_free_list, req_free_list_size, ceil_size, ceil_size);
 		if(temp == 0){
 			return -1;
-		}		
+		}
 	}
 
 	temp = req_free_list;
@@ -145,7 +145,7 @@ void free_block(int start_addr,int size){
 int find_free_buddy(int start_addr, int ceil_size) {
 	int buddy;
 	if(start_addr % (2 * ceil_size) == 0) {
-		buddy = start_addr + ceil_size;	
+		buddy = start_addr + ceil_size;
 	}
 	else {
 		buddy = start_addr - ceil_size;
@@ -196,3 +196,17 @@ int deallocate(int start_addr){
 	merge_buddies(start_addr, ceil_size);
 }
 
+memstruct getValueFromBind(memstruct bind){
+	while(bind.type == MEMSTRUCT_BIND){
+		bind = heap[bind.value.intval];
+	}
+	return bind;
+}
+
+memstruct getValueAtDynamicLocation(int location){
+	return heap[location];
+}
+
+void setValueAtDynamicLocation(int location, memstruct value){
+		heap[location] = value;
+}

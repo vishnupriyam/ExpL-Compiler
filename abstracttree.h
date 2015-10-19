@@ -1,4 +1,5 @@
 #include <string.h>
+
 #define NODETYPE_LEAF 0
 #define NODETYPE_ID 1
 #define NODETYPE_PLUS 2
@@ -41,12 +42,17 @@
 #define NODETYPE_FIELD 39
 #define NODETYPE_ALLOC 40
 #define NODETYPE_DEALLOC 41
+
 #define MEMSTRUCT_EMPTY -1
 #define MEMSTRUCT_INT 1
 #define MEMSTRUCT_STR 2
 #define MEMSTRUCT_BIND 3
+
 #define IS_ARRAY_FALSE 0
 #define IS_ARRAY_TRUE 1
+
+#define FLAG_FBIND_ADDRESS 0
+#define FLAG_FBIND_VALUE 1
 
 typedef union Constant {
        int intval;
@@ -72,5 +78,4 @@ typedef struct memstruct{
 AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3);
 AST* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3);
 memstruct interpret(AST *t);
-memstruct getValueFromBind(memstruct bind);
-void setVariableType(AST *t, int isArray, int isField);
+void setVariableType(AST *t, int isArray);

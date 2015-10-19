@@ -63,8 +63,14 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 								}
 								if(strcmp(t2->type->name,"int") != 0 ){
 									yyerror("TreeCreate : unexpected types for node type array read");exit(1);
-							     }
-								 break;
+							  }
+								break;
+		 case NODETYPE_READ :
+ 								setVariableType(t1, IS_ARRAY_FALSE);
+ 								if(strcmp(t1->type->name,"str") != 0 && strcmp(t1->type->name,"int") != 0){
+ 									yyerror("TreeCreate : invalid operation on a non primitive type");exit(1);
+ 								}
+ 								break;
 		case NODETYPE_WRITE		:
 								if(strcmp(t1->type->name,"str") != 0 && strcmp(t1->type->name,"int") != 0){
 									yyerror("TreeCreate : write operation on a non primitive type variable");exit(1);
@@ -153,13 +159,6 @@ AST* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3) {
 	return t;
 }
 
-memstruct getValueFromBind(memstruct bind){
-	while(bind.type == MEMSTRUCT_BIND){
-		bind = heap[bind.value.intval];
-	}
-	return bind;
-}
-
 void setVariableType(AST *t, int isArray){
 	Ltemp = Llookup(t->name);
 	if(Ltemp == NULL || isArray){
@@ -176,6 +175,26 @@ void setVariableType(AST *t, int isArray){
 		t->Lentry = Ltemp;
 		t->type = Ltemp->type;
 	}
+}
+
+int getFieldBind(AST *t, int flag){
+	if(t->nodetype == NODETYPE_FIELD){
+		if(flag == FLAG_FBIND_VALUE){
+			 	memstruct temp = getValueAtDynamicLocation(getFieldBind(t->ptr1,FLAG_FBIND_VALUE) + fieldRelativeAddress(t->ptr1->type, t->ptr2->name));
+				return temp.value.intval;
+		}
+		else
+			 	return getFieldBind(t->ptr1,FLAG_FBIND_VALUE) + fieldRelativeAddress(t->ptr1->type, t->ptr2->name);
+	}
+	if(t->nodetype == NODETYPE_ID){
+			 if(t->Lentry != NULL){
+				 	return t->Lentry->binding;
+			 }
+			 else {
+				 return t->Gentry->binding;
+			 }
+	}
+
 }
 
 memstruct interpret(AST *t) {
@@ -277,8 +296,67 @@ memstruct interpret(AST *t) {
 							break;
 		case NODETYPE_FIELD_ASGN	:
 							result1 = interpret(t->ptr2);
+							int mem_location = getFieldBind(t, FLAG_FBIND_ADDRESS);
+							setValueAtDynamicLocation(mem_location,result1);
+							break;
+		case NODETYPE_READ	:
+							if(strcpy(t->ptr1->type->name, "int")==0){
+								result1.type = MEMSTRUCT_INT;
+								scanf("%d", result1.value.intval);
+							} else {
+								//TODO check for the memory size of result1.value.strval
+								result1.type = MEMSTRUCT_STR;
+								scanf("%s", result1.value.strval);
+							}
+							break;
+		case NODETYPE_ARR_READ	:
+							if(strcpy(t->ptr1->type->name, "int")==0){
+								result1.type = MEMSTRUCT_INT;
+								scanf("%d", result1.value.intval);
+							} else {
+								//TODO check for the memory size of result1.value.strval
+								result1.type = MEMSTRUCT_STR;
+								scanf("%s", result1.value.strval);
+							}
+							result2 = getValueFromBind(interpret(t->ptr2));
+							if(result2.value.intval < t->ptr1->Gentry->size){
+								yyerror("interpret: index out of bounds");exit(1);
+							}
+							assignGlobalValue(t->ptr1->Gentry->binding + result2.value.intval, result1);
+							break;
+		case NODETYPE_WRITE	:
+							result1 = getValueFromBind(interpret(t->ptr1));
+							if(strcpy(t->ptr1->type->name, "int")==0){
+								printf("%d\n", result1.value.intval);
+							} else {
+								scanf("%s\n", result1.value.strval);
+							}
+							break;
+		case NODETYPE_IF	:
+							result1 = getValueFromBind(interpret(t->ptr1));
+							if(result1.value.intval){
+									interpret(t->ptr2);
+							}
+							else if(t->ptr3 != NULL){
+									interpret(t->ptr3);
+							}
+							break;
+		case NODETYPE_WHILE	:
+							result1 = getValueFromBind(interpret(t->ptr1));
+							while (result1.value.intval) {
+									interpret(t->ptr2);
+									result1 = getValueFromBind(interpret(t->ptr1));
+							}
+							break;
+		case NODETYPE_NONE	:
+							interpret(t->ptr1);
+							interpret(t->ptr2);
+							break;
+		case NODETYPE_ARR_ID	:
+							result1 = getValueFromBind(interpret(t->ptr2));
 							
 							break;
+
 	}
 
 
