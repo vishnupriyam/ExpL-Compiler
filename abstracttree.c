@@ -261,6 +261,21 @@ memstruct interpret(AST *t) {
 							else
 								return (memstruct){MEMSTRUCT_INT, result1.value.intval != result2.value.intval};
 							break;
+		case NODETYPE_AND	:
+							result1 = getValueFromBind(interpret(t->ptr1));
+							result2 = getValueFromBind(interpret(t->ptr2));
+							return (memstruct){MEMSTRUCT_INT, result1.value.intval && result2.value.intval};
+							break;
+		case NODETYPE_OR	:
+							result1 = getValueFromBind(interpret(t->ptr1));
+							result2 = getValueFromBind(interpret(t->ptr2));
+							return (memstruct){MEMSTRUCT_INT, result1.value.intval || result2.value.intval};
+							break;
+		case NODETYPE_NOT	:
+							result1 = getValueFromBind(interpret(t->ptr1));
+							result1.value.intval = !(result1.value.intval);
+							return result1;
+							break;
 		case NODETYPE_ID	:
 							if(t->Lentry != NULL){
 								return getLocalValue(t->Lentry->binding);
@@ -354,8 +369,9 @@ memstruct interpret(AST *t) {
 							break;
 		case NODETYPE_ARR_ID	:
 							result1 = getValueFromBind(interpret(t->ptr2));
-							
+							return getGlobalValue(t->ptr1->Gentry->binding + result1.value.intval);
 							break;
+
 
 	}
 
