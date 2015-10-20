@@ -11,7 +11,7 @@ fieldList *fieldListHead,*ftemp;
 
 fieldList* FInstall(char *name);
 void AddFType(TypeTable *type, fieldList *f);
-fieldList* FAppend(fieldList *f);
+fieldList* FAppend(fieldList *f1, fieldList *f2);
 fieldList* FieldLookup(char *name);
 void Type_field_list_validate();
 int isUserDefinedtype(TypeTable *t);

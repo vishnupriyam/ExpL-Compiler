@@ -71,7 +71,7 @@ ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
 }
 
 ArgStruct* ArgAppend(ArgStruct *arg1, Argstruct *arg2){
-    Argtemp = arg;
+    Argtemp = arg2;
     while (Argtemp->next != NULL) {
       Argtemp = Argtemp->next;
     }
@@ -277,10 +277,13 @@ void AddFType(TypeTable *type, fieldList *f){
     }
 }
 
-fieldList* FAppend(fieldList *f){
-    f->next = fieldListHead;
-    fieldListHead = f;
-    return fieldListHead;
+fieldList* FAppend(fieldList *f1, fieldList *f2){
+    ftemp = f2;
+    while (ftemp->next != NULL) {
+       ftemp = ftemp->next;
+    }
+    ftemp->next = f1;
+    return f2;
 }
 
 fieldList* FieldLookup(char *name){
@@ -297,12 +300,12 @@ fieldList* FieldLookup(char *name){
     return temp;
 }
 
-void Type_field_list_validate(){
-    fieldList *ftemp1 = fieldListHead;
-    while(ftemp != NULL){
-        if(TLookUp(ftemp->type) == NULL){
+void Type_field_list_validate(fieldList *f){
+    fieldList *temp = f;
+    while(temp != NULL){
+        if(TLookUp(temp->type) == NULL){
             yyerror("Type_field_list_validate : the field type has not been declared previously");
-            printf(" %s",name);
+            printf(" %s",temp->type->name);
             exit(1);
         }
     }

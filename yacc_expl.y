@@ -17,6 +17,7 @@
     ArgStruct * arg;
     GSymbol * gvar;
     LSymbol * lvar;
+    fieldList * field;
     char c;
 };
 
@@ -26,6 +27,7 @@
 %type <arg> ArgList FArgList ArgType Args Arg
 %type <gvar> GIdList GId
 %type <lvar> LIdList LId
+%type <field> TypeDeclList TypeDecl IDList TId
 
 %nonassoc RELOP
 %left AROP1
@@ -51,25 +53,26 @@ TypeDef: NewType '{' TypeDeclList '}'               {
                                                         //Creates a 'fieldlist' out of the intermediate list.
                                                         //Verifies for multiple declaration of variables.
                                                         //Verfifies if the type assigned to the used defined variables are declared before or is the current one under definition
-                                                        Type_field_list_validate();
-                                                        $1->fields = fieldListHead;
-                                                        fieldListHead = NULL;
+                                                        Type_field_list_validate($3);
+                                                        $1->fields = $3;
                                                     }
     ;
 
 NewType : ID    { $$ = TInstall($1->name,NULL);}
 
-TypeDeclList: TypeDeclList TypeDecl                 {}
-    |TypeDecl                                       {}
+TypeDeclList: TypeDeclList TypeDecl                 { $$ = FAppend($1, $2);}
+    |TypeDecl                                       { $$ = $1; }
     ;
 
 TypeDecl: INT IDList DELIM                          {
                                                         //Fills the Type pointer in the intermediate list with integer
                                                         AddFType(TLookUp("int"),$2);
+                                                        $$ = $2;
                                                     }
     |STR IDList DELIM                               {
                                                         //Fills the Type pointer in the intermediate list with string
                                                         AddFType(TLookUp("str"),$2);
+                                                        $$ = $2;
                                                     }
     |ID IDList DELIM                                {
                                                         //Fills the Type pointer in the intermediate list(IntermList) with the name of the given identifier($1)
@@ -80,16 +83,18 @@ TypeDecl: INT IDList DELIM                          {
                                                             exit(1);
                                                         }
                                                         AddFType(Ttemp,$2);
+                                                        $$ = $2;
                                                     }
     ;
 
 IDList : IDList ',' TId                            {
                                                         //Creates an intermediate list(IntermList) containing the name of the given identifier
-                                                        $$ = FAppend($3);
+                                                        $3->next = $1;
+                                                        $$ = $3;
                                                     }
     |TId                                            {
                                                         //Creates an intermediate list(IntermList) containing the name of the given identifier
-                                                        $$ = FAppend($1);
+                                                        $$ = $1;
                                                     }
     ;
 
