@@ -15,12 +15,17 @@
 %union{
     AST * nptr;
     ArgStruct * arg;
+    GSymbol * gvar;
+    LSymbol * lvar;
     char c;
 };
 
 %token ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM ASGN AROP2 AROP1 NOT LOGOP DOT NUM ID STRCONST ALLOC DEALLOC
 
-%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM AROP2 ASGN AROP1 NOT LOGOP DOT NUM ID STRCONST FIELD ALLOC DEALLOC Prog TypeDeclBlock GDecblock Fdefblock Mainblock TypeDefList TypeDef TypeDeclList TypeDecl IDList GDecblock GDecList GDecl GIdList GId  ArgList FArgList ArgType Args Arg Fdef Ldecblock Body LdecList Ldecl LIdList LId slist retstmt stmt E param
+%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM AROP2 ASGN AROP1 NOT LOGOP DOT NUM ID STRCONST FIELD ALLOC DEALLOC Prog TypeDeclBlock GDecblock Fdefblock Mainblock TypeDefList TypeDef TypeDeclList TypeDecl IDList GDecblock GDecList GDecl Fdef Ldecblock Body LdecList Ldecl LIdList LId slist retstmt stmt E param
+%type <arg> ArgList FArgList ArgType Args Arg
+%type <gvar> GIdList GId
+%type <lvar> LIdList LId
 
 %nonassoc RELOP
 %left AROP1
@@ -148,24 +153,24 @@ GId : ID '[' NUM ']'                                {
 
 FArgList : ArgList                                  {
                                                         //A Local Symbol Table is created out the entries made.
-                                                         AddArgsToLTable(ArgStructHead);
-                                                         $$ = ArgStructHead;
-
+                                                         AddArgsToLTable($1);
+                                                         $$ = $1;
                                                     }
     ;
 
-ArgList : ArgList ArgType                           {}
-    |ArgType                                        {}
-    |                                               {}
+ArgList : ArgList ArgType                           { $$ = ArgAppend($1, $2);}
+    |                                               { $$ = NULL;}
     ;
 
 ArgType : INT Args DELIM                            {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
                                                         AddArgType(TLookup("int"),$2);
+                                                        $$ = $2;
                                                     }
     |STR Args DELIM                                 {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
                                                         AddArgType(TLookup("str"),$2);
+                                                        $$ = $2;
                                                     }
     |ID Args DELIM                                   {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
@@ -176,33 +181,38 @@ ArgType : INT Args DELIM                            {
                                                             exit(1);
                                                         }
                                                         AddArgType(Ttemp,$2);
+                                                        $$ = $2;
                                                     }
     |INT Args                                       {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
                                                         AddArgType(TLookup("int"),$2);
+                                                        $$ = $2;
                                                     }
     |STR Args                                       {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
                                                         AddArgType(TLookup("str"),$2);
+                                                        $$ = $2;
                                                     }
+                                                            yyerror("yacc (argType 2): the type has not been defined");
     |ID Args                                        {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
                                                         Ttemp = TLookUp($1->name);
                                                         if(Ttemp == NULL){
-                                                            yyerror("yacc (argType 2): the type has not been defined");
                                                             printf(" %s",$1->name);
                                                             exit(1);
                                                         }
                                                         AddArgType(Ttemp,$2);
+                                                        $$ = $2;
                                                     }
     ;
 
 Args : Args ',' Arg                                 {
                                                         //Appends newly created entries to the existing.
-                                                        $$ = ArgAppend($3);
+                                                        $3->next = $1;
+                                                        $$ = $3;
                                                     }
     |Arg                                            {
-                                                        $$ = ArgAppend($1);
+                                                        $$ = $1;
                                                     }
     ;
 

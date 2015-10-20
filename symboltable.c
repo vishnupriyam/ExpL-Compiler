@@ -65,14 +65,18 @@ ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
     strcpy(temp->name,name);
     temp->passType = passType;
     temp->next = NULL;
+    //TODO negative bind for each argument
     //TODO install the argument in local symbol table also
     return temp;
 }
 
-ArgStruct* ArgAppend(ArgStruct *arg){
-    arg->next = ArgStructHead;
-    ArgStructHead = arg;
-    return ArgStructHead;
+ArgStruct* ArgAppend(ArgStruct *arg1, Argstruct *arg2){
+    Argtemp = arg;
+    while (Argtemp->next != NULL) {
+      Argtemp = Argtemp->next;
+    }
+    Argtemp->next = arg1;
+    return arg2;
 }
 
 void AddArgType(TypeTable *type, Argstruct *arg){
@@ -81,6 +85,8 @@ void AddArgType(TypeTable *type, Argstruct *arg){
         temp->type = type;
         temp = temp->next;
     }
+    Argtemp->next = ArgStructHead;
+    ArgStructHead = arg;
 }
 
 GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist){

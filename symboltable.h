@@ -42,8 +42,8 @@ typedef struct ArgStruct {
 ArgStruct *ArgStructHead,*Argtemp;
 
 ArgStruct* ArgInstall(char* name, TypeTable *type, int passType);
-ArgStruct* ArgAppend(ArgStruct *arg);
-void AddArgType(TypeTable *type, Argstruct *arg);
+ArgStruct* ArgAppend(ArgStruct *arg1, ArgStruct *arg2);
+void AddArgType(TypeTable *type, ArgStruct *arg);
 
 typedef struct GSymbol{
   char *name;
