@@ -164,6 +164,12 @@ LSymbol* Llookup(char *name){
 
 LSymbol* LAppend(LSymbol *l1){
     l1->next = LSymbolHead;
+    if(LSymbolHead == NULL){
+        l1->binding = 1;
+    }
+    else{
+        l1->binding = LSymbolHead->binding + 1;
+    }
     LSymbolHead = l1;
     return LSymbolHead;
 }
