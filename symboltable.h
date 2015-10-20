@@ -51,7 +51,7 @@ typedef struct GSymbol{
 	int size;
 	int binding;
 	ArgStruct *arglist;
-  AST *fbinding;
+	AST *fbinding;
 	struct GSymbol *next;
 }GSymbol;
 

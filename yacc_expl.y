@@ -52,7 +52,7 @@ TypeDef: NewType '{' TypeDeclList '}'               {
                                                     }
     ;
 
-NewType : ID    { $$ = TInstall($1->Name,NULL);}
+NewType : ID    { $$ = TInstall($1->name,NULL);}
 
 TypeDeclList: TypeDeclList TypeDecl                 {}
     |TypeDecl                                       {}
@@ -68,10 +68,10 @@ TypeDecl: INT IDList DELIM                          {
                                                     }
     |ID IDList DELIM                                {
                                                         //Fills the Type pointer in the intermediate list(IntermList) with the name of the given identifier($1)
-                                                        Ttemp = TLookUp($1->Name);
+                                                        Ttemp = TLookUp($1->name);
                                                         if(Ttemp == NULL){
                                                             yyerror("yacc (TypeDecl) : the type has not been defined");
-                                                            printf(" %s",$1->Name);
+                                                            printf(" %s",$1->name);
                                                             exit(1);
                                                         }
                                                         AddFType(Ttemp,$2);
@@ -88,7 +88,7 @@ IDList : IDList ',' TId                            {
                                                     }
     ;
 
-TId : ID                                            {   $$ = FInstall($1->Name); }
+TId : ID                                            {   $$ = FInstall($1->name); }
 
 GDecblock : DECL GDecList ENDDECL                   {}
     ;
@@ -109,10 +109,10 @@ GDecl : INT GIdList DELIM                           {
                                                         //Type field of the global symbol table entry is set to the specified type.
                                                         //The specified type for used defined type is obtained from a call to
                                                         //TypeTableLookUp function.
-                                                        Ttemp = TLookUp($1->Name);
+                                                        Ttemp = TLookUp($1->name);
                                                         if(Ttemp == NULL){
                                                             yyerror("yacc : the type has not been defined");
-                                                            printf(" %s",$1->Name);
+                                                            printf(" %s",$1->name);
                                                             exit(1);
                                                         }
                                                         AddGType(Ttemp,$2);
@@ -130,15 +130,15 @@ GIdList : GIdList ',' GId                           {
 
 GId : ID '[' NUM ']'                                {
                                                         //Creats a global symbol table entry
-                                                        $$ = GInstall($1->Name,NULL,$3->value,$3);
+                                                        $$ = GInstall($1->name,NULL,$3->value,$3);
                                                     }
     |ID                                             {
                                                         //Creates a global symbol table entry
-                                                        $$ = GInstall($1->Name,NULL,1,$3);
+                                                        $$ = GInstall($1->name,NULL,1,$3);
                                                     }
     |ID '(' ArgList ')'                             {
                                                         //Creates a global symbol table entry
-                                                        $$ = GInstall($1->Name,NULL,1,$3);
+                                                        $$ = GInstall($1->name,NULL,1,$3);
                                                     }
     ;
 
@@ -164,10 +164,10 @@ ArgType : INT Args DELIM                            {
                                                     }
     |ID Args DELIM                                   {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
-                                                        Ttemp = TLookUp($1->Name);
+                                                        Ttemp = TLookUp($1->name);
                                                         if(Ttemp == NULL){
                                                             yyerror("yacc (argType) : the type has not been defined");
-                                                            printf(" %s",$1->Name);
+                                                            printf(" %s",$1->name);
                                                             exit(1);
                                                         }
                                                         AddArgType(Ttemp,$2);
@@ -182,10 +182,10 @@ ArgType : INT Args DELIM                            {
                                                     }
     |ID Args                                        {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
-                                                        Ttemp = TLookUp($1->Name);
+                                                        Ttemp = TLookUp($1->name);
                                                         if(Ttemp == NULL){
                                                             yyerror("yacc (argType 2): the type has not been defined");
-                                                            printf(" %s",$1->Name);
+                                                            printf(" %s",$1->name);
                                                             exit(1);
                                                         }
                                                         AddArgType(Ttemp,$2);
@@ -203,7 +203,7 @@ Args : Args ',' Arg                                 {
 
 Arg : ID                                            {
                                                         //Creates an ArgStruct entry containing name of the identifier.
-                                                        $$ = ArgInstall($1->Name,NULL,0);
+                                                        $$ = ArgInstall($1->name,NULL,0);
                                                     }
     ;
 
@@ -215,9 +215,14 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
-                                                          validate_function($2->Name,TLookUp("int"),$4,$8);
+                                                          validate_function($2->name,TLookUp("int"),$4,$8);
+                                                          Gtemp = Glookup($2->name);
+                                                          if(Gtemp == NULL){
+                                                              yyerror("Yacc : undeclared function");exit(1);
+                                                          }
+                                                          Gtemp->fbinding = $8;
                                                           $2->Lentry = LSymbolHead;
-                                                          interpret($7);
+
                                                           LSymbolHead = NULL;
                                                           ArgStructHead = NULL;
                                                         }
@@ -225,9 +230,13 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
-                                                          validate_function($2->Name,TLookUp("str"),$4,$8);
+                                                          validate_function($2->name,TLookUp("str"),$4,$8);
+                                                          Gtemp = Glookup($2->name);
+                                                          if(Gtemp == NULL){
+                                                              yyerror("Yacc : undeclared function");exit(1);
+                                                          }
+                                                          Gtemp->fbinding = $8;
                                                           $2->Lentry = LSymbolHead;
-                                                          interpret($7);
                                                           LSymbolHead = NULL;
                                                           ArgStructHead = NULL;
                                                         }
@@ -235,15 +244,19 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
-                                                          Ttemp = TLookUp($1->Name);
+                                                          Ttemp = TLookUp($1->name);
                                                           if(Ttemp == NULL){
                                                               yyerror("yacc(Fdef) : the return type has not been defined");
-                                                              printf(" %s",$1->Name);
+                                                              printf(" %s",$1->name);
                                                               exit(1);
                                                           }
-                                                          validate_function($2->Name,Ttemp,$4,$8);
+                                                          validate_function($2->name,Ttemp,$4,$8);
+                                                          Gtemp = Glookup($2->name);
+                                                          if(Gtemp == NULL){
+                                                              yyerror("Yacc : undeclared function");exit(1);
+                                                          }
+                                                          Gtemp->fbinding = $8;
                                                           $2->Lentry = LSymbolHead;
-                                                          interpret($7);
                                                           LSymbolHead = NULL;
                                                           ArgStructHead = NULL;
                                                         }
@@ -266,7 +279,7 @@ Ldecl : INT LIdList DELIM {
                           }
     |ID LIdList DELIM     {
                             //Fills the Type field of the Local symbol table with the specified user defined type.
-                            AddLType($2,TLookUp($1->Name));
+                            AddLType($2,TLookUp($1->name));
                           }
     ;
 
@@ -281,7 +294,7 @@ LIdList : LIdList ',' LId {
 
 LId : ID    {
                 //Creates a Local Symbol Table entry containing the name of the identifier
-                $$ = LInstall($1->Name,decl_type);
+                $$ = LInstall($1->name,decl_type);
             }
     ;
 
@@ -378,19 +391,19 @@ FIELD :ID DOT ID         {
 
 E: E AROP1 E            {
                             //Verifies if both the expression is of type integer
-                            $$ = TreeCreate(TLookUp("int"), $2->Nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
+                            $$ = TreeCreate(TLookUp("int"), $2->nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |E AROP2 E          {
                             //Verifies if both the expression is of type integer
-                            $$ = TreeCreate(TLookUp("int"), $2->Nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
+                            $$ = TreeCreate(TLookUp("int"), $2->nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |'(' E ')'          {$$=$2;}
     |E RELOP E          {
-                            $$ = TreeCreate(TLookUp("boolean"), $2->Nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
+                            $$ = TreeCreate(TLookUp("boolean"), $2->nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |E LOGOP E          {
                             //Verifies if both the expression is of type boolean
-                            $$ = TreeCreate(TLookUp("boolean"), $2->Nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
+                            $$ = TreeCreate(TLookUp("boolean"), $2->nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |NOT E              {
                             //Verifies if the expression is of type boolean or null
@@ -416,13 +429,13 @@ E: E AROP1 E            {
     |ID '(' param ')'   {
                             //Type of the identifier is set to that specified in the global symbol table during declaration.
                             //The Argument list created before is set to the Arglist field.
-                            Gtemp = Glookup($1->Name);
+                            Gtemp = Glookup($1->name);
                             if(Gtemp == NULL){
                                 yyerror("Yacc : Undefined function");
-                                printf(" %s\n" $3->Name);
+                                printf(" %s\n" $3->name);
                                 exit(1);
                             }
-                            $$ = TreeCreate(Gtemp->type,NODETYPE_FUNCTION,$1->Name,(Constant){},$3,NULL,NULL,NULL)
+                            $$ = TreeCreate(Gtemp->type,NODETYPE_FUNCTION,$1->name,(Constant){},$3,NULL,NULL,NULL)
                         }
  ;
 
