@@ -56,6 +56,7 @@ typedef struct GSymbol{
 }GSymbol;
 
 GSymbol *GSymbolHead,*Gtemp;
+int gbinding = 0;
 
 GSymbol* GInstall(char *name, TypeTable *type, int size, Argstuct *arglist);
 GSymbol* Glookup(char *name);

@@ -130,11 +130,11 @@ GIdList : GIdList ',' GId                           {
 
 GId : ID '[' NUM ']'                                {
                                                         //Creats a global symbol table entry
-                                                        $$ = GInstall($1->name,NULL,$3->value,$3);
+                                                        $$ = GInstall($1->name,NULL,$3->value,NULL);
                                                     }
     |ID                                             {
                                                         //Creates a global symbol table entry
-                                                        $$ = GInstall($1->name,NULL,1,$3);
+                                                        $$ = GInstall($1->name,NULL,1,NULL);
                                                     }
     |ID '(' ArgList ')'                             {
                                                         //Creates a global symbol table entry

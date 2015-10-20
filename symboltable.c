@@ -102,11 +102,9 @@ GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist){
 
 void GAppend(GSymbol *g1){
     g1->next = GSymbolHead;
-    if(GSymbolHead == NULL){
-        g1->binding = 0;
-    }
-    else{
-        g1->binding = GSymbolHead->binding + GSymbolHead->size;
+    if(g1->arglist == NULL){
+        g1->binding = gbinding;
+        gbinding = gbinding + g1->size;
     }
     GSymbolHead = g1;
 }
