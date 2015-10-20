@@ -242,6 +242,7 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           }
                                                           $8->Lentry = $7;  //Body's Lentry has the local symbol table
                                                           Gtemp->fbinding = $8;
+                                                          LSymbolHead = NULL;
                                                         }
     |STR ID '(' FArgList ')' '{' Ldecblock Body '}'     {
                                                           //Function definition is compared with their declarartion earlier for compatibility
@@ -255,6 +256,7 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           }
                                                           $8->Lentry = $7;
                                                           Gtemp->fbinding = $8;
+                                                          LSymbolHead = NULL;
                                                         }
     |ID ID '(' FArgList ')' '{' Ldecblock Body '}'      {
                                                           //Function definition is compared with their declarartion earlier for compatibility
@@ -274,12 +276,14 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           }
                                                           $8->Lentry = $7;
                                                           Gtemp->fbinding = $8;
+                                                          LSymbolHead = NULL;
                                                         }
     ;
 
 Ldecblock : DECL LdecList ENDDECL {
                                       setLocalBindings($2);
                                       $$ = $2;
+                                      LSymbolHead = $$;
                                   }
     ;
 
