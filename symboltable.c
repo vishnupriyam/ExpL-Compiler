@@ -95,6 +95,15 @@ GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist){
     strcpy(temp->name,name);
     temp->type = type;
     temp->size = size;
+    if(arglist != NULL){
+        size = 0;
+        Argtemp = arglist;
+        while(Argtemp != NULL){
+            size = size + 1;
+            Argtemp = Argtemp->next;
+        }
+        temp->size = size;
+    }
     temp->arglist = arglist;
     temp->next = NULL;
     return temp;
@@ -102,9 +111,12 @@ GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist){
 
 void GAppend(GSymbol *g1){
     g1->next = GSymbolHead;
-    if(g1->arglist == NULL){
+    if(g1->arglist == NULL && g1->size != 0){
         g1->binding = gbinding;
         gbinding = gbinding + g1->size;
+    }
+    else{
+        g1->binding = -1;
     }
     GSymbolHead = g1;
 }

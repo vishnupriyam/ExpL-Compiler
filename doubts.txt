@@ -17,3 +17,4 @@
 13. In yacc_expl.y
         In field : field dot it grammar,
             The type passed must be type of right hand side tree ? or void ? for assignment and all we check right ?
+14. function without arguments can also be there ? - if so, how to identify if the GSymbol entry is a function or variable ?

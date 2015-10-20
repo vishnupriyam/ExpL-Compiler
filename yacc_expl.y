@@ -138,7 +138,7 @@ GId : ID '[' NUM ']'                                {
                                                     }
     |ID '(' ArgList ')'                             {
                                                         //Creates a global symbol table entry
-                                                        $$ = GInstall($1->name,NULL,1,$3);
+                                                        $$ = GInstall($1->name,NULL,0,$3);
                                                     }
     ;
 
@@ -152,6 +152,7 @@ FArgList : ArgList                                  {
 
 ArgList : ArgList ArgType                           {}
     |ArgType                                        {}
+    |                                               {}
     ;
 
 ArgType : INT Args DELIM                            {
