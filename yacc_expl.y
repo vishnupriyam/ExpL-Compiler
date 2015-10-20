@@ -100,10 +100,12 @@ GDecList : GDecList GDecl                           {}
 GDecl : INT GIdList DELIM                           {
                                                         //The Type field of the global symbol table entry is set to integer
                                                         AddGType(TLookUp("int"),$2);
+                                                        GAppend($2);
                                                     }
     |STR GIdList DELIM                              {
                                                         //The type field of the global symbol table entry is set to string
                                                         AddGType(TLookUp("str"),$2);
+                                                        GAppend($2);
                                                     }
     |ID GIdList DELIM                                 {
                                                         //Type field of the global symbol table entry is set to the specified type.
@@ -116,15 +118,17 @@ GDecl : INT GIdList DELIM                           {
                                                             exit(1);
                                                         }
                                                         AddGType(Ttemp,$2);
+                                                        GAppend($2);
                                                     }
     ;
 
 GIdList : GIdList ',' GId                           {
                                                         //Binds together the global symbol tabe entries.
-                                                        $$ = GAppend($3);
+                                                        $3->next = $1;
+                                                        $$ = $3;
                                                     }
     |GId                                            {
-                                                        $$ = GAppend($1);
+                                                        $$ = $1;
                                                     }
     ;
 
