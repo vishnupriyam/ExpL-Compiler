@@ -106,7 +106,7 @@ void GAppend(GSymbol *g1){
         g1->binding = 0;
     }
     else{
-        g1->binding = GSymbolHead->binding + 1;
+        g1->binding = GSymbolHead->binding + GSymbolHead->size;
     }
     GSymbolHead = g1;
 }
