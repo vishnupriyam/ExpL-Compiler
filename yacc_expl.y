@@ -26,7 +26,7 @@
 %type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM AROP2 ASGN AROP1 NOT LOGOP DOT NUM ID STRCONST FIELD ALLOC DEALLOC Prog TypeDeclBlock GDecblock Fdefblock Mainblock TypeDefList TypeDef TypeDeclList TypeDecl IDList GDecblock GDecList GDecl Fdef Ldecblock Body LdecList Ldecl LIdList LId slist retstmt stmt E param
 %type <arg> ArgList FArgList ArgType Args Arg
 %type <gvar> GIdList GId
-%type <lvar> LIdList LId
+%type <lvar> Ldecblock LdecList Ldecl LIdList LId
 %type <field> TypeDeclList TypeDecl IDList TId
 
 %nonassoc RELOP
@@ -158,7 +158,6 @@ GId : ID '[' NUM ']'                                {
 
 FArgList : ArgList                                  {
                                                         //A Local Symbol Table is created out the entries made.
-                                                         AddArgsToLTable($1);
                                                          $$ = $1;
                                                     }
     ;
@@ -235,30 +234,27 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
+                                                          AddArgsToLTable(&($7), $4);
                                                           validate_function($2->name,TLookUp("int"),$4,$8);
                                                           Gtemp = Glookup($2->name);
                                                           if(Gtemp == NULL){
                                                               yyerror("Yacc : undeclared function");exit(1);
                                                           }
+                                                          $8->Lentry = $7;  //Body's Lentry has the local symbol table
                                                           Gtemp->fbinding = $8;
-                                                          $2->Lentry = LSymbolHead;
-
-                                                          LSymbolHead = NULL;
-                                                          ArgStructHead = NULL;
                                                         }
     |STR ID '(' FArgList ')' '{' Ldecblock Body '}'     {
                                                           //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
+                                                          AddArgsToLTable(&($7), $4);
                                                           validate_function($2->name,TLookUp("str"),$4,$8);
                                                           Gtemp = Glookup($2->name);
                                                           if(Gtemp == NULL){
                                                               yyerror("Yacc : undeclared function");exit(1);
                                                           }
+                                                          $8->Lentry = $7;
                                                           Gtemp->fbinding = $8;
-                                                          $2->Lentry = LSymbolHead;
-                                                          LSymbolHead = NULL;
-                                                          ArgStructHead = NULL;
                                                         }
     |ID ID '(' FArgList ')' '{' Ldecblock Body '}'      {
                                                           //Function definition is compared with their declarartion earlier for compatibility
@@ -270,51 +266,62 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                               printf(" %s",$1->name);
                                                               exit(1);
                                                           }
+                                                          AddArgsToLTable(&($7), $4);
                                                           validate_function($2->name,Ttemp,$4,$8);
                                                           Gtemp = Glookup($2->name);
                                                           if(Gtemp == NULL){
                                                               yyerror("Yacc : undeclared function");exit(1);
                                                           }
+                                                          $8->Lentry = $7;
                                                           Gtemp->fbinding = $8;
-                                                          $2->Lentry = LSymbolHead;
-                                                          LSymbolHead = NULL;
-                                                          ArgStructHead = NULL;
                                                         }
     ;
 
-Ldecblock : DECL LdecList ENDDECL {}
+Ldecblock : DECL LdecList ENDDECL {
+                                      setLocalBindings($2);
+                                      $$ = $2;
+                                  }
     ;
 
-LdecList : LdecList Ldecl {}
-    |Ldecl {}
+LdecList : LdecList Ldecl { $$ = LAppend($1, $2); }
+    |Ldecl {  $$ = $1;  }
     ;
 
 Ldecl : INT LIdList DELIM {
                             //Fills the Type field of the local symbol table entry with integer.
                             AddLType($2,TLookUp("int"));
+                            $$ = $2;
                           }
     |STR LIdList DELIM    {
                             //Fills the Type field of the local symbol table entry with string.
                             AddLType($2,TLookUp("str"));
+                            $$ = $2;
                           }
     |ID LIdList DELIM     {
                             //Fills the Type field of the Local symbol table with the specified user defined type.
                             AddLType($2,TLookUp($1->name));
+                            $$ = $2;
                           }
     ;
 
 LIdList : LIdList ',' LId {
                             //Appends newly created local symbol table entries to the existing.
-                            $$ = LAppend($3);
+                            if(LlookupInTable($1, $3) != NULL){
+                              yyerror("LInstall : Local variable redefined ");
+                              printf(" %s",$3->name);
+                              exit(1);
+                            }
+                            $3->next = $1;
+                            $$ = $3;
                           }
     |LId                  {
-                            $$ = LAppend($1);
+                            $$ = $1;
                           }
     ;
 
 LId : ID    {
                 //Creates a Local Symbol Table entry containing the name of the identifier
-                $$ = LInstall($1->name,decl_type);
+                $$ = LInstall($1->name,NULL);
             }
     ;
 

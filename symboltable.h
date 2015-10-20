@@ -1,5 +1,9 @@
 #include <string.h>
 
+#define ARG_START_BIND -1
+#define LOCAL_START_BIND 1
+#define GLOBAL_START_BIND 0
+
 typedef struct fieldList
 {
 	char *name;				//name of the field
@@ -56,9 +60,9 @@ typedef struct GSymbol{
 }GSymbol;
 
 GSymbol *GSymbolHead,*Gtemp;
-int gbinding = 0;
+int gbinding = GLOBAL_START_BIND;
 
-GSymbol* GInstall(char *name, TypeTable *type, int size, Argstuct *arglist);
+GSymbol* GInstall(char *name, TypeTable *type, int size, ArgStruct *arglist);
 GSymbol* Glookup(char *name);
 GSymbol* GAppend(GSymbol *g1);
 void AddGType(TypeTable *gtype, GSymbol *g);
@@ -74,8 +78,10 @@ LSymbol *LSymbolHead,*Ltemp;
 
 LSymbol* LInstall(char *name, TypeTable *type);
 LSymbol* Llookup(char *name);
-void LAppend(LSymbol *l1);
+LSymbol *LlookupInTable(LSymbol *LSymbolHead, char *name);
+LSymbol* LAppend(LSymbol *l1, LSymbol *l2);
+void setLocalBindings(LSymbol *LSymbolHead);
 LSymbol* AddLType(TypeTable *ltype, LSymbol *l);
 
 void validate_funtion(char *fname,Typetable *rtype, ArgStruct *arglist, ASTNode *body);
-void AddArgsToLTable(ArgStruct *a);
+void AddArgsToLTable(LSymbol **LSymbolHead, ArgStruct *a);

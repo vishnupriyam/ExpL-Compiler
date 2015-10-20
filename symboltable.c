@@ -154,12 +154,12 @@ void AddGType(TypeTable *gtype, GSymbol *g){
 }
 
 LSymbol* LInstall(char *name, TypeTable *type){
-    if(Llookup(name) != NULL)	//error on redefining the variable
+    /*if(Llookup(name) != NULL)	//error on redefining the variable
 	  {
         yyerror("LInstall : Local variable redefined ");
         printf(" %s",name);
         exit(1);
-    }
+    }*/
     LSymbol *temp = (LSymbol *)malloc(sizeof(LSymbol));
     temp->name =  (char *)malloc(sizeof(name));
     strcpy(temp->name,name);
@@ -182,8 +182,32 @@ LSymbol* Llookup(char *name){
     return temp;
 }
 
-LSymbol* LAppend(LSymbol *l1){
-    l1->next = LSymbolHead;
+LSymbol *LlookupInTable(LSymbol *LSymbolHead, char *name) {
+    if(name == NULL){
+        yyerror("Llookup : Cannot look up for an identifier with name NULL in local symbol table ");
+        printf(" %s",name);
+        exit(1);
+    }
+    Ltemp = LSymbolHead;
+    while(Ltemp != NULL && strcmp(Ltemp->name,name) != 0){
+     temp = temp->next;
+    }
+    return temp;
+}
+
+LSymbol* LAppend(LSymbol *l1, LSymbol *l2){
+    Ltemp = l2;
+    while (Ltemp->next != NULL) {
+      if(LlookupInTable(l1, Ltemp->name) != NULL){
+        yyerror("LInstall : Local variable redefined ");
+        printf(" %s",Ltemp->name);
+        exit(1);
+      }
+      Ltemp = Ltemp->next;
+    }
+    Ltemp->next = l1;
+    return l2;
+    /*l1->next = LSymbolHead;
     if(LSymbolHead == NULL){
         l1->binding = 1;
     }
@@ -191,7 +215,17 @@ LSymbol* LAppend(LSymbol *l1){
         l1->binding = LSymbolHead->binding + 1;
     }
     LSymbolHead = l1;
-    return LSymbolHead;
+    return LSymbolHead;*/
+}
+
+void setLocalBindings(LSymbol *LSymbolHead) {
+    Ltemp = LSymbolHead;
+    int Lbinding = LOCAL_START_BIND;
+    while(Ltemp != NULL){
+      Ltemp->binding = binding;
+      Lbinding++;
+      Ltemp = Ltemp->next;
+    }
 }
 
 void AddLType(TypeTable *ltype, LSymbol *l){
@@ -250,9 +284,19 @@ void validate_funtion(char *fname,Typetable *rtype, ArgStruct *arglist, ASTNode 
     }
 }
 
-void AddArgsToLTable(ArgStruct *a){
+void AddArgsToLTable(LSymbol **LSymbolHead, ArgStruct *a){
+    int ArgBind = ARG_START_BIND;
     while(a != NULL){
-        LInstall(a->name,a->type);
+        if(LlookupInTable(*LSymbolHead, a->name) != NULL){
+          yyerror("LInstall : Local variable redefined ");
+          printf(" %s",a->name);
+          exit(1);
+        }
+        Ltemp = LInstall(a->name,a->type);
+        Ltemp->binding = ArgBind;
+        Ltemp->next = *LSymbolHead;
+        *LSymbolHead = Ltemp;
+        ArgBind--;
         a = a->next;
     }
 }
