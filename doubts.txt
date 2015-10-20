@@ -9,3 +9,11 @@
 9. what is nodeype do for ?
 10. passtype check for NODETYPE_FUNCTION
 11. string operations - just ==/ != ??
+12. In getFieldBind function
+        return getFieldBind(t->ptr1,FLAG_FBIND_VALUE) + fieldRelativeAddress(t->ptr1->type, t->ptr2->name);
+        shouldn't that be
+        return getFieldBind(t->ptr1,FLAG_FBIND_VALUE) + fieldRelativeAddress(t->ptr1->Ptr2->type, t->ptr2->name);
+        or both will give same type
+13. In yacc_expl.y
+        In field : field dot it grammar,
+            The type passed must be type of right hand side tree ? or void ? for assignment and all we check right ?
