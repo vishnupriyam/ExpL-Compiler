@@ -20,3 +20,4 @@
 14. function without arguments can also be there ? - if so, how to identify if the GSymbol entry is a function or variable ?
 15. In expl documentation on website - function calls etc are not mentioned ! - check
 16. ArgStructHead set to NULL after the LSymbolHead is set to NULL ! -is that ok ?
+17. check does argbind set properly as the way it is pushed to stack ? - can't the binding be at time of install?

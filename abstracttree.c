@@ -379,6 +379,34 @@ memstruct interpret(AST *t) {
 							//TODO the alloc from heap to be called
 							break;
 		case NODETYPE_FUNCTION :
+							//push arguments
+							AST *values;
+							ArgStruct *params;
+							values = t->arglist;
+							params = t->Gentry->arglist;
+							while(values != NULL){
+								if(params->passType != 1 || isUserDefinedtype(params->type)){
+									push(interpret(values->ptr2));
+								}
+								else if(params->passType == 1){
+									//TODO the argument is primitive type and is passed by reference
+								}
+								values = values->ptr1;
+								params = params->next;
+							}
+							//push return value
+							push((memstruct){});
+
+							//push current base_pointer and set it to stack_pointer
+							//TODO push base_pointer
+							base_pointer = stack_pointer;
+
+							interpret(t->Gentry->fbinding);
+
+							//TODO set back base_pointer
+							//store result in a variable
+							//pop all the arguments
+							//return the stored result
 
 							break;
 
