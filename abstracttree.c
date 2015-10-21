@@ -9,15 +9,15 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
    		temp->name = NULL;
     }
 
-  temp->type = type;
+	temp->type = type;
 	temp->nodetype = nodetype;
 	temp->value = value;
 	temp->arglist = arglist;
-  temp->ptr1 = t1;
-  temp->ptr2 = t2;
-  temp->ptr3 = t3;
+	temp->ptr1 = t1;
+	temp->ptr2 = t2;
+	temp->ptr3 = t3;
 	temp->Gentry = NULL;
-  temp->Lentry = NULL;
+	temp->Lentry = NULL;
 
 	switch(nodetype){
 		case NODETYPE_PLUS	:

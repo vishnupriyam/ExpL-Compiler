@@ -162,8 +162,12 @@ FArgList : ArgList                                  {
                                                     }
     ;
 
-ArgList : ArgList ArgType                           { $$ = ArgAppend($1, $2);}
+ArgList : ArgList1                                  {
+                                                        $$ = $1;
+                                                    }
     |                                               { $$ = NULL;}
+ArgList1 : ArgType DELIM ArgList1                   { $$ = ArgAppend($3, $1);}
+    | ArgType                                       { $$ = $1;}
     ;
 
 ArgType : INT Args DELIM                            {
