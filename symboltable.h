@@ -1,6 +1,6 @@
 #include <string.h>
 
-#define ARG_START_BIND -1
+#define ARG_START_BIND -2
 #define LOCAL_START_BIND 1
 #define GLOBAL_START_BIND 0
 
