@@ -66,8 +66,6 @@ ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
     temp->passType = passType;
     temp->next = NULL;
     //TODO negative bind for each argument
-    Ltemp->binding = ArgBind;
-    ArgBind--;
     //TODO install the argument in local symbol table also
     return temp;
 }
@@ -296,6 +294,8 @@ void AddArgsToLTable(LSymbol **LSymbolHead, ArgStruct *a){
         }
         Ltemp = LInstall(a->name,a->type);
         Ltemp->next = *LSymbolHead;
+        Ltemp->binding = ArgBind;
+        ArgBind--;
         *LSymbolHead = Ltemp;
         a = a->next;
     }
