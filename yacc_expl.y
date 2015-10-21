@@ -170,28 +170,7 @@ ArgList1 : ArgType DELIM ArgList1                   { $$ = ArgAppend($3, $1);}
     | ArgType                                       { $$ = $1;}
     ;
 
-ArgType : INT Args DELIM                            {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.
-                                                        AddArgType(TLookup("int"),$2);
-                                                        $$ = $2;
-                                                    }
-    |STR Args DELIM                                 {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.
-                                                        AddArgType(TLookup("str"),$2);
-                                                        $$ = $2;
-                                                    }
-    |ID Args DELIM                                   {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.
-                                                        Ttemp = TLookUp($1->name);
-                                                        if(Ttemp == NULL){
-                                                            yyerror("yacc (argType) : the type has not been defined");
-                                                            printf(" %s",$1->name);
-                                                            exit(1);
-                                                        }
-                                                        AddArgType(Ttemp,$2);
-                                                        $$ = $2;
-                                                    }
-    |INT Args                                       {
+ArgType : INT Args                                  {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
                                                         AddArgType(TLookup("int"),$2);
                                                         $$ = $2;
