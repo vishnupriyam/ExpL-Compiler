@@ -207,6 +207,9 @@ Arg : ID                                            {
                                                         //Creates an ArgStruct entry containing name of the identifier.
                                                         $$ = ArgInstall($1->name,NULL,0);
                                                     }
+    | '&' ID                                        {
+                                                        $$ = ArgInstall($1->name,NULL,1);
+                                                    }
     ;
 
 Fdefblock : Fdefblock Fdef                          {}
@@ -226,6 +229,7 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           $8->Lentry = $7;  //Body's Lentry has the local symbol table
                                                           Gtemp->fbinding = $8;
                                                           LSymbolHead = NULL;
+                                                          ArgStructHead = NULL;
                                                         }
     |STR ID '(' FArgList ')' '{' Ldecblock Body '}'     {
                                                           //Function definition is compared with their declarartion earlier for compatibility
@@ -240,6 +244,7 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           $8->Lentry = $7;
                                                           Gtemp->fbinding = $8;
                                                           LSymbolHead = NULL;
+                                                          ArgStructHead = NULL;
                                                         }
     |ID ID '(' FArgList ')' '{' Ldecblock Body '}'      {
                                                           //Function definition is compared with their declarartion earlier for compatibility
@@ -260,6 +265,7 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           $8->Lentry = $7;
                                                           Gtemp->fbinding = $8;
                                                           LSymbolHead = NULL;
+                                                          ArgStructHead = NULL;
                                                         }
     ;
 

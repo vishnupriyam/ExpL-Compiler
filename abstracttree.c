@@ -138,6 +138,7 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 							  if(temp1 != NULL || temp2 != NULL){
 								  yyerror("TreeCreate : mismatch in the number of arguments given");exit(0);
 							  }
+							  temp->Gentry = Gtemp;
 							  break;
 
 		case NODETYPE_MAIN :  if(strcmp(t1->t2->type->name,"int") != 0){
@@ -371,7 +372,15 @@ memstruct interpret(AST *t) {
 							result1 = getValueFromBind(interpret(t->ptr2));
 							return getGlobalValue(t->ptr1->Gentry->binding + result1.value.intval);
 							break;
+		case NODETYPE_ALLOC :
+							//TODO the alloc from heap to be called
+							break;
+		case NODETYPE_DEALLOC :
+							//TODO the alloc from heap to be called
+							break;
+		case NODETYPE_FUNCTION :
 
+							break;
 
 	}
 
