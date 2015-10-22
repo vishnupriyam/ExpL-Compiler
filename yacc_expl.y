@@ -205,10 +205,10 @@ Args : Args ',' Arg                                 {
 
 Arg : ID                                            {
                                                         //Creates an ArgStruct entry containing name of the identifier.
-                                                        $$ = ArgInstall($1->name,NULL,0);
+                                                        $$ = ArgInstall($1->name,NULL,PASS_BY_VAL);
                                                     }
     | '&' ID                                        {
-                                                        $$ = ArgInstall($1->name,NULL,1);
+                                                        $$ = ArgInstall($1->name,NULL,PASS_BY_REF);
                                                     }
     ;
 

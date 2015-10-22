@@ -54,6 +54,9 @@
 #define FLAG_FBIND_ADDRESS 0
 #define FLAG_FBIND_VALUE 1
 
+#define PASS_BY_REF 1
+#define PASS_BY_VAL 0
+
 typedef union Constant {
        int intval;
        char* strval;

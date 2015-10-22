@@ -388,7 +388,7 @@ memstruct interpret(AST *t) {
 							values = t->arglist;
 							params = t->Gentry->arglist;
 							while(values != NULL){
-								if(params->passType != 1 || isUserDefinedtype(params->type)){
+								if(params->passType != PASS_BY_REF || isUserDefinedtype(params->type)){
 									push(interpret(values->ptr2));
 								}
 								else if(params->passType == 1){
@@ -398,19 +398,23 @@ memstruct interpret(AST *t) {
 								params = params->next;
 							}
 							//push return value
-							push((memstruct){});
+							push((memstruct){MEMSTRUCT_EMPTY});
 
 							//push current base_pointer and set it to stack_pointer
-							//TODO push base_pointer
-							base_pointer = stack_pointer;
+							push_BP();
 
 							interpret(t->Gentry->fbinding);
 
-							//TODO set back base_pointer
-							//store result in a variable
+							pop_BP();
+							result1 = pop();
 							//pop all the arguments
+							params = t->Gentry->arglist;
+							while(params != NULL){
+								pop();
+								params = params->next;
+							}
 							//return the stored result
-
+							return result1;
 							break;
 
 	}

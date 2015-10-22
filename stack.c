@@ -16,6 +16,15 @@ void push(memstruct value){
 	return 0;	//stack overflow
 }
 
+void push_BP(){
+	push((memstruct){MEMSTRUCT_BIND, base_pointer});
+	base_pointer = stack_pointer;
+}
+
+void pop_BP() {
+	base_pointer = pop().value.intval;
+}
+
 memstruct pop(){
 	if(stack_pointer >= 0){
 		memstruct temp = stack[stack_pointer];
