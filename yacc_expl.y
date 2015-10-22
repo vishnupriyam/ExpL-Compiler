@@ -452,7 +452,8 @@ E: E AROP1 E            {
                                 printf(" %s\n" $3->name);
                                 exit(1);
                             }
-                            $$ = TreeCreate(Gtemp->type,NODETYPE_FUNCTION,$1->name,(Constant){},$3,NULL,NULL,NULL)
+                            $$ = TreeCreate(Gtemp->type,NODETYPE_FUNCTION,$1->name,(Constant){},$3,NULL,NULL,NULL);
+                            $$->Gentry = Gtemp;
                         }
  ;
 

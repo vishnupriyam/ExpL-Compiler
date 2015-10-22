@@ -403,7 +403,17 @@ memstruct interpret(AST *t) {
 							//push current base_pointer and set it to stack_pointer
 							push_BP();
 
+							Ltemp = t->Gentry->fbinding->Lentry;
+							while(Ltemp != NULL){
+								push((memstruct){MEMSTRUCT_EMPTY});
+							}						
+
 							interpret(t->Gentry->fbinding);
+
+							Ltemp = t->Gentry->fbinding->Lentry;
+							while(Ltemp != NULL){
+								pop();
+							}
 
 							pop_BP();
 							result1 = pop();
