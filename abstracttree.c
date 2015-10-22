@@ -123,12 +123,15 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 							break;
 		case NODETYPE_FUNCTION :
 							  Gtemp = Glookup(name);
-							  ArgStruct *temp1,*temp2;
+								if(Gtemp->arglist == NULL && size > 0){
+									yyerror("TreeCreate : invalid usage of an identifier as a function ");exit(1);
+								}
+								ArgStruct *temp1,*temp2;
 							  temp1 = Gtemp->arglist;
 							  temp2 = arglist;
 							  while(temp1 != NULL && temp2 != NULL){
 								  if(strcmp(temp1->type->name,temp2->type->name) != 0){
-									  yyerror("TreeCreate : types of arguments passed to function donot match ");exit(0);
+									  yyerror("TreeCreate : types of arguments passed to function donot match ");exit(1);
 								  }
 								  //TODO check for passType
 
@@ -136,13 +139,13 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 								  temp2 = temp2->t1;
 							  }
 							  if(temp1 != NULL || temp2 != NULL){
-								  yyerror("TreeCreate : mismatch in the number of arguments given");exit(0);
+								  yyerror("TreeCreate : mismatch in the number of arguments given");exit(1);
 							  }
 							  temp->Gentry = Gtemp;
 							  break;
 
 		case NODETYPE_MAIN :  if(strcmp(t1->t2->type->name,"int") != 0){
-								yyerror("TreeCreate : the return type of main is not int type !");exit(0);
+								yyerror("TreeCreate : the return type of main is not int type !");exit(1);
 							  }
 							  break;
 	}
