@@ -376,10 +376,30 @@ memstruct interpret(AST *t) {
 							return getGlobalValue(t->ptr1->Gentry->binding + result1.value.intval);
 							break;
 		case NODETYPE_ALLOC :
-							//TODO the alloc from heap to be called
+							int address = alloc(sizeoftype(t->ptr1->type));
+							if(address == -1){
+								yyerror("Interpret: Unable to create memory for the variable");
+								exit(1);
+							}
+							if(t->ptr1->Lentry != NULL){
+								assignLocalValue(t->ptr1->Lentry->binding, (memstruct){MEMSTRUCT_BIND, address});
+							}
+							else {
+								assignGlobalValue(t->ptr1->Gentry->binding, (memstruct){MEMSTRUCT_BIND, address});	
+							}
 							break;
 		case NODETYPE_DEALLOC :
-							//TODO the alloc from heap to be called
+							int address;
+							if(t->ptr1->Lentry != NULL){
+								address = getLocalValue(t->ptr1->Lentry->binding).value.intval;
+							}
+							else {
+								address = getGlobalValue(t->ptr1->Gentry->binding).value.intval;		
+							}
+							if(deallocate(address) == -1){
+								yyerror("Interpret: Unable to free memory for the variable");
+								exit(1);	
+							}
 							break;
 		case NODETYPE_FUNCTION :
 							//push arguments
@@ -388,10 +408,10 @@ memstruct interpret(AST *t) {
 							values = t->arglist;
 							params = t->Gentry->arglist;
 							while(values != NULL){
-								if(params->passType != PASS_BY_REF || isUserDefinedtype(params->type)){
+								if(params->passType != PASS_BY_REF && !isUserDefinedtype(params->type)){
 									push(interpret(values->ptr2));
 								}
-								else if(params->passType == 1){
+								else if(params->passType == PASS_BY_REF || isUserDefinedtype(params->type)){
 									//TODO the argument is primitive type and is passed by reference
 								}
 								values = values->ptr1;
