@@ -286,7 +286,7 @@ void validate_funtion(char *fname,Typetable *rtype, ArgStruct *arglist, ASTNode 
 
 void AddArgsToLTable(LSymbol **LSymbolHead, ArgStruct *a){
     int argLength = ArgLength(a);
-    int ArgBind = ARG_START_BIND + argLength;
+    int ArgBind = ARG_START_BIND - argLength + 1;
     while(a != NULL){
         if(LlookupInTable(*LSymbolHead, a->name) != NULL){
           yyerror("LInstall : Local variable redefined ");
