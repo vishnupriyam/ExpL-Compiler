@@ -25,6 +25,10 @@ void pop_BP() {
 	base_pointer = pop().value.intval;
 }
 
+void set_BP_to_SP(){
+	base_pointer = stack_pointer;
+}
+
 memstruct pop(){
 	if(stack_pointer >= 0){
 		memstruct temp = stack[stack_pointer];

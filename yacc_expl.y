@@ -318,7 +318,13 @@ LId : ID    {
 Mainblock : INT MAIN '(' ')' '{' Ldecblock Body '}' {
                                                         //Verifies if the type of the return statemnt is of type integer
                                                         //calls interpreter
-                                                        $$ = TreeCreate(TLookUp("void"), NODETYPE_MAIN, NULL, (Constant){}, NULL, $7, NULL, NULL);
+                                                        $7->Lentry = $6;
+                                                        Gtemp = GInstall("MAIN",TLookUp("int"),0, NULL);
+                                                        Gtemp->fbinding = $7;
+                                                        GAppend(Gtemp);
+                                                        $$ = TreeCreate(TLookUp("int"), NODETYPE_MAIN, Gtemp->name, (Constant){}, NULL, $7, NULL, NULL);
+                                                        $$->Gentry = Gtemp;
+                                                        LSymbolHead = NULL;
                                                     }
     ;
 

@@ -401,6 +401,15 @@ memstruct interpret(AST *t) {
 								exit(1);	
 							}
 							break;
+		case NODETYPE_MAIN	:
+							initialise_stack();
+							initialise_memory();
+							Gtemp = GSymbolHead;
+							while(Gtemp != NULL){
+								push((memstruct){MEMSTRUCT_EMPTY});
+								Gtemp = Gtemp->next;
+							}
+							set_BP_to_SP();
 		case NODETYPE_FUNCTION :
 							//push arguments
 							AST *values;
@@ -426,6 +435,7 @@ memstruct interpret(AST *t) {
 							Ltemp = t->Gentry->fbinding->Lentry;
 							while(Ltemp != NULL){
 								push((memstruct){MEMSTRUCT_EMPTY});
+								Ltemp = Ltemp->next;
 							}						
 
 							interpret(t->Gentry->fbinding);
@@ -433,6 +443,7 @@ memstruct interpret(AST *t) {
 							Ltemp = t->Gentry->fbinding->Lentry;
 							while(Ltemp != NULL){
 								pop();
+								Ltemp = Ltemp->next;
 							}
 
 							pop_BP();
