@@ -285,7 +285,8 @@ void validate_funtion(char *fname,Typetable *rtype, ArgStruct *arglist, ASTNode 
 }
 
 void AddArgsToLTable(LSymbol **LSymbolHead, ArgStruct *a){
-    int ArgBind = ARG_START_BIND;
+    int argLength = ArgLength(a);
+    int ArgBind = ARG_START_BIND + argLength;
     while(a != NULL){
         if(LlookupInTable(*LSymbolHead, a->name) != NULL){
           yyerror("LInstall : Local variable redefined ");
@@ -295,10 +296,19 @@ void AddArgsToLTable(LSymbol **LSymbolHead, ArgStruct *a){
         Ltemp = LInstall(a->name,a->type);
         Ltemp->next = *LSymbolHead;
         Ltemp->binding = ArgBind;
-        ArgBind--;
+        ArgBind++;
         *LSymbolHead = Ltemp;
         a = a->next;
     }
+}
+
+int ArgLength(ArgStruct *a){
+    int len = 0;
+    while(a != NULL){
+        len++;
+        a = a->next;
+    }
+    return len;
 }
 
 fieldList* FInstall(char *name){
@@ -366,9 +376,25 @@ int fieldRelativeAddress(TypeTable *t, char *name) {
 }
 
 int isUserDefinedtype(TypeTable *t){
-    if(strcmp(t->name,"int") == 0 || strcmp(t->name,"str")==0)){
+    if(strcmp(t->name,"int") == 0 || strcmp(t->name,"str")==0 || strcmp(t->name,"void")== 0 || strcmp(t->name,"boolean")==0 ){
         return 0;
     }
     else
         return 1;
+}
+
+int sizeoftype(TypeTable *t){
+    if(strcmp(t->name,"int") == 0 || strcmp(type->name,"str") == 0){
+        return 1;
+    }
+    else{
+        int size = 0;
+        fieldList *temp;
+        temp = type->fields;
+        while(temp != NULL){
+            size++;
+            temp = temp->next;
+        }
+        return size;
+    }
 }
