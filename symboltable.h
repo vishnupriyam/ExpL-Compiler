@@ -81,7 +81,7 @@ LSymbol* Llookup(char *name);
 LSymbol *LlookupInTable(LSymbol *LSymbolHead, char *name);
 LSymbol* LAppend(LSymbol *l1, LSymbol *l2);
 void setLocalBindings(LSymbol *LSymbolHead);
-LSymbol* AddLType(TypeTable *ltype, LSymbol *l);
+void AddLType(TypeTable *ltype, LSymbol *l);
 
 void validate_funtion(char *fname,TypeTable *rtype, ArgStruct *arglist,struct ASTNode *body);
 void AddArgsToLTable(LSymbol **LSymbolHead, ArgStruct *a);

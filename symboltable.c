@@ -190,7 +190,7 @@ LSymbol *LlookupInTable(LSymbol *LSymbolHead, char *name) {
     }
     Ltemp = LSymbolHead;
     while(Ltemp != NULL && strcmp(Ltemp->name,name) != 0){
-     temp = temp->next;
+     Ltemp = Ltemp->next;
     }
     return temp;
 }
@@ -222,7 +222,7 @@ void setLocalBindings(LSymbol *LSymbolHead) {
     Ltemp = LSymbolHead;
     int Lbinding = LOCAL_START_BIND;
     while(Ltemp != NULL){
-      Ltemp->binding = binding;
+      Ltemp->binding = Lbinding;
       Lbinding++;
       Ltemp = Ltemp->next;
     }
@@ -236,7 +236,7 @@ void AddLType(TypeTable *ltype, LSymbol *l){
     }
 }
 
-void validate_funtion(char *fname,Typetable *rtype, ArgStruct *arglist, ASTNode *body){
+void validate_funtion(char *fname,TypeTable *rtype, ArgStruct *arglist,struct ASTNode *body){
     //check function is declared
     Gtemp = Glookup(fname);
     if(Gtemp == NULL){
@@ -324,10 +324,10 @@ fieldList* FInstall(char *name){
 }
 
 void AddFType(TypeTable *type, fieldList *f){
-    fieldList temp = f;
+    fieldList *temp = f;
     while(temp != NULL){
         temp->type = type;
-        f = f->next;
+        temp = temp->next;
     }
 }
 
