@@ -64,7 +64,7 @@ int gbinding = GLOBAL_START_BIND;
 
 GSymbol* GInstall(char *name, TypeTable *type, int size, ArgStruct *arglist);
 GSymbol* Glookup(char *name);
-GSymbol* GAppend(GSymbol *g1);
+void GAppend(GSymbol *g1);
 void AddGType(TypeTable *gtype, GSymbol *g);
 
 typedef struct LSymbol{

@@ -70,7 +70,7 @@ ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
     return temp;
 }
 
-ArgStruct* ArgAppend(ArgStruct *arg1, Argstruct *arg2){
+ArgStruct* ArgAppend(ArgStruct *arg1, ArgStruct *arg2){
     Argtemp = arg2;
     while (Argtemp->next != NULL) {
       Argtemp = Argtemp->next;
@@ -79,7 +79,7 @@ ArgStruct* ArgAppend(ArgStruct *arg1, Argstruct *arg2){
     return arg2;
 }
 
-void AddArgType(TypeTable *type, Argstruct *arg){
+void AddArgType(TypeTable *type, ArgStruct *arg){
     ArgStruct *temp = arg;
     while(temp != NULL){
         temp->type = type;
@@ -89,7 +89,7 @@ void AddArgType(TypeTable *type, Argstruct *arg){
     ArgStructHead = arg;
 }
 
-GSymbol* GInstall(char*name, TypeTable *type, int size, Argstuct *arglist){
+GSymbol* GInstall(char*name, TypeTable *type, int size, ArgStruct *arglist){
     if(Glookup(name) != NULL)	//error on redefining the variable
 	  {
         yyerror("GInstall : Global variable redefined ");
