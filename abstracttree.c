@@ -382,7 +382,7 @@ struct memstruct interpret(AST *t) {
 							break;
 		case NODETYPE_ALLOC :
 
-							address = alloc(sizeoftype(t->ptr1->type));
+							address = allocate(sizeoftype(t->ptr1->type));
 							if(address == -1){
 								yyerror("Interpret: Unable to create memory for the variable");
 								exit(1);

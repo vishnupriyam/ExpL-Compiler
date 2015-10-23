@@ -1,3 +1,5 @@
+int gbinding = GLOBAL_START_BIND;
+
 void TTableCreate(){
     TypeTable *temp;
     temp = TInstall("int",NULL);

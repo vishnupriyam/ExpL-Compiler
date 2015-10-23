@@ -60,7 +60,6 @@ typedef struct GSymbol{
 }GSymbol;
 
 GSymbol *GSymbolHead,*Gtemp;
-int gbinding = GLOBAL_START_BIND;
 
 struct GSymbol* GInstall(char *name, TypeTable *type, int size, ArgStruct *arglist);
 struct GSymbol* Glookup(char *name);
