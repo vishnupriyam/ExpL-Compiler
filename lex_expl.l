@@ -5,6 +5,7 @@
 	#include <string.h>
 	#include "y.tab.h"
 	#include "abstracttree.h"
+	#include "symboltable.h"
 	int number;
 %}
 

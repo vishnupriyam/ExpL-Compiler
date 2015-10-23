@@ -236,7 +236,7 @@ void AddLType(TypeTable *ltype, LSymbol *l){
     }
 }
 
-void validate_funtion(char *fname,TypeTable *rtype, ArgStruct *arglist,struct ASTNode *body){
+void validate_function(char *fname,TypeTable *rtype, ArgStruct *arglist,struct ASTNode *body){
     //check function is declared
     Gtemp = Glookup(fname);
     if(Gtemp == NULL){

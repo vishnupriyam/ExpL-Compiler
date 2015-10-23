@@ -83,5 +83,5 @@ struct LSymbol* LAppend(LSymbol *l1, LSymbol *l2);
 void setLocalBindings(LSymbol *LSymbolHead);
 void AddLType(TypeTable *ltype, LSymbol *l);
 
-void validate_funtion(char *fname,TypeTable *rtype, ArgStruct *arglist,struct ASTNode *body);
+void validate_function(char *fname,TypeTable *rtype, ArgStruct *arglist,struct ASTNode *body);
 void AddArgsToLTable(LSymbol **LSymbolHead, ArgStruct *a);
