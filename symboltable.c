@@ -12,7 +12,7 @@ void TTableCreate(){
     TAppend(temp);
 }
 
-TypeTable* TLookUp(char *name){
+struct TypeTable* TLookUp(char *name){
     if(name == NULL){
         yyerror("Tlookup : Cannot look up for an identifier with type NULL in type table ");
         printf(" %s",name);
@@ -26,7 +26,7 @@ TypeTable* TLookUp(char *name){
     return temp;
 }
 
-fieldList* FLookUp(char *name, char* fieldname){
+struct fieldList* FLookUp(char *name, char* fieldname){
     TypeTable *temp = TLookUp(name);
     if(temp == NULL){
         return NULL;
@@ -38,7 +38,7 @@ fieldList* FLookUp(char *name, char* fieldname){
     return list;
 }
 
-TypeTable* TInstall(char *name, fieldList *fields){
+struct TypeTable* TInstall(char *name, fieldList *fields){
     TypeTable *temp = (TypeTable *)malloc(sizeof(TypeTable));
     if(TLookUp(name) != NULL){
         yyerror("Tinstall : type redefined ");
@@ -52,12 +52,12 @@ TypeTable* TInstall(char *name, fieldList *fields){
     return temp;
 }
 
-TypeTable* TAppend(TypeTable *t1){
+struct TypeTable* TAppend(TypeTable *t1){
     t1->next = TypeTableHead;
     TypeTableHead = t1;
 }
 
-ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
+struct ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
     ArgStruct *temp = (ArgStruct *)malloc(sizeof(ArgStruct));
     //TODO check multiple arg with same name
     temp->type = type;
@@ -70,7 +70,7 @@ ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
     return temp;
 }
 
-ArgStruct* ArgAppend(ArgStruct *arg1, ArgStruct *arg2){
+struct ArgStruct* ArgAppend(ArgStruct *arg1, ArgStruct *arg2){
     Argtemp = arg2;
     while (Argtemp->next != NULL) {
       Argtemp = Argtemp->next;
@@ -89,7 +89,7 @@ void AddArgType(TypeTable *type, ArgStruct *arg){
     ArgStructHead = arg;
 }
 
-GSymbol* GInstall(char*name, TypeTable *type, int size, ArgStruct *arglist){
+struct GSymbol* GInstall(char*name, TypeTable *type, int size, ArgStruct *arglist){
     if(Glookup(name) != NULL)	//error on redefining the variable
 	  {
         yyerror("GInstall : Global variable redefined ");
@@ -131,7 +131,7 @@ void GAppend(GSymbol *g1){
     GSymbolHead = g1;
 }
 
-GSymbol* Glookup(char *name){
+struct GSymbol* Glookup(char *name){
     if(name == NULL){
         yyerror("Glookup : Cannot look up for an identifier with name NULL in global symbol table ");
         printf(" %s",name);
@@ -153,7 +153,7 @@ void AddGType(TypeTable *gtype, GSymbol *g){
     }
 }
 
-LSymbol* LInstall(char *name, TypeTable *type){
+struct LSymbol* LInstall(char *name, TypeTable *type){
     /*if(Llookup(name) != NULL)	//error on redefining the variable
 	  {
         yyerror("LInstall : Local variable redefined ");
@@ -168,7 +168,7 @@ LSymbol* LInstall(char *name, TypeTable *type){
     return temp;
 }
 
-LSymbol* Llookup(char *name){
+struct LSymbol* Llookup(char *name){
     if(name == NULL){
         yyerror("Llookup : Cannot look up for an identifier with name NULL in local symbol table ");
         printf(" %s",name);
@@ -182,7 +182,7 @@ LSymbol* Llookup(char *name){
     return temp;
 }
 
-LSymbol *LlookupInTable(LSymbol *LSymbolHead, char *name) {
+struct LSymbol *LlookupInTable(LSymbol *LSymbolHead, char *name) {
     if(name == NULL){
         yyerror("Llookup : Cannot look up for an identifier with name NULL in local symbol table ");
         printf(" %s",name);
@@ -195,7 +195,7 @@ LSymbol *LlookupInTable(LSymbol *LSymbolHead, char *name) {
     return Ltemp;
 }
 
-LSymbol* LAppend(LSymbol *l1, LSymbol *l2){
+struct LSymbol* LAppend(LSymbol *l1, LSymbol *l2){
     Ltemp = l2;
     while (Ltemp->next != NULL) {
       if(LlookupInTable(l1, Ltemp->name) != NULL){
@@ -311,7 +311,7 @@ int ArgLength(ArgStruct *a){
     return len;
 }
 
-fieldList* FInstall(char *name){
+struct fieldList* FInstall(char *name){
     if(FieldLookup(name) != NULL){
         yyerror("FInstall : multiple declarations of same field");
         printf(" %s",name);
@@ -331,7 +331,7 @@ void AddFType(TypeTable *type, fieldList *f){
     }
 }
 
-fieldList* FAppend(fieldList *f1, fieldList *f2){
+struct fieldList* FAppend(fieldList *f1, fieldList *f2){
     ftemp = f2;
     while (ftemp->next != NULL) {
        ftemp = ftemp->next;
@@ -340,7 +340,7 @@ fieldList* FAppend(fieldList *f1, fieldList *f2){
     return f2;
 }
 
-fieldList* FieldLookup(char *name){
+struct fieldList* FieldLookup(char *name){
     if(name == NULL){
         yyerror("Flookup : Cannot look up for an identifier with name NULL in local symbol table ");
         printf(" %s",name);

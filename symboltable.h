@@ -14,9 +14,9 @@ typedef struct TypeTable
 TypeTable *TypeTableHead,*Ttemp;
 
 void TTableCreate();
-TypeTable* TLookUp(char *name);
-TypeTable* TInstall(char *name,struct fieldList *fields);
-TypeTable* TAppend(TypeTable *t1);
+struct TypeTable* TLookUp(char *name);
+struct TypeTable* TInstall(char *name,struct fieldList *fields);
+struct TypeTable* TAppend(TypeTable *t1);
 struct fieldList* FLookUp(char* name, char* fieldname);
 
 typedef struct fieldList
@@ -28,10 +28,10 @@ typedef struct fieldList
 
 fieldList *fieldListHead,*ftemp;
 
-fieldList* FInstall(char *name);
+struct fieldList* FInstall(char *name);
 void AddFType(TypeTable *type, fieldList *f);
-fieldList* FAppend(fieldList *f1, fieldList *f2);
-fieldList* FieldLookup(char *name);
+struct fieldList* FAppend(fieldList *f1, fieldList *f2);
+struct fieldList* FieldLookup(char *name);
 void Type_field_list_validate();
 int isUserDefinedtype(TypeTable *t);
 int fieldRelativeAddress(TypeTable *t, char *name);
@@ -45,8 +45,8 @@ typedef struct ArgStruct {
 
 ArgStruct *ArgStructHead,*Argtemp;
 
-ArgStruct* ArgInstall(char* name, TypeTable *type, int passType);
-ArgStruct* ArgAppend(ArgStruct *arg1, ArgStruct *arg2);
+struct ArgStruct* ArgInstall(char* name, TypeTable *type, int passType);
+struct ArgStruct* ArgAppend(ArgStruct *arg1, ArgStruct *arg2);
 void AddArgType(TypeTable *type, ArgStruct *arg);
 
 typedef struct GSymbol{
@@ -62,8 +62,8 @@ typedef struct GSymbol{
 GSymbol *GSymbolHead,*Gtemp;
 int gbinding = GLOBAL_START_BIND;
 
-GSymbol* GInstall(char *name, TypeTable *type, int size, ArgStruct *arglist);
-GSymbol* Glookup(char *name);
+struct GSymbol* GInstall(char *name, TypeTable *type, int size, ArgStruct *arglist);
+struct GSymbol* Glookup(char *name);
 void GAppend(GSymbol *g1);
 void AddGType(TypeTable *gtype, GSymbol *g);
 
@@ -76,10 +76,10 @@ typedef struct LSymbol{
 
 LSymbol *LSymbolHead,*Ltemp;
 
-LSymbol* LInstall(char *name, TypeTable *type);
-LSymbol* Llookup(char *name);
-LSymbol *LlookupInTable(LSymbol *LSymbolHead, char *name);
-LSymbol* LAppend(LSymbol *l1, LSymbol *l2);
+struct LSymbol* LInstall(char *name, TypeTable *type);
+struct LSymbol* Llookup(char *name);
+struct LSymbol *LlookupInTable(LSymbol *LSymbolHead, char *name);
+struct LSymbol* LAppend(LSymbol *l1, LSymbol *l2);
 void setLocalBindings(LSymbol *LSymbolHead);
 void AddLType(TypeTable *ltype, LSymbol *l);
 

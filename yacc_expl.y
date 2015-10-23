@@ -14,7 +14,7 @@
     #include "abstracttree.c"
     #include "stack.c"
     #include "heap.c"
-    
+
     AST *root;
     TypeTable decl_type,arg_type,local_type;
 %}
@@ -153,7 +153,7 @@ GIdList : GIdList ',' GId                           {
 
 GId : ID '[' NUM ']'                                {
                                                         //Creats a global symbol table entry
-                                                        $$ = GInstall($1->name,NULL,$3->value,NULL);
+                                                        $$ = GInstall($1->name,NULL,$3->value.intval,NULL);
                                                     }
     |ID                                             {
                                                         //Creates a global symbol table entry
@@ -181,12 +181,12 @@ ArgList1 : ArgType DELIM ArgList1                   { $$ = ArgAppend($3, $1);}
 
 ArgType : INT Args                                  {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
-                                                        AddArgType(TLookup("int"),$2);
+                                                        AddArgType(TLookUp("int"),$2);
                                                         $$ = $2;
                                                     }
     |STR Args                                       {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
-                                                        AddArgType(TLookup("str"),$2);
+                                                        AddArgType(TLookUp("str"),$2);
                                                         $$ = $2;
                                                     }
     |ID Args                                        {
@@ -288,17 +288,17 @@ LdecList : LdecList Ldecl { $$ = LAppend($1, $2); }
 
 Ldecl : INT LIdList DELIM {
                             //Fills the Type field of the local symbol table entry with integer.
-                            AddLType($2,TLookUp("int"));
+                            AddLType(TLookUp("int"),$2);
                             $$ = $2;
                           }
     |STR LIdList DELIM    {
                             //Fills the Type field of the local symbol table entry with string.
-                            AddLType($2,TLookUp("str"));
+                            AddLType(TLookUp("str"),$2);
                             $$ = $2;
                           }
     |ID LIdList DELIM     {
                             //Fills the Type field of the Local symbol table with the specified user defined type.
-                            AddLType($2,TLookUp($1->name));
+                            AddLType(TLookUp($1->name),$2);
                             $$ = $2;
                           }
     ;

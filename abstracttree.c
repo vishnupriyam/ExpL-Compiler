@@ -205,6 +205,9 @@ int getFieldBind(AST *t, int flag){
 
 struct memstruct interpret(AST *t) {
 	memstruct result1, result2;
+	AST *values;
+	ArgStruct *params;
+	int address;
 	switch(t->nodetype){
 		case NODETYPE_PLUS :
 							result1 = getValueFromBind(interpret(t->ptr1));
@@ -378,7 +381,7 @@ struct memstruct interpret(AST *t) {
 							return getGlobalValue(t->ptr1->Gentry->binding + result1.value.intval);
 							break;
 		case NODETYPE_ALLOC :
-							int address;
+
 							address = alloc(sizeoftype(t->ptr1->type));
 							if(address == -1){
 								yyerror("Interpret: Unable to create memory for the variable");
@@ -392,7 +395,6 @@ struct memstruct interpret(AST *t) {
 							}
 							break;
 		case NODETYPE_DEALLOC :
-							int address;
 							if(t->ptr1->Lentry != NULL){
 								address = getLocalValue(t->ptr1->Lentry->binding).value.intval;
 							}
@@ -414,9 +416,6 @@ struct memstruct interpret(AST *t) {
 							}
 							set_BP_to_SP();
 		case NODETYPE_FUNCTION :
-							//push arguments
-							AST *values;
-							ArgStruct *params;
 							values = t->arglist;
 							params = t->Gentry->arglist;
 							while(values != NULL){

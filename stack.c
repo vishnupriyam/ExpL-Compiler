@@ -7,7 +7,7 @@ void initialise_stack(){
 	}
 }
 
-void push(memstruct value){
+int push(memstruct value){
 	if(stack_pointer + 1 < STACK_SIZE){
 		stack_pointer++;
 		stack[stack_pointer] = value;

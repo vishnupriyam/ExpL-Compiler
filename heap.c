@@ -12,9 +12,9 @@ void initialise_memory(){
 	i = 0;
 	heap[i] = (memstruct){MEMSTRUCT_BIND,512}; 	//One 512 block and it's starting address is 512
 	i = 2*i + 1;	//Starting index of next level i.e., block of size 256
-	heap[i] = (memstruct){MEMSTRUCT_BIND,256}	//One 256 block and it's starting address is 256
+	heap[i] = (memstruct){MEMSTRUCT_BIND,256};	//One 256 block and it's starting address is 256
 	i = 2*i + 1;	//Starting index of next level i.e., block of size 128
-	heap[i] = (memstruct){MEMSTRUCT_BIND,128}	//One 128 block and it's starting address is 128
+	heap[i] = (memstruct){MEMSTRUCT_BIND,128};	//One 128 block and it's starting address is 128
 }
 
 void print_memory_freelist(){

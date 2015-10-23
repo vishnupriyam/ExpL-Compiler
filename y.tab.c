@@ -79,7 +79,7 @@
     #include "abstracttree.c"
     #include "stack.c"
     #include "heap.c"
-    
+
     AST *root;
     TypeTable decl_type,arg_type,local_type;
 
@@ -1666,7 +1666,7 @@ yyreduce:
 #line 154 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Creats a global symbol table entry
-                                                        (yyval.gvar) = GInstall((yyvsp[-3].nptr)->name,NULL,(yyvsp[-1].nptr)->value,NULL);
+                                                        (yyval.gvar) = GInstall((yyvsp[-3].nptr)->name,NULL,(yyvsp[-1].nptr)->value.intval,NULL);
                                                     }
 #line 1672 "y.tab.c" /* yacc.c:1646  */
     break;
@@ -1728,7 +1728,7 @@ yyreduce:
 #line 182 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
-                                                        AddArgType(TLookup("int"),(yyvsp[0].arg));
+                                                        AddArgType(TLookUp("int"),(yyvsp[0].arg));
                                                         (yyval.arg) = (yyvsp[0].arg);
                                                     }
 #line 1735 "y.tab.c" /* yacc.c:1646  */
@@ -1738,7 +1738,7 @@ yyreduce:
 #line 187 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
-                                                        AddArgType(TLookup("str"),(yyvsp[0].arg));
+                                                        AddArgType(TLookUp("str"),(yyvsp[0].arg));
                                                         (yyval.arg) = (yyvsp[0].arg);
                                                     }
 #line 1745 "y.tab.c" /* yacc.c:1646  */
@@ -1896,7 +1896,7 @@ yyreduce:
 #line 289 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Fills the Type field of the local symbol table entry with integer.
-                            AddLType((yyvsp[-1].lvar),TLookUp("int"));
+                            AddLType(TLookUp("int"),(yyvsp[-1].lvar));
                             (yyval.lvar) = (yyvsp[-1].lvar);
                           }
 #line 1903 "y.tab.c" /* yacc.c:1646  */
@@ -1906,7 +1906,7 @@ yyreduce:
 #line 294 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Fills the Type field of the local symbol table entry with string.
-                            AddLType((yyvsp[-1].lvar),TLookUp("str"));
+                            AddLType(TLookUp("str"),(yyvsp[-1].lvar));
                             (yyval.lvar) = (yyvsp[-1].lvar);
                           }
 #line 1913 "y.tab.c" /* yacc.c:1646  */
@@ -1916,7 +1916,7 @@ yyreduce:
 #line 299 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Fills the Type field of the Local symbol table with the specified user defined type.
-                            AddLType((yyvsp[-1].lvar),TLookUp((yyvsp[-2].nptr)->name));
+                            AddLType(TLookUp((yyvsp[-2].nptr)->name),(yyvsp[-1].lvar));
                             (yyval.lvar) = (yyvsp[-1].lvar);
                           }
 #line 1923 "y.tab.c" /* yacc.c:1646  */
