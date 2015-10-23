@@ -196,14 +196,14 @@ int deallocate(int start_addr){
 	merge_buddies(start_addr, ceil_size);
 }
 
-memstruct getValueFromBind(memstruct bind){
+struct memstruct getValueFromBind(memstruct bind){
 	while(bind.type == MEMSTRUCT_BIND){
 		bind = heap[bind.value.intval];
 	}
 	return bind;
 }
 
-memstruct getValueAtDynamicLocation(int location){
+struct memstruct getValueAtDynamicLocation(int location){
 	return heap[location];
 }
 

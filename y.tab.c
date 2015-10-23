@@ -69,14 +69,21 @@
     #include <string.h>
     int yylex(void);
     extern FILE *yyin;
+
     #include "symboltable.h"
-    #include "symboltable.c"
     #include "abstracttree.h"
+    #include "stack.h"
+    #include "heap.h"
+
+    #include "symboltable.c"
     #include "abstracttree.c"
+    #include "stack.c"
+    #include "heap.c"
+    
     AST *root;
     TypeTable decl_type,arg_type,local_type;
 
-#line 80 "y.tab.c" /* yacc.c:339  */
+#line 87 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -192,7 +199,7 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 15 "yacc_expl.y" /* yacc.c:355  */
+#line 22 "yacc_expl.y" /* yacc.c:355  */
 
     AST * nptr;
     ArgStruct * arg;
@@ -202,7 +209,7 @@ union YYSTYPE
     TypeTable * ty;
     char c;
 
-#line 206 "y.tab.c" /* yacc.c:355  */
+#line 213 "y.tab.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -217,7 +224,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 221 "y.tab.c" /* yacc.c:358  */
+#line 228 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -518,15 +525,15 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    41,    41,    46,    47,    50,    51,    54,    63,    65,
-      66,    69,    74,    79,    92,    97,   103,   105,   108,   109,
-     112,   117,   122,   137,   142,   147,   151,   155,   161,   167,
-     170,   171,   172,   175,   180,   185,   198,   203,   208,   212,
-     217,   218,   221,   235,   249,   271,   278,   279,   282,   287,
-     292,   299,   309,   314,   320,   333,   339,   343,   346,   350,
-     356,   360,   364,   368,   372,   375,   380,   384,   388,   392,
-     396,   400,   406,   412,   417,   421,   425,   426,   429,   433,
-     437,   438,   439,   443,   448,   453,   454,   468,   474,   480
+       0,    48,    48,    53,    54,    57,    58,    61,    70,    72,
+      73,    76,    81,    86,    99,   104,   110,   112,   115,   116,
+     119,   124,   129,   144,   149,   154,   158,   162,   168,   174,
+     177,   178,   179,   182,   187,   192,   205,   210,   215,   219,
+     224,   225,   228,   242,   256,   278,   285,   286,   289,   294,
+     299,   306,   316,   321,   327,   340,   346,   350,   353,   357,
+     363,   367,   371,   375,   379,   382,   387,   391,   395,   399,
+     403,   407,   413,   419,   424,   428,   432,   433,   436,   440,
+     444,   445,   446,   450,   455,   460,   461,   475,   481,   487
 };
 #endif
 
@@ -1459,39 +1466,39 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 41 "yacc_expl.y" /* yacc.c:1646  */
+#line 48 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         interpret((yyvsp[0].nptr));
                                                     }
-#line 1467 "y.tab.c" /* yacc.c:1646  */
+#line 1474 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 46 "yacc_expl.y" /* yacc.c:1646  */
+#line 53 "yacc_expl.y" /* yacc.c:1646  */
     {}
-#line 1473 "y.tab.c" /* yacc.c:1646  */
+#line 1480 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 47 "yacc_expl.y" /* yacc.c:1646  */
+#line 54 "yacc_expl.y" /* yacc.c:1646  */
     {}
-#line 1479 "y.tab.c" /* yacc.c:1646  */
+#line 1486 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 50 "yacc_expl.y" /* yacc.c:1646  */
+#line 57 "yacc_expl.y" /* yacc.c:1646  */
     {}
-#line 1485 "y.tab.c" /* yacc.c:1646  */
+#line 1492 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 51 "yacc_expl.y" /* yacc.c:1646  */
+#line 58 "yacc_expl.y" /* yacc.c:1646  */
     {}
-#line 1491 "y.tab.c" /* yacc.c:1646  */
+#line 1498 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 54 "yacc_expl.y" /* yacc.c:1646  */
+#line 61 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Creates a 'fieldlist' out of the intermediate list.
                                                         //Verifies for multiple declaration of variables.
@@ -1499,49 +1506,49 @@ yyreduce:
                                                         Type_field_list_validate((yyvsp[-1].field));
                                                         (yyvsp[-3].ty)->fields = (yyvsp[-1].field);
                                                     }
-#line 1503 "y.tab.c" /* yacc.c:1646  */
+#line 1510 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 63 "yacc_expl.y" /* yacc.c:1646  */
+#line 70 "yacc_expl.y" /* yacc.c:1646  */
     { (yyval.ty) = TInstall((yyvsp[0].nptr)->name,NULL);}
-#line 1509 "y.tab.c" /* yacc.c:1646  */
+#line 1516 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 65 "yacc_expl.y" /* yacc.c:1646  */
+#line 72 "yacc_expl.y" /* yacc.c:1646  */
     { (yyval.field) = FAppend((yyvsp[-1].field), (yyvsp[0].field));}
-#line 1515 "y.tab.c" /* yacc.c:1646  */
+#line 1522 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 66 "yacc_expl.y" /* yacc.c:1646  */
+#line 73 "yacc_expl.y" /* yacc.c:1646  */
     { (yyval.field) = (yyvsp[0].field); }
-#line 1521 "y.tab.c" /* yacc.c:1646  */
+#line 1528 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 69 "yacc_expl.y" /* yacc.c:1646  */
+#line 76 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Fills the Type pointer in the intermediate list with integer
                                                         AddFType(TLookUp("int"),(yyvsp[-1].field));
                                                         (yyval.field) = (yyvsp[-1].field);
                                                     }
-#line 1531 "y.tab.c" /* yacc.c:1646  */
+#line 1538 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 74 "yacc_expl.y" /* yacc.c:1646  */
+#line 81 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Fills the Type pointer in the intermediate list with string
                                                         AddFType(TLookUp("str"),(yyvsp[-1].field));
                                                         (yyval.field) = (yyvsp[-1].field);
                                                     }
-#line 1541 "y.tab.c" /* yacc.c:1646  */
+#line 1548 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 79 "yacc_expl.y" /* yacc.c:1646  */
+#line 86 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Fills the Type pointer in the intermediate list(IntermList) with the name of the given identifier($1)
                                                         Ttemp = TLookUp((yyvsp[-2].nptr)->name);
@@ -1553,74 +1560,74 @@ yyreduce:
                                                         AddFType(Ttemp,(yyvsp[-1].field));
                                                         (yyval.field) = (yyvsp[-1].field);
                                                     }
-#line 1557 "y.tab.c" /* yacc.c:1646  */
+#line 1564 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 92 "yacc_expl.y" /* yacc.c:1646  */
+#line 99 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Creates an intermediate list(IntermList) containing the name of the given identifier
                                                         (yyvsp[0].field)->next = (yyvsp[-2].field);
                                                         (yyval.field) = (yyvsp[0].field);
                                                     }
-#line 1567 "y.tab.c" /* yacc.c:1646  */
+#line 1574 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 97 "yacc_expl.y" /* yacc.c:1646  */
+#line 104 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Creates an intermediate list(IntermList) containing the name of the given identifier
                                                         (yyval.field) = (yyvsp[0].field);
                                                     }
-#line 1576 "y.tab.c" /* yacc.c:1646  */
+#line 1583 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 103 "yacc_expl.y" /* yacc.c:1646  */
+#line 110 "yacc_expl.y" /* yacc.c:1646  */
     {   (yyval.field) = FInstall((yyvsp[0].nptr)->name); }
-#line 1582 "y.tab.c" /* yacc.c:1646  */
+#line 1589 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 105 "yacc_expl.y" /* yacc.c:1646  */
+#line 112 "yacc_expl.y" /* yacc.c:1646  */
     {}
-#line 1588 "y.tab.c" /* yacc.c:1646  */
+#line 1595 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 108 "yacc_expl.y" /* yacc.c:1646  */
+#line 115 "yacc_expl.y" /* yacc.c:1646  */
     {}
-#line 1594 "y.tab.c" /* yacc.c:1646  */
+#line 1601 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 109 "yacc_expl.y" /* yacc.c:1646  */
+#line 116 "yacc_expl.y" /* yacc.c:1646  */
     {}
-#line 1600 "y.tab.c" /* yacc.c:1646  */
+#line 1607 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 112 "yacc_expl.y" /* yacc.c:1646  */
+#line 119 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //The Type field of the global symbol table entry is set to integer
                                                         AddGType(TLookUp("int"),(yyvsp[-1].gvar));
                                                         GAppend((yyvsp[-1].gvar));
                                                     }
-#line 1610 "y.tab.c" /* yacc.c:1646  */
+#line 1617 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 117 "yacc_expl.y" /* yacc.c:1646  */
+#line 124 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //The type field of the global symbol table entry is set to string
                                                         AddGType(TLookUp("str"),(yyvsp[-1].gvar));
                                                         GAppend((yyvsp[-1].gvar));
                                                     }
-#line 1620 "y.tab.c" /* yacc.c:1646  */
+#line 1627 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 122 "yacc_expl.y" /* yacc.c:1646  */
+#line 129 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Type field of the global symbol table entry is set to the specified type.
                                                         //The specified type for used defined type is obtained from a call to
@@ -1634,111 +1641,111 @@ yyreduce:
                                                         AddGType(Ttemp,(yyvsp[-1].gvar));
                                                         GAppend((yyvsp[-1].gvar));
                                                     }
-#line 1638 "y.tab.c" /* yacc.c:1646  */
+#line 1645 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 137 "yacc_expl.y" /* yacc.c:1646  */
+#line 144 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Binds together the global symbol tabe entries.
                                                         (yyvsp[0].gvar)->next = (yyvsp[-2].gvar);
                                                         (yyval.gvar) = (yyvsp[0].gvar);
                                                     }
-#line 1648 "y.tab.c" /* yacc.c:1646  */
+#line 1655 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 142 "yacc_expl.y" /* yacc.c:1646  */
+#line 149 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         (yyval.gvar) = (yyvsp[0].gvar);
                                                     }
-#line 1656 "y.tab.c" /* yacc.c:1646  */
+#line 1663 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 147 "yacc_expl.y" /* yacc.c:1646  */
+#line 154 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Creats a global symbol table entry
                                                         (yyval.gvar) = GInstall((yyvsp[-3].nptr)->name,NULL,(yyvsp[-1].nptr)->value,NULL);
                                                     }
-#line 1665 "y.tab.c" /* yacc.c:1646  */
+#line 1672 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 151 "yacc_expl.y" /* yacc.c:1646  */
+#line 158 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Creates a global symbol table entry
                                                         (yyval.gvar) = GInstall((yyvsp[0].nptr)->name,NULL,1,NULL);
                                                     }
-#line 1674 "y.tab.c" /* yacc.c:1646  */
+#line 1681 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 155 "yacc_expl.y" /* yacc.c:1646  */
+#line 162 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Creates a global symbol table entry
                                                         (yyval.gvar) = GInstall((yyvsp[-3].nptr)->name,NULL,0,(yyvsp[-1].arg));
                                                     }
-#line 1683 "y.tab.c" /* yacc.c:1646  */
+#line 1690 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 161 "yacc_expl.y" /* yacc.c:1646  */
+#line 168 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //A Local Symbol Table is created out the entries made.
                                                          (yyval.arg) = (yyvsp[0].arg);
                                                     }
-#line 1692 "y.tab.c" /* yacc.c:1646  */
+#line 1699 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 167 "yacc_expl.y" /* yacc.c:1646  */
+#line 174 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         (yyval.arg) = (yyvsp[0].arg);
                                                     }
-#line 1700 "y.tab.c" /* yacc.c:1646  */
+#line 1707 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 170 "yacc_expl.y" /* yacc.c:1646  */
+#line 177 "yacc_expl.y" /* yacc.c:1646  */
     { (yyval.arg) = NULL;}
-#line 1706 "y.tab.c" /* yacc.c:1646  */
+#line 1713 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 171 "yacc_expl.y" /* yacc.c:1646  */
+#line 178 "yacc_expl.y" /* yacc.c:1646  */
     { (yyval.arg) = ArgAppend((yyvsp[0].arg), (yyvsp[-2].arg));}
-#line 1712 "y.tab.c" /* yacc.c:1646  */
+#line 1719 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 172 "yacc_expl.y" /* yacc.c:1646  */
+#line 179 "yacc_expl.y" /* yacc.c:1646  */
     { (yyval.arg) = (yyvsp[0].arg);}
-#line 1718 "y.tab.c" /* yacc.c:1646  */
+#line 1725 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 175 "yacc_expl.y" /* yacc.c:1646  */
+#line 182 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
                                                         AddArgType(TLookup("int"),(yyvsp[0].arg));
                                                         (yyval.arg) = (yyvsp[0].arg);
                                                     }
-#line 1728 "y.tab.c" /* yacc.c:1646  */
+#line 1735 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 180 "yacc_expl.y" /* yacc.c:1646  */
+#line 187 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
                                                         AddArgType(TLookup("str"),(yyvsp[0].arg));
                                                         (yyval.arg) = (yyvsp[0].arg);
                                                     }
-#line 1738 "y.tab.c" /* yacc.c:1646  */
+#line 1745 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 185 "yacc_expl.y" /* yacc.c:1646  */
+#line 192 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
                                                         Ttemp = TLookUp((yyvsp[-1].nptr)->name);
@@ -1750,58 +1757,58 @@ yyreduce:
                                                         AddArgType(Ttemp,(yyvsp[0].arg));
                                                         (yyval.arg) = (yyvsp[0].arg);
                                                     }
-#line 1754 "y.tab.c" /* yacc.c:1646  */
+#line 1761 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 198 "yacc_expl.y" /* yacc.c:1646  */
+#line 205 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Appends newly created entries to the existing.
                                                         (yyvsp[0].arg)->next = (yyvsp[-2].arg);
                                                         (yyval.arg) = (yyvsp[0].arg);
                                                     }
-#line 1764 "y.tab.c" /* yacc.c:1646  */
+#line 1771 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 203 "yacc_expl.y" /* yacc.c:1646  */
+#line 210 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         (yyval.arg) = (yyvsp[0].arg);
                                                     }
-#line 1772 "y.tab.c" /* yacc.c:1646  */
+#line 1779 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 208 "yacc_expl.y" /* yacc.c:1646  */
+#line 215 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Creates an ArgStruct entry containing name of the identifier.
                                                         (yyval.arg) = ArgInstall((yyvsp[0].nptr)->name,NULL,PASS_BY_VAL);
                                                     }
-#line 1781 "y.tab.c" /* yacc.c:1646  */
+#line 1788 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 212 "yacc_expl.y" /* yacc.c:1646  */
+#line 219 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         (yyval.arg) = ArgInstall((yyvsp[0].nptr)->name,NULL,PASS_BY_REF);
                                                     }
-#line 1789 "y.tab.c" /* yacc.c:1646  */
+#line 1796 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 217 "yacc_expl.y" /* yacc.c:1646  */
+#line 224 "yacc_expl.y" /* yacc.c:1646  */
     {}
-#line 1795 "y.tab.c" /* yacc.c:1646  */
+#line 1802 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 218 "yacc_expl.y" /* yacc.c:1646  */
+#line 225 "yacc_expl.y" /* yacc.c:1646  */
     {}
-#line 1801 "y.tab.c" /* yacc.c:1646  */
+#line 1808 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 221 "yacc_expl.y" /* yacc.c:1646  */
+#line 228 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                           //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
@@ -1816,11 +1823,11 @@ yyreduce:
                                                           Gtemp->fbinding = (yyvsp[-1].nptr);
                                                           LSymbolHead = NULL;
                                                         }
-#line 1820 "y.tab.c" /* yacc.c:1646  */
+#line 1827 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 235 "yacc_expl.y" /* yacc.c:1646  */
+#line 242 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                           //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
@@ -1835,11 +1842,11 @@ yyreduce:
                                                           Gtemp->fbinding = (yyvsp[-1].nptr);
                                                           LSymbolHead = NULL;
                                                         }
-#line 1839 "y.tab.c" /* yacc.c:1646  */
+#line 1846 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 249 "yacc_expl.y" /* yacc.c:1646  */
+#line 256 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                           //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
@@ -1860,63 +1867,63 @@ yyreduce:
                                                           Gtemp->fbinding = (yyvsp[-1].nptr);
                                                           LSymbolHead = NULL;
                                                         }
-#line 1864 "y.tab.c" /* yacc.c:1646  */
+#line 1871 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 271 "yacc_expl.y" /* yacc.c:1646  */
+#line 278 "yacc_expl.y" /* yacc.c:1646  */
     {
                                       setLocalBindings((yyvsp[-1].lvar));
                                       (yyval.lvar) = (yyvsp[-1].lvar);
                                       LSymbolHead = (yyval.lvar);
                                   }
-#line 1874 "y.tab.c" /* yacc.c:1646  */
+#line 1881 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 278 "yacc_expl.y" /* yacc.c:1646  */
+#line 285 "yacc_expl.y" /* yacc.c:1646  */
     { (yyval.lvar) = LAppend((yyvsp[-1].lvar), (yyvsp[0].lvar)); }
-#line 1880 "y.tab.c" /* yacc.c:1646  */
+#line 1887 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 279 "yacc_expl.y" /* yacc.c:1646  */
+#line 286 "yacc_expl.y" /* yacc.c:1646  */
     {  (yyval.lvar) = (yyvsp[0].lvar);  }
-#line 1886 "y.tab.c" /* yacc.c:1646  */
+#line 1893 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 282 "yacc_expl.y" /* yacc.c:1646  */
+#line 289 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Fills the Type field of the local symbol table entry with integer.
                             AddLType((yyvsp[-1].lvar),TLookUp("int"));
                             (yyval.lvar) = (yyvsp[-1].lvar);
                           }
-#line 1896 "y.tab.c" /* yacc.c:1646  */
+#line 1903 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 287 "yacc_expl.y" /* yacc.c:1646  */
+#line 294 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Fills the Type field of the local symbol table entry with string.
                             AddLType((yyvsp[-1].lvar),TLookUp("str"));
                             (yyval.lvar) = (yyvsp[-1].lvar);
                           }
-#line 1906 "y.tab.c" /* yacc.c:1646  */
+#line 1913 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 292 "yacc_expl.y" /* yacc.c:1646  */
+#line 299 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Fills the Type field of the Local symbol table with the specified user defined type.
                             AddLType((yyvsp[-1].lvar),TLookUp((yyvsp[-2].nptr)->name));
                             (yyval.lvar) = (yyvsp[-1].lvar);
                           }
-#line 1916 "y.tab.c" /* yacc.c:1646  */
+#line 1923 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 299 "yacc_expl.y" /* yacc.c:1646  */
+#line 306 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Appends newly created local symbol table entries to the existing.
                             if(LlookupInTable((yyvsp[-2].lvar), (yyvsp[0].lvar)) != NULL){
@@ -1927,28 +1934,28 @@ yyreduce:
                             (yyvsp[0].lvar)->next = (yyvsp[-2].lvar);
                             (yyval.lvar) = (yyvsp[0].lvar);
                           }
-#line 1931 "y.tab.c" /* yacc.c:1646  */
+#line 1938 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 309 "yacc_expl.y" /* yacc.c:1646  */
+#line 316 "yacc_expl.y" /* yacc.c:1646  */
     {
                             (yyval.lvar) = (yyvsp[0].lvar);
                           }
-#line 1939 "y.tab.c" /* yacc.c:1646  */
+#line 1946 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 314 "yacc_expl.y" /* yacc.c:1646  */
+#line 321 "yacc_expl.y" /* yacc.c:1646  */
     {
                 //Creates a Local Symbol Table entry containing the name of the identifier
                 (yyval.lvar) = LInstall((yyvsp[0].nptr)->name,NULL);
             }
-#line 1948 "y.tab.c" /* yacc.c:1646  */
+#line 1955 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 320 "yacc_expl.y" /* yacc.c:1646  */
+#line 327 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                         //Verifies if the type of the return statemnt is of type integer
                                                         //calls interpreter
@@ -1960,278 +1967,278 @@ yyreduce:
                                                         (yyval.nptr)->Gentry = Gtemp;
                                                         LSymbolHead = NULL;
                                                     }
-#line 1964 "y.tab.c" /* yacc.c:1646  */
+#line 1971 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 333 "yacc_expl.y" /* yacc.c:1646  */
+#line 340 "yacc_expl.y" /* yacc.c:1646  */
     {
                                 //Return statement is set as Ptr2 of slist
                                 (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_BODY, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), (yyvsp[-1].nptr), NULL);
                             }
-#line 1973 "y.tab.c" /* yacc.c:1646  */
+#line 1980 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 339 "yacc_expl.y" /* yacc.c:1646  */
+#line 346 "yacc_expl.y" /* yacc.c:1646  */
     {
                                 //Appends newly created statement node to the existing.
                                 (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_NONE, NULL, (Constant){}, NULL, (yyvsp[-1].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 1982 "y.tab.c" /* yacc.c:1646  */
+#line 1989 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 343 "yacc_expl.y" /* yacc.c:1646  */
+#line 350 "yacc_expl.y" /* yacc.c:1646  */
     { (yyval.nptr) = (yyvsp[0].nptr); }
-#line 1988 "y.tab.c" /* yacc.c:1646  */
+#line 1995 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 346 "yacc_expl.y" /* yacc.c:1646  */
+#line 353 "yacc_expl.y" /* yacc.c:1646  */
     {
                                 //Verifies if the LHS and RHS of the assignment node is of the same type.
                                 (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_ASGN, NULL, (Constant){}, NULL, (yyvsp[-3].nptr), (yyvsp[-1].nptr), NULL);
                             }
-#line 1997 "y.tab.c" /* yacc.c:1646  */
+#line 2004 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 350 "yacc_expl.y" /* yacc.c:1646  */
+#line 357 "yacc_expl.y" /* yacc.c:1646  */
     {
                                         //Verifies if the LHS and RHS of the Assignment node is of the same type.
                                         //Also type checks for array
                                         (yyval.nptr) = TreeCreate(TLookup("void"), NODETYPE_ARR_ASGN, NULL, (Constant){}, NULL, (yyvsp[-6].nptr), (yyvsp[-4].nptr), (yyvsp[-1].nptr));
                                     }
-#line 2007 "y.tab.c" /* yacc.c:1646  */
+#line 2014 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 356 "yacc_expl.y" /* yacc.c:1646  */
+#line 363 "yacc_expl.y" /* yacc.c:1646  */
     {
                                     //Verifies if the identifier is of type integer or string
                                     (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_READ, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), NULL, NULL);
                                 }
-#line 2016 "y.tab.c" /* yacc.c:1646  */
+#line 2023 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 360 "yacc_expl.y" /* yacc.c:1646  */
+#line 367 "yacc_expl.y" /* yacc.c:1646  */
     {
                                     //Verifies if the FIELD is of type integer or string
                                     (yyval.nptr) = TreeCreate(TLookup("void"), NODETYPE_FIELD_READ, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), NULL, NULL);
                                 }
-#line 2025 "y.tab.c" /* yacc.c:1646  */
+#line 2032 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 364 "yacc_expl.y" /* yacc.c:1646  */
+#line 371 "yacc_expl.y" /* yacc.c:1646  */
     {
                                             //Verifies if the identifier is of type integer or string. //Being an array, Expression node has to be of type integer.
                                             (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_ARR_READ, NULL, (Constant){}, NULL, (yyvsp[-5].nptr), (yyvsp[-3].nptr), NULL);
                                         }
-#line 2034 "y.tab.c" /* yacc.c:1646  */
+#line 2041 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 368 "yacc_expl.y" /* yacc.c:1646  */
+#line 375 "yacc_expl.y" /* yacc.c:1646  */
     {
                                         //Verifies if the Expression node is of type integer or string
                                         (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_WRITE, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), NULL, NULL);
                                     }
-#line 2043 "y.tab.c" /* yacc.c:1646  */
+#line 2050 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 372 "yacc_expl.y" /* yacc.c:1646  */
+#line 379 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                 (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_IF, NULL, (Constant){},NULL, (yyvsp[-5].nptr), (yyvsp[-2].nptr), NULL);
                                             }
-#line 2051 "y.tab.c" /* yacc.c:1646  */
+#line 2058 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 375 "yacc_expl.y" /* yacc.c:1646  */
+#line 382 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                             //Verifies if the Conditional Expression node is of boolean type.
                                                             //Verifies if the Conditional Expression node is of boolean type
                                                             (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_IF, NULL, (Constant){},NULL, (yyvsp[-7].nptr), (yyvsp[-4].nptr), (yyvsp[-2].nptr));
                                                         }
-#line 2061 "y.tab.c" /* yacc.c:1646  */
+#line 2068 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 380 "yacc_expl.y" /* yacc.c:1646  */
+#line 387 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                     //Verifies if the Conditional Expression node is of boolean type.
                                                     (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_WHILE, NULL, (Constant){}, NULL, (yyvsp[-5].nptr), (yyvsp[-2].nptr), NULL);
                                                 }
-#line 2070 "y.tab.c" /* yacc.c:1646  */
+#line 2077 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 384 "yacc_expl.y" /* yacc.c:1646  */
+#line 391 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                     //Verifies if the identifier is of user defined type
                                                     (yyval.nptr) = TreeCreate(TLookup("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,(yyvsp[-5].nptr),NULL,NULL);
                                                 }
-#line 2079 "y.tab.c" /* yacc.c:1646  */
+#line 2086 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 388 "yacc_expl.y" /* yacc.c:1646  */
+#line 395 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                     //Verifies if the FIELD is of user defined type.
                                                     (yyval.nptr) = TreeCreate(TLookup("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,(yyvsp[-5].nptr),NULL,NULL);
                                                 }
-#line 2088 "y.tab.c" /* yacc.c:1646  */
+#line 2095 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 392 "yacc_expl.y" /* yacc.c:1646  */
+#line 399 "yacc_expl.y" /* yacc.c:1646  */
     {
                                             //Verifies if the left hand side and right hand side of the Assignment statement is of same type.
                                             (yyval.nptr) = TreeCreate(TLookup("void"), NODETYPE_FIELD_ASGN, NULL, (Constant){}, NULL, (yyvsp[-3].nptr), (yyvsp[-1].nptr), NULL);
                                         }
-#line 2097 "y.tab.c" /* yacc.c:1646  */
+#line 2104 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 396 "yacc_expl.y" /* yacc.c:1646  */
+#line 403 "yacc_expl.y" /* yacc.c:1646  */
     {
                                             //Verifies if the field is of user defined type.
                                             (yyval.nptr) = TreeCreate(TLookUp("void"),NODETYPE_DEALLOC,NULL,(Constant){},NULL,(yyvsp[-2].nptr),NULL,NULL);
                                         }
-#line 2106 "y.tab.c" /* yacc.c:1646  */
+#line 2113 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 400 "yacc_expl.y" /* yacc.c:1646  */
+#line 407 "yacc_expl.y" /* yacc.c:1646  */
     {
                                             //Verifies if the FIELD is of user defined type.
                                             (yyval.nptr) = TreeCreate(TLookUp("void"),NODETYPE_DEALLOC,NULL,(Constant){},NULL,(yyvsp[-2].nptr),NULL,NULL);
                                         }
-#line 2115 "y.tab.c" /* yacc.c:1646  */
+#line 2122 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 406 "yacc_expl.y" /* yacc.c:1646  */
+#line 413 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //The Type field for the identifiers are set.
                             //Example: In the reduction of a.b, the Type field of a is set based on the symbol table entry.
                             //The Type field of b is set to that specified in the fieldlist of the Typetable entry for a
                             (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_FIELD, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                         }
-#line 2126 "y.tab.c" /* yacc.c:1646  */
+#line 2133 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 412 "yacc_expl.y" /* yacc.c:1646  */
+#line 419 "yacc_expl.y" /* yacc.c:1646  */
     {
                             (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_FIELD, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                         }
-#line 2134 "y.tab.c" /* yacc.c:1646  */
+#line 2141 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 417 "yacc_expl.y" /* yacc.c:1646  */
+#line 424 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Verifies if both the expression is of type integer
                             (yyval.nptr) = TreeCreate(TLookUp("int"), (yyvsp[-1].nptr)->nodetype, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                         }
-#line 2143 "y.tab.c" /* yacc.c:1646  */
+#line 2150 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 421 "yacc_expl.y" /* yacc.c:1646  */
+#line 428 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Verifies if both the expression is of type integer
                             (yyval.nptr) = TreeCreate(TLookUp("int"), (yyvsp[-1].nptr)->nodetype, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                         }
-#line 2152 "y.tab.c" /* yacc.c:1646  */
+#line 2159 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 425 "yacc_expl.y" /* yacc.c:1646  */
+#line 432 "yacc_expl.y" /* yacc.c:1646  */
     {(yyval.nptr)=(yyvsp[-1].nptr);}
-#line 2158 "y.tab.c" /* yacc.c:1646  */
+#line 2165 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 426 "yacc_expl.y" /* yacc.c:1646  */
+#line 433 "yacc_expl.y" /* yacc.c:1646  */
     {
                             (yyval.nptr) = TreeCreate(TLookUp("boolean"), (yyvsp[-1].nptr)->nodetype, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                         }
-#line 2166 "y.tab.c" /* yacc.c:1646  */
+#line 2173 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 429 "yacc_expl.y" /* yacc.c:1646  */
+#line 436 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Verifies if both the expression is of type boolean
                             (yyval.nptr) = TreeCreate(TLookUp("boolean"), (yyvsp[-1].nptr)->nodetype, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                         }
-#line 2175 "y.tab.c" /* yacc.c:1646  */
+#line 2182 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 433 "yacc_expl.y" /* yacc.c:1646  */
+#line 440 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Verifies if the expression is of type boolean or null
                             (yyval.nptr) = TreeCreate(TLookUp("boolean"), NODETYPE_NOT, NULL, (Constant){}, NULL, (yyvsp[0].nptr), NULL, NULL);
                         }
-#line 2184 "y.tab.c" /* yacc.c:1646  */
+#line 2191 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 437 "yacc_expl.y" /* yacc.c:1646  */
+#line 444 "yacc_expl.y" /* yacc.c:1646  */
     {(yyval.nptr) = (yyvsp[0].nptr);}
-#line 2190 "y.tab.c" /* yacc.c:1646  */
+#line 2197 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 438 "yacc_expl.y" /* yacc.c:1646  */
+#line 445 "yacc_expl.y" /* yacc.c:1646  */
     {(yyval.nptr) = (yyvsp[0].nptr);}
-#line 2196 "y.tab.c" /* yacc.c:1646  */
+#line 2203 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 439 "yacc_expl.y" /* yacc.c:1646  */
+#line 446 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //type field of the identifier is set to that specified in the symbol table.
                             (yyval.nptr) = (yyvsp[0].nptr);
                         }
-#line 2205 "y.tab.c" /* yacc.c:1646  */
+#line 2212 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 443 "yacc_expl.y" /* yacc.c:1646  */
+#line 450 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Type field in the ASTnode is set to that specified in the symbol table.
                             //Verifies if the expression node is an integer
                             (yyval.nptr) = TreeCreate(NULL, NODETYPE_ARR_ID, NULL, (Constant){}, NULL, (yyvsp[-3].nptr), (yyvsp[-1].nptr), NULL);
                         }
-#line 2215 "y.tab.c" /* yacc.c:1646  */
+#line 2222 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 448 "yacc_expl.y" /* yacc.c:1646  */
+#line 455 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //The Type field of the identifier is from the fieldlist entry of the TypeTable.
                             //Verifies for the parameter compatibility in function declaration and calling.
                             (yyval.nptr) = (yyvsp[0].nptr);
                         }
-#line 2225 "y.tab.c" /* yacc.c:1646  */
+#line 2232 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 453 "yacc_expl.y" /* yacc.c:1646  */
+#line 460 "yacc_expl.y" /* yacc.c:1646  */
     {(yyval.nptr) = (yyvsp[0].nptr);}
-#line 2231 "y.tab.c" /* yacc.c:1646  */
+#line 2238 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 454 "yacc_expl.y" /* yacc.c:1646  */
+#line 461 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Type of the identifier is set to that specified in the global symbol table during declaration.
                             //The Argument list created before is set to the Arglist field.
@@ -2244,40 +2251,40 @@ yyreduce:
                             (yyval.nptr) = TreeCreate(Gtemp->type,NODETYPE_FUNCTION,(yyvsp[-3].nptr)->name,(Constant){},(yyvsp[-1].nptr),NULL,NULL,NULL);
                             (yyval.nptr)->Gentry = Gtemp;
                         }
-#line 2248 "y.tab.c" /* yacc.c:1646  */
+#line 2255 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 468 "yacc_expl.y" /* yacc.c:1646  */
+#line 475 "yacc_expl.y" /* yacc.c:1646  */
     {
                         //Creates a statement node and its Ptr1 field is set to the expression node.
                         //Appends the newly created parameter list to the existing.
                         (yyval.nptr) = TreeCreate(TLookUp("void"),NODETYPE_PARAM,NULL,(Constant){},NULL,(yyvsp[-2].nptr),(yyvsp[0].nptr),NULL);
 
                     }
-#line 2259 "y.tab.c" /* yacc.c:1646  */
+#line 2266 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 474 "yacc_expl.y" /* yacc.c:1646  */
+#line 481 "yacc_expl.y" /* yacc.c:1646  */
     {
                         //Creates a statement node and its Ptr1 field is set to the expression node.
                         (yyval.nptr) = TreeCreate(TLookUp("void"),NODETYPE_PARAM,NULL,(Constant){},NULL,(yyvsp[0].nptr),NULL,NULL);
                     }
-#line 2268 "y.tab.c" /* yacc.c:1646  */
+#line 2275 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 480 "yacc_expl.y" /* yacc.c:1646  */
+#line 487 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Appends expression to the return statement.
                             (yyval.nptr) = TreeCreate((yyvsp[-1].nptr)->type, NODETYPE_RET,NULL,(Constant){},NULL,(yyvsp[-1].nptr),NULL,NULL);
                          }
-#line 2277 "y.tab.c" /* yacc.c:1646  */
+#line 2284 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2281 "y.tab.c" /* yacc.c:1646  */
+#line 2288 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2505,7 +2512,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 486 "yacc_expl.y" /* yacc.c:1906  */
+#line 493 "yacc_expl.y" /* yacc.c:1906  */
 
 
 int main(int argc,char* argv[]) {

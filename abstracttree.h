@@ -78,7 +78,7 @@ typedef struct memstruct{
 	Constant value;
 }memstruct;
 
-AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3);
-AST* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3);
-memstruct interpret(AST *t);
+struct ASTNode* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3);
+struct ASTNode* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3);
+struct memstruct interpret(AST *t);
 void setVariableType(AST *t, int isArray);

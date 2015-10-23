@@ -4,10 +4,17 @@
     #include <string.h>
     int yylex(void);
     extern FILE *yyin;
+
     #include "symboltable.h"
-    #include "symboltable.c"
     #include "abstracttree.h"
+    #include "stack.h"
+    #include "heap.h"
+
+    #include "symboltable.c"
     #include "abstracttree.c"
+    #include "stack.c"
+    #include "heap.c"
+    
     AST *root;
     TypeTable decl_type,arg_type,local_type;
 %}

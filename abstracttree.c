@@ -137,7 +137,7 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 								  //TODO check for passType
 
 								  temp1 = temp1->next;
-								  temp2 = temp2->t1;
+								  temp2 = temp2->ptr1;
 							  }
 							  if(temp1 != NULL || temp2 != NULL){
 								  yyerror("TreeCreate : mismatch in the number of arguments given");exit(1);
@@ -145,7 +145,7 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 							  temp->Gentry = Gtemp;
 							  break;
 
-		case NODETYPE_MAIN :  if(strcmp(t1->t2->type->name,"int") != 0){
+		case NODETYPE_MAIN :  if(strcmp(t1->ptr2->type->name,"int") != 0){
 								yyerror("TreeCreate : the return type of main is not int type !");exit(1);
 							  }
 							  break;
@@ -185,7 +185,8 @@ void setVariableType(AST *t, int isArray){
 int getFieldBind(AST *t, int flag){
 	if(t->nodetype == NODETYPE_FIELD){
 		if(flag == FLAG_FBIND_VALUE){
-			 	memstruct temp = getValueAtDynamicLocation(getFieldBind(t->ptr1,FLAG_FBIND_VALUE) + fieldRelativeAddress(t->ptr1->type, t->ptr2->name));
+			 	memstruct temp;
+				temp = getValueAtDynamicLocation(getFieldBind(t->ptr1,FLAG_FBIND_VALUE) + fieldRelativeAddress(t->ptr1->type, t->ptr2->name));
 				return temp.value.intval;
 		}
 		else
@@ -202,7 +203,7 @@ int getFieldBind(AST *t, int flag){
 
 }
 
-memstruct interpret(AST *t) {
+struct memstruct interpret(AST *t) {
 	memstruct result1, result2;
 	switch(t->nodetype){
 		case NODETYPE_PLUS :
@@ -253,7 +254,7 @@ memstruct interpret(AST *t) {
 		case NODETYPE_EQ	:
 							result1 = getValueFromBind(interpret(t->ptr1));
 							result2	= getValueFromBind(interpret(t->ptr2));
-							if(strcmp(t->ptr1->type, "str") == 0)
+							if(strcmp(t->ptr1->type->name, "str") == 0)
 								return (memstruct){MEMSTRUCT_INT, strcmp(result1.value.strval, result2.value.strval) == 0};
 							else
 								return (memstruct){MEMSTRUCT_INT, result1.value.intval == result2.value.intval};
@@ -261,7 +262,7 @@ memstruct interpret(AST *t) {
 		case NODETYPE_NE	:
 							result1 = getValueFromBind(interpret(t->ptr1));
 							result2	= getValueFromBind(interpret(t->ptr2));
-							if(strcmp(t->ptr1->type, "str") == 0)
+							if(strcmp(t->ptr1->type->name, "str") == 0)
 								return (memstruct){MEMSTRUCT_INT, strcmp(result1.value.strval, result2.value.strval) != 0};
 							else
 								return (memstruct){MEMSTRUCT_INT, result1.value.intval != result2.value.intval};
@@ -322,7 +323,7 @@ memstruct interpret(AST *t) {
 		case NODETYPE_READ	:
 							if(strcpy(t->ptr1->type->name, "int")==0){
 								result1.type = MEMSTRUCT_INT;
-								scanf("%d", result1.value.intval);
+								scanf("%d", &result1.value.intval);
 							} else {
 								//TODO check for the memory size of result1.value.strval
 								result1.type = MEMSTRUCT_STR;
@@ -332,7 +333,7 @@ memstruct interpret(AST *t) {
 		case NODETYPE_ARR_READ	:
 							if(strcpy(t->ptr1->type->name, "int")==0){
 								result1.type = MEMSTRUCT_INT;
-								scanf("%d", result1.value.intval);
+								scanf("%d", &result1.value.intval);
 							} else {
 								//TODO check for the memory size of result1.value.strval
 								result1.type = MEMSTRUCT_STR;
@@ -377,7 +378,8 @@ memstruct interpret(AST *t) {
 							return getGlobalValue(t->ptr1->Gentry->binding + result1.value.intval);
 							break;
 		case NODETYPE_ALLOC :
-							int address = alloc(sizeoftype(t->ptr1->type));
+							int address;
+							address = alloc(sizeoftype(t->ptr1->type));
 							if(address == -1){
 								yyerror("Interpret: Unable to create memory for the variable");
 								exit(1);
