@@ -4,10 +4,25 @@
 #define LOCAL_START_BIND 1
 #define GLOBAL_START_BIND 0
 
+typedef struct TypeTable
+{
+	char *name;			 // type name
+	struct fieldList *fields;	 	 // pointer to the head of the fieldlist
+	struct TypeTable *next;
+}TypeTable;
+
+TypeTable *TypeTableHead,*Ttemp;
+
+void TTableCreate();
+TypeTable* TLookUp(char *name);
+TypeTable* TInstall(char *name,struct fieldList *fields);
+TypeTable* TAppend(TypeTable *t1);
+struct fieldList* FLookUp(char* name, char* fieldname);
+
 typedef struct fieldList
 {
 	char *name;				//name of the field
-	TypeTable *type;	//pointer to type table entry
+	struct TypeTable *type;	//pointer to type table entry
 	struct fieldList *next;
 }fieldList;
 
@@ -20,21 +35,6 @@ fieldList* FieldLookup(char *name);
 void Type_field_list_validate();
 int isUserDefinedtype(TypeTable *t);
 int fieldRelativeAddress(TypeTable *t, char *name);
-
-typedef struct TypeTable
-{
-	char *name;			 // type name
-	fieldList *fields;	 	 // pointer to the head of the fieldlist
-	struct TypeTable *next;
-}TypeTable;
-
-TypeTable *TypeTableHead,*Ttemp;
-
-void TTableCreate();
-TypeTable* TLookUp(char *name);
-TypeTable* TInstall(char *name, fieldList *fields);
-TypeTable* TAppend(TypeTable *t1);
-fieldList* FLookUp(char* name, char* fieldname)
 
 typedef struct ArgStruct {
 	TypeTable *type;
@@ -55,7 +55,7 @@ typedef struct GSymbol{
 	int size;
 	int binding;
 	ArgStruct *arglist;
-	AST *fbinding;
+	struct ASTNode *fbinding;
 	struct GSymbol *next;
 }GSymbol;
 
@@ -83,5 +83,5 @@ LSymbol* LAppend(LSymbol *l1, LSymbol *l2);
 void setLocalBindings(LSymbol *LSymbolHead);
 LSymbol* AddLType(TypeTable *ltype, LSymbol *l);
 
-void validate_funtion(char *fname,Typetable *rtype, ArgStruct *arglist, ASTNode *body);
+void validate_funtion(char *fname,TypeTable *rtype, ArgStruct *arglist,struct ASTNode *body);
 void AddArgsToLTable(LSymbol **LSymbolHead, ArgStruct *a);

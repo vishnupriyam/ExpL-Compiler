@@ -4,9 +4,9 @@
     #include <string.h>
     int yylex(void);
     extern FILE *yyin;
-    #include "abstracttree.h"
     #include "symboltable.h"
     #include "symboltable.c"
+    #include "abstracttree.h"
     #include "abstracttree.c"
     AST *root;
     TypeTable decl_type,arg_type,local_type;
@@ -18,16 +18,18 @@
     GSymbol * gvar;
     LSymbol * lvar;
     fieldList * field;
+    TypeTable * ty;
     char c;
 };
 
 %token ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM ASGN AROP2 AROP1 NOT LOGOP DOT NUM ID STRCONST ALLOC DEALLOC
 
-%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM AROP2 ASGN AROP1 NOT LOGOP DOT NUM ID STRCONST FIELD ALLOC DEALLOC Prog TypeDeclBlock GDecblock Fdefblock Mainblock TypeDefList TypeDef TypeDeclList TypeDecl IDList GDecblock GDecList GDecl Fdef Ldecblock Body LdecList Ldecl LIdList LId slist retstmt stmt E param
-%type <arg> ArgList FArgList ArgType Args Arg
+%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM AROP2 ASGN AROP1 NOT LOGOP DOT NUM ID STRCONST FIELD ALLOC DEALLOC Prog TypeDeclBlock Fdefblock Mainblock TypeDefList TypeDef GDecblock GDecList GDecl Fdef Body slist retstmt stmt E param
+%type <arg> ArgList FArgList ArgType Args Arg ArgList1
 %type <gvar> GIdList GId
 %type <lvar> Ldecblock LdecList Ldecl LIdList LId
 %type <field> TypeDeclList TypeDecl IDList TId
+%type <ty> NewType
 
 %nonassoc RELOP
 %left AROP1
@@ -45,7 +47,7 @@ TypeDeclBlock: TYPE TypeDefList ENDTYPE             {}
     |                                               {}
     ;
 
-TypeDefList: TypeDefList TypeDef                    {}                                                    }
+TypeDefList: TypeDefList TypeDef                    {}
     |TypeDef                                        {}
     ;
 
@@ -180,11 +182,11 @@ ArgType : INT Args                                  {
                                                         AddArgType(TLookup("str"),$2);
                                                         $$ = $2;
                                                     }
-                                                            yyerror("yacc (argType 2): the type has not been defined");
     |ID Args                                        {
                                                         //The Type field in the ArgStruct entry is set to the specified type.
                                                         Ttemp = TLookUp($1->name);
                                                         if(Ttemp == NULL){
+                                                            yyerror("yacc (argType 2): the type has not been defined");
                                                             printf(" %s",$1->name);
                                                             exit(1);
                                                         }
@@ -208,7 +210,7 @@ Arg : ID                                            {
                                                         $$ = ArgInstall($1->name,NULL,PASS_BY_VAL);
                                                     }
     | '&' ID                                        {
-                                                        $$ = ArgInstall($1->name,NULL,PASS_BY_REF);
+                                                        $$ = ArgInstall($2->name,NULL,PASS_BY_REF);
                                                     }
     ;
 

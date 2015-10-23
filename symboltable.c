@@ -47,7 +47,7 @@ TypeTable* TInstall(char *name, fieldList *fields){
     }
     temp->name =  (char *)malloc(sizeof(name));
     strcpy(temp->name,name);
-    temp->fieldList = fields;
+    temp->fields = fields;
     temp->next = NULL;
     return temp;
 }
