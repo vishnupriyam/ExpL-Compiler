@@ -192,7 +192,7 @@ LSymbol *LlookupInTable(LSymbol *LSymbolHead, char *name) {
     while(Ltemp != NULL && strcmp(Ltemp->name,name) != 0){
      Ltemp = Ltemp->next;
     }
-    return temp;
+    return Ltemp;
 }
 
 LSymbol* LAppend(LSymbol *l1, LSymbol *l2){
@@ -246,7 +246,7 @@ void validate_funtion(char *fname,TypeTable *rtype, ArgStruct *arglist,struct AS
     }
 
     //compare the return type as declared and as from the body of the function
-    if(!(Gtemp->type == rtype && body->type == rtype)){
+    if(!(strcmp(Gtemp->type->name,rtype->name) == 0 && strcmp(body->type->name,rtype->name) == 0)){
         yyerror("validate_function : return type doesnot match with definition or with return type of body");
         printf("%s\n",fname);
         exit(1);
@@ -357,7 +357,8 @@ fieldList* FieldLookup(char *name){
 void Type_field_list_validate(fieldList *f){
     fieldList *temp = f;
     while(temp != NULL){
-        if(TLookUp(temp->type) == NULL){
+        //TODO : is this check required ?
+        if(TLookUp(temp->type->name) == NULL){
             yyerror("Type_field_list_validate : the field type has not been declared previously");
             printf(" %s",temp->type->name);
             exit(1);
@@ -384,13 +385,13 @@ int isUserDefinedtype(TypeTable *t){
 }
 
 int sizeoftype(TypeTable *t){
-    if(strcmp(t->name,"int") == 0 || strcmp(type->name,"str") == 0){
+    if(strcmp(t->name,"int") == 0 || strcmp(t->name,"str") == 0){
         return 1;
     }
     else{
         int size = 0;
         fieldList *temp;
-        temp = type->fields;
+        temp = t->fields;
         while(temp != NULL){
             size++;
             temp = temp->next;

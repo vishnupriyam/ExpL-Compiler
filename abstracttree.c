@@ -123,10 +123,11 @@ AST* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *
 							break;
 		case NODETYPE_FUNCTION :
 							  Gtemp = Glookup(name);
-								if(Gtemp->arglist == NULL && size > 0){
+								if(Gtemp->arglist == NULL && Gtemp->size > 0){
 									yyerror("TreeCreate : invalid usage of an identifier as a function ");exit(1);
 								}
-								ArgStruct *temp1,*temp2;
+							  ArgStruct *temp1;
+							  AST *temp2;
 							  temp1 = Gtemp->arglist;
 							  temp2 = arglist;
 							  while(temp1 != NULL && temp2 != NULL){
@@ -385,7 +386,7 @@ memstruct interpret(AST *t) {
 								assignLocalValue(t->ptr1->Lentry->binding, (memstruct){MEMSTRUCT_BIND, address});
 							}
 							else {
-								assignGlobalValue(t->ptr1->Gentry->binding, (memstruct){MEMSTRUCT_BIND, address});	
+								assignGlobalValue(t->ptr1->Gentry->binding, (memstruct){MEMSTRUCT_BIND, address});
 							}
 							break;
 		case NODETYPE_DEALLOC :
@@ -394,11 +395,11 @@ memstruct interpret(AST *t) {
 								address = getLocalValue(t->ptr1->Lentry->binding).value.intval;
 							}
 							else {
-								address = getGlobalValue(t->ptr1->Gentry->binding).value.intval;		
+								address = getGlobalValue(t->ptr1->Gentry->binding).value.intval;
 							}
 							if(deallocate(address) == -1){
 								yyerror("Interpret: Unable to free memory for the variable");
-								exit(1);	
+								exit(1);
 							}
 							break;
 		case NODETYPE_MAIN	:
@@ -436,7 +437,7 @@ memstruct interpret(AST *t) {
 							while(Ltemp != NULL){
 								push((memstruct){MEMSTRUCT_EMPTY});
 								Ltemp = Ltemp->next;
-							}						
+							}
 
 							interpret(t->Gentry->fbinding);
 
