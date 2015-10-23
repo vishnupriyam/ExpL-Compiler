@@ -280,6 +280,7 @@ Ldecblock : DECL LdecList ENDDECL {
                                       $$ = $2;
                                       LSymbolHead = $$;
                                   }
+    |                             {}
     ;
 
 LdecList : LdecList Ldecl { $$ = LAppend($1, $2); }

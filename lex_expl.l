@@ -39,7 +39,7 @@ lt 						[<]
 "int"   				{return INT;}
 "str"   				{return STR;}
 "return"				{return RETURN;}
-"decl"    				{return DECL;}
+"decl"    				{return DECL;printf("djghjdf");}
 "enddecl"				{return ENDDECL;}
 "main"					{return MAIN;}
 "type"					{return TYPE;}

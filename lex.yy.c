@@ -930,7 +930,7 @@ YY_RULE_SETUP
 case 14:
 YY_RULE_SETUP
 #line 42 "lex_expl.l"
-{return DECL;}
+{return DECL;printf("djghjdf");}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP

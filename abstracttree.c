@@ -169,7 +169,9 @@ void setVariableType(AST *t, int isArray){
 	if(Ltemp == NULL || isArray){
 		Gtemp = Glookup(t->name);
 		if(Gtemp == NULL){
-			 yyerror("TreeCreate : variable undefined !");exit(1);
+			 yyerror("TreeCreate : variable undefined !");
+			 printf("\n%s",t->name);
+			 exit(1);
 		}
 		else{
 			t->Gentry = Gtemp;

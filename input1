@@ -1,0 +1,13 @@
+decl
+    int a,b,c;
+enddecl
+
+int main(){
+    begin
+        a = 1;
+        b = 2;
+        c = a + b;
+        write(c);
+        return 1;
+    end
+}
