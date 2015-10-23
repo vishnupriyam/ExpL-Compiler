@@ -20,12 +20,12 @@
 %}
 
 %union{
-    AST * nptr;
-    ArgStruct * arg;
-    GSymbol * gvar;
-    LSymbol * lvar;
-    fieldList * field;
-    TypeTable * ty;
+    struct ASTNode * nptr;
+    struct ArgStruct * arg;
+    struct GSymbol * gvar;
+    struct LSymbol * lvar;
+    struct fieldList * field;
+    struct TypeTable * ty;
     char c;
 };
 
@@ -305,7 +305,7 @@ Ldecl : INT LIdList DELIM {
 
 LIdList : LIdList ',' LId {
                             //Appends newly created local symbol table entries to the existing.
-                            if(LlookupInTable($1, $3) != NULL){
+                            if(LlookupInTable($1, $3->name) != NULL){
                               yyerror("LInstall : Local variable redefined ");
                               printf(" %s",$3->name);
                               exit(1);
@@ -357,7 +357,7 @@ stmt: ID ASGN E DELIM       {
     |ID '[' E ']' ASGN E DELIM      {
                                         //Verifies if the LHS and RHS of the Assignment node is of the same type.
                                         //Also type checks for array
-                                        $$ = TreeCreate(TLookup("void"), NODETYPE_ARR_ASGN, NULL, (Constant){}, NULL, $1, $3, $6);
+                                        $$ = TreeCreate(TLookUp("void"), NODETYPE_ARR_ASGN, NULL, (Constant){}, NULL, $1, $3, $6);
                                     }
 
     |READ '(' ID ')' DELIM      {
@@ -366,7 +366,7 @@ stmt: ID ASGN E DELIM       {
                                 }
     |READ '(' FIELD ')' DELIM   {
                                     //Verifies if the FIELD is of type integer or string
-                                    $$ = TreeCreate(TLookup("void"), NODETYPE_FIELD_READ, NULL, (Constant){}, NULL, $3, NULL, NULL);
+                                    $$ = TreeCreate(TLookUp("void"), NODETYPE_FIELD_READ, NULL, (Constant){}, NULL, $3, NULL, NULL);
                                 }
     |READ '(' ID '[' E ']' ')' DELIM    {
                                             //Verifies if the identifier is of type integer or string. //Being an array, Expression node has to be of type integer.
@@ -390,15 +390,15 @@ stmt: ID ASGN E DELIM       {
                                                 }
     |ID ASGN ALLOC '(' ')' DELIM                {
                                                     //Verifies if the identifier is of user defined type
-                                                    $$ = TreeCreate(TLookup("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,$1,NULL,NULL);
+                                                    $$ = TreeCreate(TLookUp("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,$1,NULL,NULL);
                                                 }
     |FIELD ASGN ALLOC '(' ')' DELIM             {
                                                     //Verifies if the FIELD is of user defined type.
-                                                    $$ = TreeCreate(TLookup("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,$1,NULL,NULL);
+                                                    $$ = TreeCreate(TLookUp("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,$1,NULL,NULL);
                                                 }
     |FIELD ASGN E DELIM                 {
                                             //Verifies if the left hand side and right hand side of the Assignment statement is of same type.
-                                            $$ = TreeCreate(TLookup("void"), NODETYPE_FIELD_ASGN, NULL, (Constant){}, NULL, $1, $3, NULL);
+                                            $$ = TreeCreate(TLookUp("void"), NODETYPE_FIELD_ASGN, NULL, (Constant){}, NULL, $1, $3, NULL);
                                         }
     |DEALLOC '(' ID ')' DELIM           {
                                             //Verifies if the field is of user defined type.
@@ -464,7 +464,7 @@ E: E AROP1 E            {
                             Gtemp = Glookup($1->name);
                             if(Gtemp == NULL){
                                 yyerror("Yacc : Undefined function");
-                                printf(" %s\n" $3->name);
+                                printf(" %s",$1->name);
                                 exit(1);
                             }
                             $$ = TreeCreate(Gtemp->type,NODETYPE_FUNCTION,$1->name,(Constant){},$3,NULL,NULL,NULL);

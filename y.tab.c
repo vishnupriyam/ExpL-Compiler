@@ -201,12 +201,12 @@ union YYSTYPE
 {
 #line 22 "yacc_expl.y" /* yacc.c:355  */
 
-    AST * nptr;
-    ArgStruct * arg;
-    GSymbol * gvar;
-    LSymbol * lvar;
-    fieldList * field;
-    TypeTable * ty;
+    struct ASTNode * nptr;
+    struct ArgStruct * arg;
+    struct GSymbol * gvar;
+    struct LSymbol * lvar;
+    struct fieldList * field;
+    struct TypeTable * ty;
     char c;
 
 #line 213 "y.tab.c" /* yacc.c:355  */
@@ -1926,7 +1926,7 @@ yyreduce:
 #line 306 "yacc_expl.y" /* yacc.c:1646  */
     {
                             //Appends newly created local symbol table entries to the existing.
-                            if(LlookupInTable((yyvsp[-2].lvar), (yyvsp[0].lvar)) != NULL){
+                            if(LlookupInTable((yyvsp[-2].lvar), (yyvsp[0].lvar)->name) != NULL){
                               yyerror("LInstall : Local variable redefined ");
                               printf(" %s",(yyvsp[0].lvar)->name);
                               exit(1);
@@ -2008,7 +2008,7 @@ yyreduce:
     {
                                         //Verifies if the LHS and RHS of the Assignment node is of the same type.
                                         //Also type checks for array
-                                        (yyval.nptr) = TreeCreate(TLookup("void"), NODETYPE_ARR_ASGN, NULL, (Constant){}, NULL, (yyvsp[-6].nptr), (yyvsp[-4].nptr), (yyvsp[-1].nptr));
+                                        (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_ARR_ASGN, NULL, (Constant){}, NULL, (yyvsp[-6].nptr), (yyvsp[-4].nptr), (yyvsp[-1].nptr));
                                     }
 #line 2014 "y.tab.c" /* yacc.c:1646  */
     break;
@@ -2026,7 +2026,7 @@ yyreduce:
 #line 367 "yacc_expl.y" /* yacc.c:1646  */
     {
                                     //Verifies if the FIELD is of type integer or string
-                                    (yyval.nptr) = TreeCreate(TLookup("void"), NODETYPE_FIELD_READ, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), NULL, NULL);
+                                    (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_FIELD_READ, NULL, (Constant){}, NULL, (yyvsp[-2].nptr), NULL, NULL);
                                 }
 #line 2032 "y.tab.c" /* yacc.c:1646  */
     break;
@@ -2080,7 +2080,7 @@ yyreduce:
 #line 391 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                     //Verifies if the identifier is of user defined type
-                                                    (yyval.nptr) = TreeCreate(TLookup("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,(yyvsp[-5].nptr),NULL,NULL);
+                                                    (yyval.nptr) = TreeCreate(TLookUp("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,(yyvsp[-5].nptr),NULL,NULL);
                                                 }
 #line 2086 "y.tab.c" /* yacc.c:1646  */
     break;
@@ -2089,7 +2089,7 @@ yyreduce:
 #line 395 "yacc_expl.y" /* yacc.c:1646  */
     {
                                                     //Verifies if the FIELD is of user defined type.
-                                                    (yyval.nptr) = TreeCreate(TLookup("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,(yyvsp[-5].nptr),NULL,NULL);
+                                                    (yyval.nptr) = TreeCreate(TLookUp("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,(yyvsp[-5].nptr),NULL,NULL);
                                                 }
 #line 2095 "y.tab.c" /* yacc.c:1646  */
     break;
@@ -2098,7 +2098,7 @@ yyreduce:
 #line 399 "yacc_expl.y" /* yacc.c:1646  */
     {
                                             //Verifies if the left hand side and right hand side of the Assignment statement is of same type.
-                                            (yyval.nptr) = TreeCreate(TLookup("void"), NODETYPE_FIELD_ASGN, NULL, (Constant){}, NULL, (yyvsp[-3].nptr), (yyvsp[-1].nptr), NULL);
+                                            (yyval.nptr) = TreeCreate(TLookUp("void"), NODETYPE_FIELD_ASGN, NULL, (Constant){}, NULL, (yyvsp[-3].nptr), (yyvsp[-1].nptr), NULL);
                                         }
 #line 2104 "y.tab.c" /* yacc.c:1646  */
     break;
@@ -2245,7 +2245,7 @@ yyreduce:
                             Gtemp = Glookup((yyvsp[-3].nptr)->name);
                             if(Gtemp == NULL){
                                 yyerror("Yacc : Undefined function");
-                                printf(" %s\n" (yyvsp[-1].nptr)->name);
+                                printf(" %s",(yyvsp[-3].nptr)->name);
                                 exit(1);
                             }
                             (yyval.nptr) = TreeCreate(Gtemp->type,NODETYPE_FUNCTION,(yyvsp[-3].nptr)->name,(Constant){},(yyvsp[-1].nptr),NULL,NULL,NULL);

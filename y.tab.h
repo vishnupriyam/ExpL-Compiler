@@ -128,12 +128,12 @@ union YYSTYPE
 {
 #line 22 "yacc_expl.y" /* yacc.c:1909  */
 
-    AST * nptr;
-    ArgStruct * arg;
-    GSymbol * gvar;
-    LSymbol * lvar;
-    fieldList * field;
-    TypeTable * ty;
+    struct ASTNode * nptr;
+    struct ArgStruct * arg;
+    struct GSymbol * gvar;
+    struct LSymbol * lvar;
+    struct fieldList * field;
+    struct TypeTable * ty;
     char c;
 
 #line 140 "y.tab.h" /* yacc.c:1909  */

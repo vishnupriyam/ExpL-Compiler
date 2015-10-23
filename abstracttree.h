@@ -63,14 +63,14 @@ typedef union Constant {
 }Constant;
 
 typedef struct ASTNode{
-       TypeTable *type;
+       struct TypeTable *type;
        int nodetype;
        char *name;
        Constant value;
        struct ASTNode *arglist;
        struct ASTNode *ptr1,*ptr2,*ptr3;
-       GSymbol *Gentry;
-       LSymbol *Lentry;
+       struct GSymbol *Gentry;
+       struct LSymbol *Lentry;
 }AST;
 
 typedef struct memstruct{
@@ -78,7 +78,7 @@ typedef struct memstruct{
 	Constant value;
 }memstruct;
 
-struct ASTNode* TreeCreate(TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3);
+struct ASTNode* TreeCreate(struct TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3);
 struct ASTNode* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3);
 struct memstruct interpret(AST *t);
 void setVariableType(AST *t, int isArray);
