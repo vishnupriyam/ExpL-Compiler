@@ -352,7 +352,7 @@ struct memstruct interpret(AST *t) {
 							break;
 		case NODETYPE_WRITE	:
 							result1 = getValueFromBind(interpret(t->ptr1));
-							if(strcpy(t->ptr1->type->name, "int")==0){
+							if(strcmp(t->ptr1->type->name, "int")==0){
 								printf("%d\n", result1.value.intval);
 							} else {
 								scanf("%s\n", result1.value.strval);
@@ -407,6 +407,9 @@ struct memstruct interpret(AST *t) {
 								yyerror("Interpret: Unable to free memory for the variable");
 								exit(1);
 							}
+							break;
+		case NODETYPE_BODY  :
+							interpret(t->ptr1);
 							break;
 		case NODETYPE_MAIN	:
 							initialise_stack();
