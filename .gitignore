@@ -30,3 +30,8 @@
 
 # Debug files
 *.dSYM/
+
+expl.sh
+lex.yy.c
+y.tab.c
+y.tab.h
