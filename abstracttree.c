@@ -188,7 +188,7 @@ struct memstruct interpret(AST *t) {
 	memstruct result1, result2;
 	AST *values;
 	ArgStruct *params;
-	int address;
+	int address, iTemp;
 	switch(t->nodetype){
 		case NODETYPE_PLUS :
 							result1 = getValueFromBind(interpret(t->ptr1));
@@ -294,7 +294,7 @@ struct memstruct interpret(AST *t) {
 		case NODETYPE_ARR_ASGN	:
 							result1 = interpret(t->ptr3);
 							result2 = getValueFromBind(interpret(t->ptr2));
-							if(result2.value.intval < t->ptr1->Gentry->size){
+							if(result2.value.intval >= t->ptr1->Gentry->size){
 								yyerror("interpret: index out of bounds");exit(1);
 							}
 							assignGlobalValue(t->ptr1->Gentry->binding + result2.value.intval, result1);
@@ -330,7 +330,7 @@ struct memstruct interpret(AST *t) {
 								scanf("%s", result1.value.strval);
 							}
 							result2 = getValueFromBind(interpret(t->ptr2));
-							if(result2.value.intval < t->ptr1->Gentry->size){
+							if(result2.value.intval >= t->ptr1->Gentry->size){
 								yyerror("interpret: index out of bounds");exit(1);
 							}
 							assignGlobalValue(t->ptr1->Gentry->binding + result2.value.intval, result1);
@@ -401,7 +401,10 @@ struct memstruct interpret(AST *t) {
 							initialise_memory();
 							Gtemp = GSymbolHead;
 							while(Gtemp != NULL){
-								push((memstruct){MEMSTRUCT_EMPTY});
+								iTemp = Gtemp->size;
+								while(iTemp--){
+									push((memstruct){MEMSTRUCT_EMPTY});
+								}
 								Gtemp = Gtemp->next;
 							}
 							set_BP_to_SP();
