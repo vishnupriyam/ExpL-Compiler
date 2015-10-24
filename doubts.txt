@@ -21,3 +21,7 @@
 15. In expl documentation on website - function calls etc are not mentioned ! - check
 16. ArgStructHead set to NULL after the LSymbolHead is set to NULL ! -is that ok ?
 17. check does argbind set properly as the way it is pushed to stack ? - can't the binding be at time of install?
+Things to be done :
+18. any heap initialisation to be done ?
+19. pass by reference module ? any heap initialisation to be called ?
+20. read not working fine 
