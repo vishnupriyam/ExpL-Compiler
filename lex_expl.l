@@ -131,7 +131,9 @@ lt 						[<]
 							return ID;
 						}
 \"(\\.|[^\\"])*\"		{
-							yylval.nptr = TreeCreate(TLookUp("str"),NODETYPE_LEAF,NULL,(Constant){yytext},NULL,NULL,NULL,NULL);
+							Constant val;
+							strcpy(val.strval, yytext);
+							yylval.nptr = TreeCreate(TLookUp("str"),NODETYPE_LEAF,NULL, val,NULL,NULL,NULL,NULL);
 							return STRCONST;
 						}
 {NL}    				{}
