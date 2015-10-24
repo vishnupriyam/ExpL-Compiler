@@ -329,8 +329,8 @@ struct memstruct interpret(AST *t) {
 								result1.type = MEMSTRUCT_INT;
 								scanf("%d", &result1.value.intval);
 							} else {
-								//TODO check for the memory size of result1.value.strval
 								result1.type = MEMSTRUCT_STR;
+								result1.value.strval = (char *)malloc(sizeof(char)*16);
 								scanf("%s", result1.value.strval);
 							}
 							if(t->ptr1->Lentry != NULL){
@@ -360,7 +360,7 @@ struct memstruct interpret(AST *t) {
 							if(strcmp(t->ptr1->type->name, "int")==0){
 								printf("%d\n", result1.value.intval);
 							} else {
-								scanf("%s\n", result1.value.strval);
+								printf("%s\n", result1.value.strval);
 							}
 							break;
 		case NODETYPE_IF	:

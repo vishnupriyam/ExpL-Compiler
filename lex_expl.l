@@ -132,7 +132,9 @@ lt 						[<]
 						}
 \"(\\.|[^\\"])*\"		{
 							Constant val;
-							strcpy(val.strval, yytext);
+							val.strval = (char *)malloc(sizeof(yytext) - 2);
+							strncpy(val.strval, yytext + 1, strlen(yytext) - 2);
+							(val.strval)[strlen(yytext)-2] = '\0';
 							yylval.nptr = TreeCreate(TLookUp("str"),NODETYPE_LEAF,NULL, val,NULL,NULL,NULL,NULL);
 							return STRCONST;
 						}
