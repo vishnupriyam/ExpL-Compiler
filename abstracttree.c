@@ -13,9 +13,6 @@ AST* TreeCreate(struct TypeTable *type, int nodetype, char *name, Constant value
 	temp->nodetype = nodetype;
 	temp->value = value;
 	temp->arglist = arglist;
-	temp->ptr1 = t1;
-	temp->ptr2 = t2;
-	temp->ptr3 = t3;
 	temp->Gentry = NULL;
 	temp->Lentry = NULL;
 
@@ -150,8 +147,10 @@ AST* TreeCreate(struct TypeTable *type, int nodetype, char *name, Constant value
 							  }
 							  break;
 	}
-
-    return temp;
+		temp->ptr1 = t1;
+		temp->ptr2 = t2;
+		temp->ptr3 = t3;
+	  return temp;
 }
 
 AST* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3) {
@@ -333,6 +332,12 @@ struct memstruct interpret(AST *t) {
 								//TODO check for the memory size of result1.value.strval
 								result1.type = MEMSTRUCT_STR;
 								scanf("%s", result1.value.strval);
+							}
+							if(t->ptr1->Lentry != NULL){
+								assignLocalValue(t->ptr1->Lentry->binding, result1);
+							}
+							else {
+								assignGlobalValue(t->ptr1->Gentry->binding, result1);
 							}
 							break;
 		case NODETYPE_ARR_READ	:
