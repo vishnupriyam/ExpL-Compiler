@@ -326,7 +326,7 @@ struct memstruct interpret(AST *t) {
 							setValueAtDynamicLocation(mem_location,result1);
 							break;
 		case NODETYPE_READ	:
-							if(strcpy(t->ptr1->type->name, "int")==0){
+							if(strcmp(t->ptr1->type->name, "int")==0){
 								result1.type = MEMSTRUCT_INT;
 								scanf("%d", &result1.value.intval);
 							} else {
@@ -336,7 +336,7 @@ struct memstruct interpret(AST *t) {
 							}
 							break;
 		case NODETYPE_ARR_READ	:
-							if(strcpy(t->ptr1->type->name, "int")==0){
+							if(strcmp(t->ptr1->type->name, "int")==0){
 								result1.type = MEMSTRUCT_INT;
 								scanf("%d", &result1.value.intval);
 							} else {
