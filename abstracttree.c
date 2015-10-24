@@ -17,26 +17,6 @@ AST* TreeCreate(struct TypeTable *type, int nodetype, char *name, Constant value
 	temp->Lentry = NULL;
 
 	switch(nodetype){
-		case NODETYPE_PLUS	:
-		case NODETYPE_MINUS :
-		case NODETYPE_MUL	:
-		case NODETYPE_DIV	:
-		case NODETYPE_MOD	: if(strcmp(t1->type->name,t2->type->name) != 0 || strcmp(t1->type->name,"int") != 0){
-								 yyerror( "TreeCreate : unexpected operand types for nodetype plus/minus/div/mod/mul");exit(1);
-							  }
-							  break;
-		case NODETYPE_GT	:
-		case NODETYPE_LT	:
-		case NODETYPE_GE	:
-		case NODETYPE_LE	: if(strcmp(t1->type->name,t2->type->name) != 0 || strcmp(t1->type->name,"int") != 0){
-								yyerror("TreeCreate : unexpected operand types for nodetype gt/lt/ge/le");exit(1);
-							  }
-							  break;
-		case NODETYPE_EQ	:
-		case NODETYPE_NE	: if(!(strcmp(t1->type->name,t2->type->name) == 0 && (strcmp(t1->type->name,"int") == 0 || strcmp(t1->type->name,"boolean") == 0) || strcmp(t1->type->name,"str") == 0)){
-									yyerror("TreeCreate : unexpected operand types for nodetype eq/ne");exit(1);
-							  }
-							  break;
 		case NODETYPE_ASGN	: setVariableType(t1, IS_ARRAY_FALSE);
 							  if(strcmp(t1->type->name,t2->type->name) != 0){
 									yyerror("TreeCreate : unexpected operand types for nodetype assignment");exit(1);
@@ -345,8 +325,8 @@ struct memstruct interpret(AST *t) {
 								result1.type = MEMSTRUCT_INT;
 								scanf("%d", &result1.value.intval);
 							} else {
-								//TODO check for the memory size of result1.value.strval
 								result1.type = MEMSTRUCT_STR;
+								result1.value.strval = (char *)malloc(sizeof(char)*16);
 								scanf("%s", result1.value.strval);
 							}
 							result2 = getValueFromBind(interpret(t->ptr2));

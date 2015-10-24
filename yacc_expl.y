@@ -111,6 +111,7 @@ IDList : IDList ',' TId                            {
 TId : ID                                            {   $$ = FInstall($1->name); }
 
 GDecblock : DECL GDecList ENDDECL                   {}
+      |                                             {}
     ;
 
 GDecList : GDecList GDecl                           {}
@@ -432,18 +433,30 @@ FIELD :ID DOT ID         {
 
 E: E AROP1 E            {
                             //Verifies if both the expression is of type integer
+                            if(strcmp($1->type->name,$3->type->name) != 0 || strcmp($1->type->name,"int") != 0){
+                        		  yyerror( "TreeCreate : unexpected operand types for nodetype plus/minus/div/mod/mul");exit(1);
+                        		}
                             $$ = TreeCreate(TLookUp("int"), $2->nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |E AROP2 E          {
                             //Verifies if both the expression is of type integer
+                            if(strcmp($1->type->name,$3->type->name) != 0 || strcmp($1->type->name,"int") != 0){
+                        			yyerror( "TreeCreate : unexpected operand types for nodetype plus/minus/div/mod/mul");exit(1);
+                        		}
                             $$ = TreeCreate(TLookUp("int"), $2->nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |'(' E ')'          {$$=$2;}
     |E RELOP E          {
+                            if(strcmp($1->type->name,$3->type->name) != 0 || strcmp($1->type->name,"int") != 0){
+                        			yyerror("TreeCreate : unexpected operand types for nodetype gt/lt/ge/le");exit(1);
+                        		}
                             $$ = TreeCreate(TLookUp("boolean"), $2->nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |E LOGOP E          {
                             //Verifies if both the expression is of type boolean
+                            if(!(strcmp($1->type->name,$3->type->name) == 0 && (strcmp($1->type->name,"int") == 0 || strcmp($1->type->name,"boolean") == 0) || strcmp($1->type->name,"str") == 0)){
+            									yyerror("TreeCreate : unexpected operand types for nodetype eq/ne");exit(1);
+            							  }
                             $$ = TreeCreate(TLookUp("boolean"), $2->nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |NOT E              {

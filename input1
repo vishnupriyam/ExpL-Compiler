@@ -10,7 +10,7 @@ int main(){
         name = "vicchu";
         write(name);
         read(a);
-        write(a);
+        write(a+3*2/1);
         return 1;
     end
 }
