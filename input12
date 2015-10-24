@@ -1,0 +1,1 @@
+decl int a,b,c; enddecl int main() { begin a=1; b=2;write(a);end }

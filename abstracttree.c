@@ -83,7 +83,7 @@ AST* TreeCreate(struct TypeTable *type, int nodetype, char *name, Constant value
 								setVariableType(t1, IS_ARRAY_TRUE);
 								temp->type = t1->type;
 								break;
-		case NODETYPE_ID 	   : setVariableType(temp, IS_ARRAY_FALSE);
+		case NODETYPE_ID 	   : //setVariableType(temp, IS_ARRAY_FALSE);
 								 break;
 		case NODETYPE_FIELD	:	if(t1->nodetype == NODETYPE_ID){
 									setVariableType(t1, IS_ARRAY_FALSE);

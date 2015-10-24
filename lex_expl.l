@@ -136,6 +136,8 @@ lt 						[<]
 						}
 {NL}    				{}
 {whitespaces} 			{}
+[,]						{return *yytext;}
+[&]						{return *yytext;}
 .   		 			{printf("INVALID CHARACTER");exit(1);}
 %%
 

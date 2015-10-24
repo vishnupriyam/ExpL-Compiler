@@ -45,7 +45,7 @@
 
 %%
 
-Prog: TypeDeclBlock GDecblock Fdefblock Mainblock   {
+Prog: TypeDeclBlock GDecblock Fdefblock Mainblock ENDOFFILE {
                                                         interpret($4);
                                                     }
     ;
@@ -230,6 +230,7 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
                                                           AddArgsToLTable(&($7), $4);
+                                                          setVariableType($2, IS_ARRAY_FALSE);
                                                           validate_function($2->name,TLookUp("int"),$4,$8);
                                                           Gtemp = Glookup($2->name);
                                                           if(Gtemp == NULL){
@@ -244,6 +245,7 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
                                                           AddArgsToLTable(&($7), $4);
+                                                          setVariableType($2, IS_ARRAY_FALSE);
                                                           validate_function($2->name,TLookUp("str"),$4,$8);
                                                           Gtemp = Glookup($2->name);
                                                           if(Gtemp == NULL){
@@ -258,6 +260,7 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
                                                           Ttemp = TLookUp($1->name);
+                                                          setVariableType($2, IS_ARRAY_FALSE);
                                                           if(Ttemp == NULL){
                                                               yyerror("yacc(Fdef) : the return type has not been defined");
                                                               printf(" %s",$1->name);
@@ -352,6 +355,7 @@ slist: slist stmt           {
     ;
 
 stmt: ID ASGN E DELIM       {
+                                setVariableType($1, IS_ARRAY_FALSE);
                                 //Verifies if the LHS and RHS of the assignment node is of the same type.
                                 $$ = TreeCreate(TLookUp("void"), NODETYPE_ASGN, NULL, (Constant){}, NULL, $1, $3, NULL);
                             }
@@ -363,6 +367,7 @@ stmt: ID ASGN E DELIM       {
 
     |READ '(' ID ')' DELIM      {
                                     //Verifies if the identifier is of type integer or string
+                                    setVariableType($3, IS_ARRAY_FALSE);
                                     $$ = TreeCreate(TLookUp("void"), NODETYPE_READ, NULL, (Constant){}, NULL, $3, NULL, NULL);
                                 }
     |READ '(' FIELD ')' DELIM   {
@@ -391,6 +396,7 @@ stmt: ID ASGN E DELIM       {
                                                 }
     |ID ASGN ALLOC '(' ')' DELIM                {
                                                     //Verifies if the identifier is of user defined type
+                                                    setVariableType($1, IS_ARRAY_FALSE);
                                                     $$ = TreeCreate(TLookUp("void"),NODETYPE_ALLOC,NULL,(Constant){},NULL,$1,NULL,NULL);
                                                 }
     |FIELD ASGN ALLOC '(' ')' DELIM             {
@@ -403,6 +409,7 @@ stmt: ID ASGN E DELIM       {
                                         }
     |DEALLOC '(' ID ')' DELIM           {
                                             //Verifies if the field is of user defined type.
+                                            setVariableType($3, IS_ARRAY_FALSE);
                                             $$ = TreeCreate(TLookUp("void"),NODETYPE_DEALLOC,NULL,(Constant){},NULL,$3,NULL,NULL);
                                         }
     |DEALLOC '(' FIELD ')' DELIM        {
@@ -446,6 +453,7 @@ E: E AROP1 E            {
     |STRCONST           {$$ = $1;}
     |ID                 {
                             //type field of the identifier is set to that specified in the symbol table.
+                            setVariableType($1, IS_ARRAY_FALSE);
                             $$ = $1;
                         }
     |ID '[' E ']'       {
@@ -462,6 +470,7 @@ E: E AROP1 E            {
     |ID '(' param ')'   {
                             //Type of the identifier is set to that specified in the global symbol table during declaration.
                             //The Argument list created before is set to the Arglist field.
+                            setVariableType($1, IS_ARRAY_FALSE);
                             Gtemp = Glookup($1->name);
                             if(Gtemp == NULL){
                                 yyerror("Yacc : Undefined function");
@@ -494,6 +503,7 @@ retstmt : RETURN E DELIM {
 %%
 
 int main(int argc,char* argv[]) {
+    TTableCreate();
     if(argc>1)
     {
         FILE *file = fopen(argv[1],"r");
