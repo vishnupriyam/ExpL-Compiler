@@ -42,6 +42,7 @@
 %left AROP1
 %left AROP2
 %right LOGOP
+%nonassoc NOT
 
 %%
 
