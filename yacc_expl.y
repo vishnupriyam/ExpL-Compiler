@@ -64,12 +64,11 @@ TypeDef: NewType '{' TypeDeclList '}'               {
                                                         //Verifies for multiple declaration of variables.
                                                         //Verfifies if the type assigned to the used defined variables are declared before or is the current one under definition
                                                         Type_field_list_validate($3);
-                                                        TAppend($1);
                                                         $1->fields = $3;
                                                     }
     ;
 
-NewType : ID    { $$ = TInstall($1->name,NULL);}
+NewType : ID    { $$ = TInstall($1->name,NULL);TAppend($$);}
 
 TypeDeclList: TypeDeclList TypeDecl                 { $$ = FAppend($1, $2);}
     |TypeDecl                                       { $$ = $1; }
@@ -449,8 +448,12 @@ E: E AROP1 E            {
                             $$ = TreeCreate(TLookUp("int"), $2->nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |'(' E ')'          {$$=$2;}
-    |E RELOP E          {
-                            if(strcmp($1->type->name,$3->type->name) != 0 || strcmp($1->type->name,"int") != 0){
+    |E RELOP E          {   if( $2->nodetype == NODETYPE_EQ || $2->nodetype == NODETYPE_NE){
+                                if(!(strcmp($1->type->name,$3->type->name) == 0 || strcmp($1->type->name,"int") == 0 || (isUserDefinedtype($1->type) && (strcmp($3->type->name,"null") == 0)) )){
+                                    yyerror("TreeCreate : unexpected operand types for nodetype eq/ne");exit(1);
+                                }
+                            }
+                            else if(strcmp($1->type->name,$3->type->name) != 0 || strcmp($1->type->name,"int") != 0){
                         			yyerror("TreeCreate : unexpected operand types for nodetype gt/lt/ge/le");exit(1);
                         		}
                             $$ = TreeCreate(TLookUp("boolean"), $2->nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
@@ -458,8 +461,8 @@ E: E AROP1 E            {
     |E LOGOP E          {
                             //Verifies if both the expression is of type boolean
                             if(!(strcmp($1->type->name,$3->type->name) == 0 && (strcmp($1->type->name,"int") == 0 || strcmp($1->type->name,"boolean") == 0) || strcmp($1->type->name,"str") == 0)){
-            									yyerror("TreeCreate : unexpected operand types for nodetype eq/ne");exit(1);
-            							  }
+            					yyerror("TreeCreate : unexpected operand types for nodetype and/or/no");exit(1);
+            				}
                             $$ = TreeCreate(TLookUp("boolean"), $2->nodetype, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |NOT E              {

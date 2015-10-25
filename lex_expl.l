@@ -45,7 +45,7 @@ lt 						[<]
 "main"					{return MAIN;}
 "type"					{return TYPE;}
 "endtype"				{return ENDTYPE;}
-"NULL"					{
+"null"					{
 							yylval.nptr = TreeCreate(TLookUp("null"),NODETYPE_NULL,NULL,(Constant){},NULL,NULL,NULL,NULL);
 							return NULLC;
 						}

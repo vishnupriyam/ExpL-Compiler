@@ -18,7 +18,7 @@ AST* TreeCreate(struct TypeTable *type, int nodetype, char *name, Constant value
 
 	switch(nodetype){
 		case NODETYPE_ASGN	: setVariableType(t1, IS_ARRAY_FALSE);
-							  if(strcmp(t1->type->name,t2->type->name) != 0){
+							  if(!(strcmp(t1->type->name,t2->type->name) == 0 || (!(isUserDefinedtype(t1->type) && strcmp(t2->type->name,"null"))))){
 									yyerror("TreeCreate : unexpected operand types for nodetype assignment");exit(1);
 							  }
 							  break;
@@ -29,7 +29,7 @@ AST* TreeCreate(struct TypeTable *type, int nodetype, char *name, Constant value
 								}
 								break;
 		case NODETYPE_FIELD_ASGN:
-								if(strcmp(t1->type->name, t2->type->name) != 0){
+								if(!(strcmp(t1->type->name, t2->type->name) == 0 || (isUserDefinedtype(t1->type) && (strcmp(t2->type->name,"null") == 0)))){
 									yyerror("TreeCreate : unexpected operand types for nodetype field asgn");exit(1);
 								}
 								break;
@@ -242,17 +242,28 @@ struct memstruct interpret(AST *t) {
 		case NODETYPE_EQ	:
 							result1 = getValueFromBind(interpret(t->ptr1));
 							result2	= getValueFromBind(interpret(t->ptr2));
-							if(strcmp(t->ptr1->type->name, "str") == 0)
+							if(strcmp(t->ptr1->type->name,"null") == 0)
+								return (memstruct){MEMSTRUCT_INT, result2.type == MEMSTRUCT_EMPTY};
+							else if(strcmp(t->ptr2->type->name,"null") == 0){
+								printf("type %d\n",result1.type == MEMSTRUCT_EMPTY);
+								return (memstruct){MEMSTRUCT_INT, result1.type == MEMSTRUCT_EMPTY};
+							}
+							else if(strcmp(t->ptr1->type->name, "str") == 0)
 								return (memstruct){MEMSTRUCT_INT, strcmp(result1.value.strval, result2.value.strval) == 0};
-							else
+							else if(strcmp(t->ptr1->type->name,"int") == 0)
 								return (memstruct){MEMSTRUCT_INT, result1.value.intval == result2.value.intval};
+
 							break;
 		case NODETYPE_NE	:
 							result1 = getValueFromBind(interpret(t->ptr1));
 							result2	= getValueFromBind(interpret(t->ptr2));
-							if(strcmp(t->ptr1->type->name, "str") == 0)
+							if(strcmp(t->ptr1->type->name,"null") == 0)
+								return (memstruct){MEMSTRUCT_INT, result2.type != MEMSTRUCT_EMPTY};
+							else if(strcmp(t->ptr2->type->name,"null") == 0)
+								return (memstruct){MEMSTRUCT_INT, result1.type != MEMSTRUCT_EMPTY};
+							else if(strcmp(t->ptr1->type->name, "str") == 0)
 								return (memstruct){MEMSTRUCT_INT, strcmp(result1.value.strval, result2.value.strval) != 0};
-							else
+							else if(strcmp(t->ptr1->type->name,"int") == 0)
 								return (memstruct){MEMSTRUCT_INT, result1.value.intval != result2.value.intval};
 							break;
 		case NODETYPE_AND	:
@@ -479,6 +490,9 @@ struct memstruct interpret(AST *t) {
 		case NODETYPE_FIELD :
 							mem_location = getFieldBind(t,FLAG_FBIND_ADDRESS);
 							return (memstruct){MEMSTRUCT_BIND,mem_location};
+							break;
+		case NODETYPE_NULL :
+							return (memstruct){MEMSTRUCT_EMPTY};
 							break;
 		default :
 							yyerror("invalid node type : ");

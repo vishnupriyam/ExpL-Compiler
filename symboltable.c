@@ -197,16 +197,17 @@ struct LSymbol *LlookupInTable(LSymbol *LSymbolHead, char *name) {
 }
 
 struct LSymbol* LAppend(LSymbol *l1, LSymbol *l2){
-    Ltemp = l2;
-    while (Ltemp->next != NULL) {
-      if(LlookupInTable(l1, Ltemp->name) != NULL){
+    LSymbol *Ltemp2;
+    Ltemp2 = l2;
+    while (Ltemp2->next != NULL) {
+      if(LlookupInTable(l1, Ltemp2->name) != NULL){
         yyerror("LInstall : Local variable redefined ");
-        printf(" %s",Ltemp->name);
+        printf(" %s",Ltemp2->name);
         exit(1);
       }
-      Ltemp = Ltemp->next;
+      Ltemp2 = Ltemp2->next;
     }
-    Ltemp->next = l1;
+    Ltemp2->next = l1;
     return l2;
     /*l1->next = LSymbolHead;
     if(LSymbolHead == NULL){
