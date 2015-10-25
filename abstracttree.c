@@ -173,6 +173,9 @@ int getFieldBind(AST *t, int flag){
 		if(flag == FLAG_FBIND_VALUE){
 			 	memstruct temp;
 				temp = getValueAtDynamicLocation(getFieldBind(t->ptr1,FLAG_FBIND_VALUE) + fieldRelativeAddress(t->ptr1->type, t->ptr2->name));
+				if(temp.type != MEMSTRUCT_BIND){
+					yyerror("getFieldBind: Invalid access to the memory");exit(1);
+				}
 				return temp.value.intval;
 		}
 		else
@@ -180,9 +183,15 @@ int getFieldBind(AST *t, int flag){
 	}
 	if(t->nodetype == NODETYPE_ID){
 			 if(t->Lentry != NULL){
+				 	if(getLocalValue(t->Lentry->binding).type != MEMSTRUCT_BIND){
+						yyerror("getFieldBind: Invalid access to the memory");exit(1);
+					}
 				 	return t->Lentry->binding;
 			 }
 			 else {
+				 if(getGlobalValue(t->Gentry->binding).type != MEMSTRUCT_BIND){
+					 yyerror("getFieldBind: Invalid access to the memory");exit(1);
+				 }
 				 return t->Gentry->binding;
 			 }
 	}
