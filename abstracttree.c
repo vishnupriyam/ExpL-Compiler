@@ -192,7 +192,7 @@ struct memstruct interpret(AST *t) {
 	memstruct result1, result2;
 	AST *values;
 	ArgStruct *params;
-	int address, iTemp,a;
+	int address, iTemp,mem_location;
 	switch(t->nodetype){
 		case NODETYPE_PLUS :
 							result1 = getValueFromBind(interpret(t->ptr1));
@@ -245,7 +245,6 @@ struct memstruct interpret(AST *t) {
 							if(strcmp(t->ptr1->type->name,"null") == 0)
 								return (memstruct){MEMSTRUCT_INT, result2.type == MEMSTRUCT_EMPTY};
 							else if(strcmp(t->ptr2->type->name,"null") == 0){
-								printf("type %d\n",result1.type == MEMSTRUCT_EMPTY);
 								return (memstruct){MEMSTRUCT_INT, result1.type == MEMSTRUCT_EMPTY};
 							}
 							else if(strcmp(t->ptr1->type->name, "str") == 0)
