@@ -380,7 +380,7 @@ void Type_field_list_validate(fieldList *f){
 
 int fieldRelativeAddress(TypeTable *t, char *name) {
     ftemp = t->fields;
-    int relBind = 0;
+    int relBind = 1;
     while(strcmp(ftemp->name,name) != 0){
       relBind++;
       ftemp = ftemp->next;
