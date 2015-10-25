@@ -118,15 +118,6 @@ struct GSymbol* GInstall(char*name, TypeTable *type, int size, ArgStruct *arglis
 
 void GAppend(GSymbol *g1){
     Gtemp = g1;
-    if(Gtemp->next == NULL){
-        if(Gtemp->arglist == NULL && Gtemp->size != 0){
-            Gtemp->binding = gbinding;
-            gbinding = gbinding + Gtemp->size;
-        }
-        else{
-            Gtemp->binding = -1;
-        }
-    }
     while (Gtemp->next != NULL) {
       if(Gtemp->arglist == NULL && Gtemp->size != 0){
           Gtemp->binding = gbinding;
@@ -136,6 +127,15 @@ void GAppend(GSymbol *g1){
           Gtemp->binding = -1;
       }
       Gtemp = Gtemp->next;
+    }
+    if(Gtemp->next == NULL){
+        if(Gtemp->arglist == NULL && Gtemp->size != 0){
+            Gtemp->binding = gbinding;
+            gbinding = gbinding + Gtemp->size;
+        }
+        else{
+            Gtemp->binding = -1;
+        }
     }
     Gtemp->next = GSymbolHead;
     GSymbolHead = g1;
