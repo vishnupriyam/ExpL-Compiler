@@ -248,7 +248,6 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
-                                                          AddArgsToLTable(&($7), $4);
                                                           setVariableType($2, IS_ARRAY_FALSE);
                                                           validate_function($2->name,TLookUp("str"),$4,$8);
                                                           Gtemp = Glookup($2->name);
@@ -270,7 +269,6 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                               printf(" %s",$1->name);
                                                               exit(1);
                                                           }
-                                                          AddArgsToLTable(&($7), $4);
                                                           validate_function($2->name,Ttemp,$4,$8);
                                                           Gtemp = Glookup($2->name);
                                                           if(Gtemp == NULL){
