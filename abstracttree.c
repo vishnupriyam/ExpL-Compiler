@@ -186,13 +186,13 @@ int getFieldBind(AST *t, int flag){
 				 	if(getLocalValue(t->Lentry->binding).type != MEMSTRUCT_BIND){
 						yyerror("getFieldBind: Invalid access to the memory");exit(1);
 					}
-				 	return t->Lentry->binding;
+				 	return getLocalValue(t->Lentry->binding).value.intval;
 			 }
 			 else {
 				 if(getGlobalValue(t->Gentry->binding).type != MEMSTRUCT_BIND){
 					 yyerror("getFieldBind: Invalid access to the memory");exit(1);
 				 }
-				 return t->Gentry->binding;
+				 return getGlobalValue(t->Gentry->binding).value.intval;
 			 }
 	}
 }
