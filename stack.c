@@ -53,3 +53,7 @@ void assignLocalValue(int location, memstruct value){
 void assignGlobalValue(int location, memstruct value) {
 	stack[GLOBAL_INDEX + location] = value;
 }
+
+void setFunctionReturnValue(memstruct value) {
+	stack[base_pointer + RELATIVE_RETURN_ADDRESS] = value;
+}

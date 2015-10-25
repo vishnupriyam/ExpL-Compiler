@@ -108,9 +108,9 @@ AST* TreeCreate(struct TypeTable *type, int nodetype, char *name, Constant value
 							  temp1 = Gtemp->arglist;
 							  temp2 = arglist;
 							  while(temp1 != NULL && temp2 != NULL){
-								  if(strcmp(temp1->type->name,temp2->type->name) != 0){
-									  yyerror("TreeCreate : types of arguments passed to function donot match ");exit(1);
-								  }
+									if(strcmp(temp1->type->name,temp2->ptr2->type->name) != 0){
+										yyerror("TreeCreate : types of arguments passed to function donot match ");exit(1);
+									}
 								  //TODO check for passType
 
 								  temp1 = temp1->next;
@@ -395,6 +395,7 @@ struct memstruct interpret(AST *t) {
 							break;
 		case NODETYPE_BODY  :
 							interpret(t->ptr1);
+							interpret(t->ptr2);
 							break;
 		case NODETYPE_MAIN	:
 							initialise_stack();
@@ -451,6 +452,20 @@ struct memstruct interpret(AST *t) {
 							}
 							//return the stored result
 							return result1;
+							break;
+		case NODETYPE_RET	:
+							result1 = interpret(t->ptr1);
+							if(isUserDefinedtype(t->type)){
+								setFunctionReturnValue((memstruct){MEMSTRUCT_BIND, result1.value.intval});
+							}
+							else if(strcmp(t->type->name,"int") == 0){
+								setFunctionReturnValue((memstruct){MEMSTRUCT_INT, result1.value.intval});
+							}
+							else if(strcmp(t->type->name,"str") == 0) {
+								Constant val;
+								val.strval = result1.value.strval;
+								setFunctionReturnValue((memstruct){MEMSTRUCT_STR, val});
+							}
 							break;
 
 	}

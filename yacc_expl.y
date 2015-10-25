@@ -31,7 +31,7 @@
 
 %token ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM ASGN AROP2 AROP1 NOT LOGOP DOT NUM ID STRCONST ALLOC DEALLOC
 
-%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM AROP2 ASGN AROP1 NOT LOGOP DOT NUM ID STRCONST FIELD ALLOC DEALLOC Prog TypeDeclBlock Fdefblock Mainblock TypeDefList TypeDef GDecblock GDecList GDecl Fdef Body slist retstmt stmt E param
+%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM AROP2 ASGN AROP1 NOT LOGOP DOT NUM ID STRCONST FIELD ALLOC DEALLOC Prog TypeDeclBlock Fdefblock Mainblock TypeDefList TypeDef GDecblock GDecList GDecl Fdef Body slist retstmt stmt E param fparam
 %type <arg> ArgList FArgList ArgType Args Arg ArgList1
 %type <gvar> GIdList GId
 %type <lvar> Ldecblock LdecList Ldecl LIdList LId
@@ -169,7 +169,8 @@ GId : ID '[' NUM ']'                                {
 
 FArgList : ArgList                                  {
                                                         //A Local Symbol Table is created out the entries made.
-                                                         $$ = $1;
+                                                        ArgStructHead = $1;
+                                                        $$ = $1;
                                                     }
     ;
 
@@ -177,6 +178,8 @@ ArgList : ArgList1                                  {
                                                         $$ = $1;
                                                     }
     |                                               { $$ = NULL;}
+    ;
+
 ArgList1 : ArgType DELIM ArgList1                   { $$ = ArgAppend($3, $1);}
     | ArgType                                       { $$ = $1;}
     ;
@@ -231,7 +234,6 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
                                                           //Function definition is compared with their declarartion earlier for compatibility
                                                           //Lentry is set to the LST of the function
                                                           //LST is set to NULL
-                                                          AddArgsToLTable(&($7), $4);
                                                           setVariableType($2, IS_ARRAY_FALSE);
                                                           validate_function($2->name,TLookUp("int"),$4,$8);
                                                           Gtemp = Glookup($2->name);
@@ -282,6 +284,8 @@ Fdef : INT ID '(' FArgList ')' '{' Ldecblock Body '}'   {
 
 Ldecblock : DECL LdecList ENDDECL {
                                       setLocalBindings($2);
+                                      AddArgsToLTable(&($2), ArgStructHead);
+                                      ArgStructHead = NULL;
                                       $$ = $2;
                                       LSymbolHead = $$;
                                   }
@@ -345,7 +349,7 @@ Mainblock : INT MAIN '(' ')' '{' Ldecblock Body '}' {
 
 Body : BEG slist retstmt END{
                                 //Return statement is set as Ptr2 of slist
-                                $$ = TreeCreate(TLookUp("void"), NODETYPE_BODY, NULL, (Constant){}, NULL, $2, $3, NULL);
+                                $$ = TreeCreate($3->type, NODETYPE_BODY, NULL, (Constant){}, NULL, $2, $3, NULL);
                             }
     ;
 
@@ -473,6 +477,7 @@ E: E AROP1 E            {
     |ID '[' E ']'       {
                             //Type field in the ASTnode is set to that specified in the symbol table.
                             //Verifies if the expression node is an integer
+                            setVariableType($1, IS_ARRAY_TRUE);
                             $$ = TreeCreate(NULL, NODETYPE_ARR_ID, NULL, (Constant){}, NULL, $1, $3, NULL);
                         }
     |FIELD              {
@@ -481,10 +486,10 @@ E: E AROP1 E            {
                             $$ = $1;
                         }
     |NULLC              {$$ = $1;}
-    |ID '(' param ')'   {
+    |ID '(' fparam ')'   {
                             //Type of the identifier is set to that specified in the global symbol table during declaration.
                             //The Argument list created before is set to the Arglist field.
-                            setVariableType($1, IS_ARRAY_FALSE);
+                            setVariableType($1, IS_ARRAY_TRUE);
                             Gtemp = Glookup($1->name);
                             if(Gtemp == NULL){
                                 yyerror("Yacc : Undefined function");
@@ -496,6 +501,10 @@ E: E AROP1 E            {
                         }
  ;
 
+fparam : param  { $$ = $1;  }
+  |     { $$ = NULL; }
+  ;
+
 param : param ',' E {
                         //Creates a statement node and its Ptr1 field is set to the expression node.
                         //Appends the newly created parameter list to the existing.
@@ -504,7 +513,7 @@ param : param ',' E {
                     }
     |E              {
                         //Creates a statement node and its Ptr1 field is set to the expression node.
-                        $$ = TreeCreate(TLookUp("void"),NODETYPE_PARAM,NULL,(Constant){},NULL,$1,NULL,NULL);
+                        $$ = TreeCreate(TLookUp("void"),NODETYPE_PARAM,NULL,(Constant){},NULL,NULL,$1,NULL);
                     }
     ;
 

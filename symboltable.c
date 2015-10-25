@@ -87,8 +87,6 @@ void AddArgType(TypeTable *type, ArgStruct *arg){
         temp->type = type;
         temp = temp->next;
     }
-    Argtemp->next = ArgStructHead;
-    ArgStructHead = arg;
 }
 
 struct GSymbol* GInstall(char*name, TypeTable *type, int size, ArgStruct *arglist){

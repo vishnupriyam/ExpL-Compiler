@@ -26,3 +26,4 @@ Things to be done :
 19. pass by reference module ? any heap initialisation to be called ?
 20. read not working fine
 21. unused terminals BREAK and CONTINUE in the grammar
+22. function declarations of type int print(int start, end) leads to error. why?

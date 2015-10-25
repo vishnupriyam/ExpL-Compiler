@@ -1,6 +1,6 @@
 #define STACK_SIZE 1024
 #define GLOBAL_INDEX 0
-
+#define RELATIVE_RETURN_ADDRESS -1
 memstruct stack[STACK_SIZE];
 
 int stack_pointer = -1;
@@ -16,3 +16,4 @@ memstruct getLocalValue(int location);
 memstruct getGlobalValue(int location);
 void assignLocalValue(int location, memstruct value);
 void assignGlobalValue(int location, memstruct value);
+void setFunctionReturnValue(memstruct value);
