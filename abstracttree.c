@@ -144,6 +144,11 @@ AST* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3) {
 }
 
 void setVariableType(AST *t, int isArray){
+	if(t->nodetype == NODETYPE_FIELD){
+		while(t->ptr1 != NULL){
+			t = t->ptr1;
+		}
+	}
 	Ltemp = Llookup(t->name);
 	if(Ltemp == NULL || isArray){
 		Gtemp = Glookup(t->name);
@@ -181,14 +186,13 @@ int getFieldBind(AST *t, int flag){
 				 return t->Gentry->binding;
 			 }
 	}
-
 }
 
 struct memstruct interpret(AST *t) {
 	memstruct result1, result2;
 	AST *values;
 	ArgStruct *params;
-	int address, iTemp;
+	int address, iTemp,a;
 	switch(t->nodetype){
 		case NODETYPE_PLUS :
 							result1 = getValueFromBind(interpret(t->ptr1));
@@ -301,7 +305,7 @@ struct memstruct interpret(AST *t) {
 							break;
 		case NODETYPE_FIELD_ASGN	:
 							result1 = interpret(t->ptr2);
-							int mem_location = getFieldBind(t, FLAG_FBIND_ADDRESS);
+							int mem_location = getFieldBind(t->ptr1, FLAG_FBIND_ADDRESS);
 							setValueAtDynamicLocation(mem_location,result1);
 							break;
 		case NODETYPE_READ	:
@@ -368,17 +372,22 @@ struct memstruct interpret(AST *t) {
 							return getGlobalValue(t->ptr1->Gentry->binding + result1.value.intval);
 							break;
 		case NODETYPE_ALLOC :
-
 							address = allocate(sizeoftype(t->ptr1->type));
 							if(address == -1){
 								yyerror("Interpret: Unable to create memory for the variable");
 								exit(1);
 							}
-							if(t->ptr1->Lentry != NULL){
-								assignLocalValue(t->ptr1->Lentry->binding, (memstruct){MEMSTRUCT_BIND, address});
+							if(t->ptr1->nodetype == NODETYPE_FIELD){
+								mem_location = getFieldBind(t->ptr1,FLAG_FBIND_ADDRESS);
+								setValueAtDynamicLocation(mem_location,(memstruct){MEMSTRUCT_BIND,address});
 							}
-							else {
-								assignGlobalValue(t->ptr1->Gentry->binding, (memstruct){MEMSTRUCT_BIND, address});
+							else{
+								if(t->ptr1->Lentry != NULL){
+									assignLocalValue(t->ptr1->Lentry->binding, (memstruct){MEMSTRUCT_BIND, address});
+								}
+								else if(t->ptr1->Gentry != NULL){
+									assignGlobalValue(t->ptr1->Gentry->binding, (memstruct){MEMSTRUCT_BIND, address});
+								}
 							}
 							break;
 		case NODETYPE_DEALLOC :
@@ -466,6 +475,15 @@ struct memstruct interpret(AST *t) {
 								val.strval = result1.value.strval;
 								setFunctionReturnValue((memstruct){MEMSTRUCT_STR, val});
 							}
+							break;
+		case NODETYPE_FIELD :
+							mem_location = getFieldBind(t,FLAG_FBIND_ADDRESS);
+							return (memstruct){MEMSTRUCT_BIND,mem_location};
+							break;
+		default :
+							yyerror("invalid node type : ");
+							printf("nodetype %d\n",t->nodetype);
+							exit(1);
 							break;
 
 	}

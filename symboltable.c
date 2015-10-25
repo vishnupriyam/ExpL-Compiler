@@ -35,7 +35,7 @@ struct fieldList* FLookUp(char *name, char* fieldname){
         return NULL;
     }
     fieldList *list = temp->fields;
-    while(list != NULL && strcmp(list->name,name) != 0){
+    while(list != NULL && strcmp(list->name,fieldname) != 0){
         list = list->next;
     }
     return list;
