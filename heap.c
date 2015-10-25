@@ -131,6 +131,7 @@ int allocate(int size){
 	temp--;
 	start_addr = heap[temp].value.intval;
 	heap[temp].value.intval = -1;
+	heap[start_addr].type = MEMSTRUCT_SIZE;
 	heap[start_addr].value.intval = size;
 	return start_addr;
 }

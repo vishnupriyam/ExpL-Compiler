@@ -266,9 +266,9 @@ struct memstruct interpret(AST *t) {
 							result1 = getValueFromBind(interpret(t->ptr1));
 							result2	= getValueFromBind(interpret(t->ptr2));
 							if(strcmp(t->ptr1->type->name,"null") == 0)
-								return (memstruct){MEMSTRUCT_INT, result2.type != MEMSTRUCT_EMPTY};
+								return (memstruct){MEMSTRUCT_INT, result2.type == MEMSTRUCT_SIZE};
 							else if(strcmp(t->ptr2->type->name,"null") == 0)
-								return (memstruct){MEMSTRUCT_INT, result1.type != MEMSTRUCT_EMPTY};
+								return (memstruct){MEMSTRUCT_INT, result1.type == MEMSTRUCT_SIZE};
 							else if(strcmp(t->ptr1->type->name, "str") == 0)
 								return (memstruct){MEMSTRUCT_INT, strcmp(result1.value.strval, result2.value.strval) != 0};
 							else if(strcmp(t->ptr1->type->name,"int") == 0)
