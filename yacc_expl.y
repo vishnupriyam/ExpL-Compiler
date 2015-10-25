@@ -64,6 +64,7 @@ TypeDef: NewType '{' TypeDeclList '}'               {
                                                         //Verifies for multiple declaration of variables.
                                                         //Verfifies if the type assigned to the used defined variables are declared before or is the current one under definition
                                                         Type_field_list_validate($3);
+                                                        TAppend($1);
                                                         $1->fields = $3;
                                                     }
     ;

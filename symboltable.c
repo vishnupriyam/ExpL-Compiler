@@ -15,6 +15,7 @@ void TTableCreate(){
 }
 
 struct TypeTable* TLookUp(char *name){
+
     if(name == NULL){
         yyerror("Tlookup : Cannot look up for an identifier with type NULL in type table ");
         printf(" %s",name);
@@ -363,6 +364,7 @@ void Type_field_list_validate(fieldList *f){
             printf(" %s",temp->type->name);
             exit(1);
         }
+        temp = temp->next;
     }
 }
 
