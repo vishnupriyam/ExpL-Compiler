@@ -190,7 +190,7 @@ int getFieldBind(AST *t, int flag){
 			 }
 			 else {
 				 if(getGlobalValue(t->Gentry->binding).type != MEMSTRUCT_BIND){
-					 yyerror("getFieldBind: Invalid access to the memory");exit(1);
+				 	 yyerror("getFieldBind: Invalid access to the memory");exit(1);
 				 }
 				 return getGlobalValue(t->Gentry->binding).value.intval;
 			 }
@@ -441,12 +441,7 @@ struct memstruct interpret(AST *t) {
 							values = t->arglist;
 							params = t->Gentry->arglist;
 							while(values != NULL){
-								if(params->passType != PASS_BY_REF && !isUserDefinedtype(params->type)){
-									push(interpret(values->ptr2));
-								}
-								else if(params->passType == PASS_BY_REF || isUserDefinedtype(params->type)){
-									//TODO the argument is primitive type and is passed by reference
-								}
+								push(interpret(values->ptr2));
 								values = values->ptr1;
 								params = params->next;
 							}
