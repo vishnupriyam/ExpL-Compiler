@@ -23,6 +23,7 @@ int find_free_buddy(int start_addr, int ceil_size);
 int minimum(int x, int y);
 void merge_buddies(int start_addr, int ceil_size);
 int deallocate(int start_addr);
+struct memstruct getBind(memstruct bind);
 struct memstruct getValueFromBind(memstruct bind);
 struct memstruct getValueAtDynamicLocation(int location);
 void setValueAtDynamicLocation(int location, memstruct value);

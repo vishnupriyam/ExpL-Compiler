@@ -306,7 +306,7 @@ struct memstruct interpret(AST *t) {
 							}
 							break;
 		case NODETYPE_ASGN	:
-							result1 = interpret(t->ptr2);
+							result1 = getBind(interpret(t->ptr2));
 							if(t->ptr1->Lentry != NULL){
 								assignLocalValue(t->ptr1->Lentry->binding, result1);
 							}
@@ -323,7 +323,7 @@ struct memstruct interpret(AST *t) {
 							assignGlobalValue(t->ptr1->Gentry->binding + result2.value.intval, result1);
 							break;
 		case NODETYPE_FIELD_ASGN	:
-							result1 = interpret(t->ptr2);
+							result1 = getBind(interpret(t->ptr2));
 							int mem_location = getFieldBind(t->ptr1, FLAG_FBIND_ADDRESS);
 							setValueAtDynamicLocation(mem_location,result1);
 							break;
