@@ -410,15 +410,23 @@ struct memstruct interpret(AST *t) {
 							}
 							break;
 		case NODETYPE_DEALLOC :
-							if(t->ptr1->Lentry != NULL){
-								address = getLocalValue(t->ptr1->Lentry->binding).value.intval;
+							if(t->ptr1->nodetype == NODETYPE_FIELD){
+								address = getFieldBind(t->ptr1,FLAG_FBIND_ADDRESS);
+								setValueAtDynamicLocation(address,(memstruct){MEMSTRUCT_EMPTY});
 							}
-							else {
-								address = getGlobalValue(t->ptr1->Gentry->binding).value.intval;
+							else{
+								if(t->ptr1->Lentry != NULL){
+									address = getLocalValue(t->ptr1->Lentry->binding).value.intval;
+									assignLocalValue(t->ptr1->Lentry->binding,(memstruct){MEMSTRUCT_EMPTY});
+								}
+								else {
+									address = getGlobalValue(t->ptr1->Gentry->binding).value.intval;
+									assignGlobalValue(t->ptr1->Gentry->binding,(memstruct){MEMSTRUCT_EMPTY});
+								}
 							}
 							if(deallocate(address) == -1){
-								yyerror("Interpret: Unable to free memory for the variable");
-								exit(1);
+							yyerror("Interpret: Unable to free memory for the variable");
+							exit(1);
 							}
 							break;
 		case NODETYPE_BODY  :
