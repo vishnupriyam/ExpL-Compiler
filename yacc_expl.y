@@ -31,11 +31,11 @@
 
 %token ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM ASGN AROP2 AROP1 NOT LOGOP DOT NUM ID STRCONST ALLOC DEALLOC
 
-%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM AROP2 ASGN AROP1 NOT LOGOP DOT NUM ID STRCONST FIELD ALLOC DEALLOC Prog TypeDeclBlock Fdefblock Mainblock TypeDefList TypeDef GDecblock GDecList GDecl Fdef Body slist retstmt stmt E param fparam
-%type <arg> ArgList FArgList ArgType Args Arg ArgList1
+%type <nptr> ENDOFFILE READ WRITE IF THEN ELSE ENDIF DO ENDWHILE BREAK WHILE INT STR RETURN DECL ENDDECL MAIN TYPE ENDTYPE NULLC CONTINUE BEG END RELOP DELIM AROP2 ASGN AROP1 NOT LOGOP DOT NUM ID STRCONST FIELD ALLOC DEALLOC Prog FieldDeclBlock Fdefblock Mainblock TypeDefList TypeDef GDecblock GDecList GDecl Fdef Body slist retstmt stmt E param fparam
+%type <arg> FArgList ArgList ArgType
 %type <gvar> GIdList GId
 %type <lvar> Ldecblock LdecList Ldecl LIdList LId
-%type <field> TypeDeclList TypeDecl IDList TId
+%type <field> FieldDeclList FieldDecl
 %type <ty> NewType
 
 %nonassoc RELOP
@@ -46,12 +46,12 @@
 
 %%
 
-Prog: TypeDeclBlock GDecblock Fdefblock Mainblock ENDOFFILE {
+Prog: FieldDeclBlock GDecblock Fdefblock Mainblock ENDOFFILE {
                                                         interpret($4);
                                                     }
     ;
 
-TypeDeclBlock: TYPE TypeDefList ENDTYPE             {}
+FieldDeclBlock: TYPE TypeDefList ENDTYPE            {}
     |                                               {}
     ;
 
@@ -59,7 +59,7 @@ TypeDefList: TypeDefList TypeDef                    {}
     |TypeDef                                        {}
     ;
 
-TypeDef: NewType '{' TypeDeclList '}'               {
+TypeDef: NewType '{' FieldDeclList '}'               {
                                                         //Creates a 'fieldlist' out of the intermediate list.
                                                         //Verifies for multiple declaration of variables.
                                                         //Verfifies if the type assigned to the used defined variables are declared before or is the current one under definition
@@ -70,45 +70,30 @@ TypeDef: NewType '{' TypeDeclList '}'               {
 
 NewType : ID    { $$ = TInstall($1->name,NULL);TAppend($$);}
 
-TypeDeclList: TypeDeclList TypeDecl                 { $$ = FAppend($1, $2);}
-    |TypeDecl                                       { $$ = $1; }
+FieldDeclList: FieldDeclList FieldDecl          { //verify there are no redeclarations of field variables and append to field list
+                                                    $$ = FAppend($1,$2);
+                                                }
+    |FieldDecl                                  { $$ = $1; }
     ;
 
-TypeDecl: INT IDList DELIM                          {
-                                                        //Fills the Type pointer in the intermediate list with integer
-                                                        AddFType(TLookUp("int"),$2);
-                                                        $$ = $2;
-                                                    }
-    |STR IDList DELIM                               {
-                                                        //Fills the Type pointer in the intermediate list with string
-                                                        AddFType(TLookUp("str"),$2);
-                                                        $$ = $2;
-                                                    }
-    |ID IDList DELIM                                {
+FieldDecl: INT ID DELIM                         {
+                                                    //Fills the Type pointer in the intermediate list with integer
+                                                    $$ = FieldInstall(TLookUp("int"),$2->name);
+                                                }
+    |STR ID DELIM                               {
+                                                    $$ = FieldInstall(TLookUp("str"),$2->name);
+                                                }
+    |ID ID DELIM                                {
                                                         //Fills the Type pointer in the intermediate list(IntermList) with the name of the given identifier($1)
-                                                        Ttemp = TLookUp($1->name);
-                                                        if(Ttemp == NULL){
-                                                            yyerror("yacc (TypeDecl) : the type has not been defined");
-                                                            printf(" %s",$1->name);
-                                                            exit(1);
-                                                        }
-                                                        AddFType(Ttemp,$2);
-                                                        $$ = $2;
+                                                    Ttemp = TLookUp($1->name);
+                                                    if(Ttemp == NULL){
+                                                        yyerror("yacc (FieldDecl) : the type has not been defined");
+                                                        printf(" %s",$1->name);
+                                                        exit(1);
                                                     }
+                                                    $$ = FieldInstall(TLookUp($1->name),$2->name);
+                                                }
     ;
-
-IDList : IDList ',' TId                            {
-                                                        //Creates an intermediate list(IntermList) containing the name of the given identifier
-                                                        $3->next = $1;
-                                                        $$ = $3;
-                                                    }
-    |TId                                            {
-                                                        //Creates an intermediate list(IntermList) containing the name of the given identifier
-                                                        $$ = $1;
-                                                    }
-    ;
-
-TId : ID                                            {   $$ = FInstall($1->name); }
 
 GDecblock : DECL GDecList ENDDECL                   {}
       |                                             {}
@@ -161,70 +146,39 @@ GId : ID '[' NUM ']'                                {
                                                         //Creates a global symbol table entry
                                                         $$ = GInstall($1->name,NULL,1,NULL);
                                                     }
-    |ID '(' ArgList ')'                             {
+    |ID '(' FArgList ')'                            {
                                                         //Creates a global symbol table entry
                                                         $$ = GInstall($1->name,NULL,0,$3);
                                                     }
     ;
 
 FArgList : ArgList                                  {
-                                                        //A Local Symbol Table is created out the entries made.
                                                         ArgStructHead = $1;
                                                         $$ = $1;
                                                     }
+    |                                               {}
     ;
 
-ArgList : ArgList1                                  {
-                                                        $$ = $1;
-                                                    }
-    |                                               { $$ = NULL;}
+ArgList : ArgType DELIM ArgList                   {
+                                                    //verify no redeclarations are present in argAppend and then appends
+                                                    $$ = ArgAppend($3, $1);
+                                                  }
+    | ArgType                                     { $$ = $1;}
     ;
 
-ArgList1 : ArgType DELIM ArgList1                   { $$ = ArgAppend($3, $1);}
-    | ArgType                                       { $$ = $1;}
+ArgType : INT ID                                  { $$ = ArgInstall($2->name,TLookUp("int"));}
+    | STR ID                                      { $$ = ArgInstall($2->name,TLookUp("str"));}
+    | ID ID                                       {
+                                                    Ttemp = TLookUp($1->name);
+                                                    if(Ttemp == NULL){
+                                                        yyerror("yacc (argType 2): the type has not been defined");
+                                                        printf(" %s",$1->name);
+                                                        exit(1);
+                                                    }
+                                                    $$ = ArgInstall($2->name,Ttemp);
+                                                  }
     ;
 
-ArgType : INT Args                                  {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.
-                                                        AddArgType(TLookUp("int"),$2);
-                                                        $$ = $2;
-                                                    }
-    |STR Args                                       {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.
-                                                        AddArgType(TLookUp("str"),$2);
-                                                        $$ = $2;
-                                                    }
-    |ID Args                                        {
-                                                        //The Type field in the ArgStruct entry is set to the specified type.
-                                                        Ttemp = TLookUp($1->name);
-                                                        if(Ttemp == NULL){
-                                                            yyerror("yacc (argType 2): the type has not been defined");
-                                                            printf(" %s",$1->name);
-                                                            exit(1);
-                                                        }
-                                                        AddArgType(Ttemp,$2);
-                                                        $$ = $2;
-                                                    }
-    ;
-
-Args : Args ',' Arg                                 {
-                                                        //Appends newly created entries to the existing.
-                                                        $3->next = $1;
-                                                        $$ = $3;
-                                                    }
-    |Arg                                            {
-                                                        $$ = $1;
-                                                    }
-    ;
-
-Arg : ID                                            {
-                                                        //Creates an ArgStruct entry containing name of the identifier.
-                                                        $$ = ArgInstall($1->name,NULL,PASS_BY_VAL);
-                                                    }
-    | '&' ID                                        {
-                                                        $$ = ArgInstall($2->name,NULL,PASS_BY_REF);
-                                                    }
-    ;
 
 Fdefblock : Fdefblock Fdef                          {}
     |                                               {}
