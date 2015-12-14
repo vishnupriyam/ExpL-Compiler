@@ -27,6 +27,7 @@ lt 						[<]
 %%
 <<EOF>>  				{return ENDOFFILE;}
 "alloc"					{return ALLOC;}
+"dealloc"				{return DEALLOC;}
 "read"  				{return READ;}
 "write" 				{return WRITE;}
 "if"    				{return IF;}

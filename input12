@@ -1,1 +1,0 @@
-type     linkedlist{         int a;         linkedlist next;     } endtype decl     linkedlist head; enddecl int main(){     decl         int length,x;         linkedlist p,q;     enddecl     begin         return 1;     end } 

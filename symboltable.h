@@ -28,10 +28,8 @@ typedef struct fieldList
 
 fieldList *fieldListHead,*ftemp;
 
-struct fieldList* FInstall(char *name);
-void AddFType(TypeTable *type, fieldList *f);
+struct fieldList* FieldInstall(TypeTable *type,char *name);
 struct fieldList* FAppend(fieldList *f1, fieldList *f2);
-struct fieldList* FieldLookup(char *name);
 void Type_field_list_validate();
 int isUserDefinedtype(TypeTable *t);
 int fieldRelativeAddress(TypeTable *t, char *name);
@@ -39,15 +37,13 @@ int fieldRelativeAddress(TypeTable *t, char *name);
 typedef struct ArgStruct {
 	TypeTable *type;
 	char *name;
-	int passType;
 	struct ArgStruct *next;
 }ArgStruct;
 
 ArgStruct *ArgStructHead,*Argtemp;
 
-struct ArgStruct* ArgInstall(char* name, TypeTable *type, int passType);
+struct ArgStruct* ArgInstall(char* name, TypeTable *type);
 struct ArgStruct* ArgAppend(ArgStruct *arg1, ArgStruct *arg2);
-void AddArgType(TypeTable *type, ArgStruct *arg);
 
 typedef struct GSymbol{
   char *name;

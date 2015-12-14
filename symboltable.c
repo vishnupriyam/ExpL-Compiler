@@ -60,13 +60,12 @@ struct TypeTable* TAppend(TypeTable *t1){
     TypeTableHead = t1;
 }
 
-struct ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
+struct ArgStruct* ArgInstall(char* name, TypeTable *type){
     ArgStruct *temp = (ArgStruct *)malloc(sizeof(ArgStruct));
     //TODO check multiple arg with same name
     temp->type = type;
     temp->name =  (char *)malloc(sizeof(name));
     strcpy(temp->name,name);
-    temp->passType = passType;
     temp->next = NULL;
     //TODO negative bind for each argument
     //TODO install the argument in local symbol table also
@@ -74,20 +73,22 @@ struct ArgStruct* ArgInstall(char* name, TypeTable *type,int passType){
 }
 
 struct ArgStruct* ArgAppend(ArgStruct *arg1, ArgStruct *arg2){
-    Argtemp = arg2;
+    Argtemp = arg1;
     while (Argtemp->next != NULL) {
-      Argtemp = Argtemp->next;
+        if(strcmp(Argtemp->name,arg2->name) == 0){
+            yyerror("ArgAppend : argument variable redefined !");
+            printf("%s",arg2->name);
+            exit(1);
+        }
+        Argtemp = Argtemp->next;
     }
-    Argtemp->next = arg1;
-    return arg2;
-}
-
-void AddArgType(TypeTable *type, ArgStruct *arg){
-    ArgStruct *temp = arg;
-    while(temp != NULL){
-        temp->type = type;
-        temp = temp->next;
+    if(strcmp(Argtemp->name,arg2->name) == 0){
+        yyerror("ArgAppend : argument variable redefined !");
+        printf("%s",arg2->name);
+        exit(1);
     }
+    Argtemp->next = arg2;
+    return arg1;
 }
 
 struct GSymbol* GInstall(char*name, TypeTable *type, int size, ArgStruct *arglist){
@@ -280,11 +281,6 @@ void validate_function(char *fname,TypeTable *rtype, ArgStruct *arglist,struct A
             exit(1);
         }
 
-        if(temp1->passType != temp2->passType){
-            yyerror("validate_function : passType of arguments donot match");
-            printf("%s\n",fname);
-            exit(1);
-        }
         temp1 = temp1->next;
         temp2 = temp2->next;
     }
@@ -322,48 +318,31 @@ int ArgLength(ArgStruct *a){
     return len;
 }
 
-struct fieldList* FInstall(char *name){
-    if(FieldLookup(name) != NULL){
-        yyerror("FInstall : multiple declarations of same field");
-        printf(" %s",name);
-        exit(1);
-    }
+struct fieldList* FieldInstall(TypeTable *type,char *name){
     fieldList *temp = (fieldList *)malloc(sizeof(fieldList));
+    temp->type = type;
     temp->name =  (char *)malloc(sizeof(name));
     strcpy(temp->name,name);
     return temp;
 }
 
-void AddFType(TypeTable *type, fieldList *f){
-    fieldList *temp = f;
-    while(temp != NULL){
-        temp->type = type;
-        temp = temp->next;
-    }
-}
 
 struct fieldList* FAppend(fieldList *f1, fieldList *f2){
-    ftemp = f2;
-    while (ftemp->next != NULL) {
-       ftemp = ftemp->next;
+    //verify the field name are not redeclared
+    fieldList *temp1;
+    temp1 = f1;
+    while(temp1 != NULL && strcmp(temp1->name,f2->name) != 0){
+        temp1 = temp1->next;
     }
-    ftemp->next = f1;
+    if(temp1 != NULL){
+        yyerror("FAppend : redeclaration of field variable");
+        printf("%s",f2->name);
+        exit(1);
+    }
+    f2->next = f1;
     return f2;
 }
 
-struct fieldList* FieldLookup(char *name){
-    if(name == NULL){
-        yyerror("Flookup : Cannot look up for an identifier with name NULL in local symbol table ");
-        printf(" %s",name);
-        exit(1);
-    }
-    fieldList *temp;
-    temp = fieldListHead;
-    while(temp != NULL && strcmp(temp->name,name) != 0){
-   	    temp = temp->next;
-    }
-    return temp;
-}
 
 void Type_field_list_validate(fieldList *f){
     fieldList *temp = f;
