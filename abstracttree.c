@@ -133,6 +133,27 @@ AST* TreeCreate(struct TypeTable *type, int nodetype, char *name, Constant value
 	  return temp;
 }
 
+int getRegister(){
+	if(currentRegisterCount < 7){
+		currentRegisterCount++;
+		return currentRegisterCount;
+	}
+	else{
+		printf("Error : No enough registers to getRegister | all registers are busy\n");
+		exit(1);
+	}
+}
+
+void freeRegister(){
+	if(currentRegisterCount > -1){
+		currentRegisterCount--;
+	}
+}
+
+void freeAllRegisters(){
+	currentRegisterCount = -1;
+}
+
 AST* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3) {
 	if(t == NULL){
 		return NULL;
@@ -194,6 +215,154 @@ int getFieldBind(AST *t, int flag){
 				 }
 				 return getGlobalValue(t->Gentry->binding).value.intval;
 			 }
+	}
+}
+
+int interpret(AST *t) {
+	int result1, result2;
+	switch(t->nodetype){
+		case NODETYPE_PLUS :
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval + registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_MINUS :
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval - registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_MUL :
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval * registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_DIV :
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval / registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_MOD :
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval % registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_GT :
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval > registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_LT :
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval < registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_GE :
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval >= registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_LE :
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval <= registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_EQ	:
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			if(strcmp(t->ptr1->type->name,"null") == 0)
+				registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result2].type == VALUEOBJECT_EMPTY};
+			else if(strcmp(t->ptr2->type->name,"null") == 0){
+				registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].type == VALUEOBJECT_EMPTY};
+			}
+			else if(strcmp(t->ptr1->type->name, "str") == 0)
+				registers[result1] = (valueObject){VALUEOBJECT_INT, strcmp(registers[result1].value.strval, registers[result2].value.strval) == 0};
+			else if(strcmp(t->ptr1->type->name,"int") == 0)
+				registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval == registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_NE	:
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			if(strcmp(t->ptr1->type->name,"null") == 0)
+				registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result2].type != VALUEOBJECT_EMPTY};
+			else if(strcmp(t->ptr2->type->name,"null") == 0){
+				registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].type != VALUEOBJECT_EMPTY};
+			}
+			else if(strcmp(t->ptr1->type->name, "str") == 0)
+				registers[result1] = (valueObject){VALUEOBJECT_INT, strcmp(registers[result1].value.strval, registers[result2].value.strval) != 0};
+			else if(strcmp(t->ptr1->type->name,"int") == 0)
+				registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval != registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_AND :
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval && registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_OR :
+			result1 = getValueFromBind(interpret(t->ptr1));
+			result2	= getValueFromBind(interpret(t->ptr2));
+			registers[result1] = (valueObject){VALUEOBJECT_INT, registers[result1].value.intval || registers[result2].value.intval};
+			freeRegister();
+			return result1;
+			break;
+		case NODETYPE_NOT	:
+			result1 = getValueFromBind(interpret(t->ptr1));
+			registers[result1].value.intval = !(registers[result1].value.intval);
+			return result1;
+			break;
+		case NODETYPE_ID	:
+			result1 = getRegister();
+			if(t->Lentry != NULL){
+				registers[result1] = getLocalValue(t->Lentry->binding);
+			}
+			else {
+				registers[result1] = getGlobalValue(t->Gentry->binding);
+			}
+			return result1;
+			break;
+		case NODETYPE_LEAF	:
+			result1 = getRegister();
+			if(strcmp(t->type->name,"str") == 0){
+				registers[result1] = (valueObject){VALUEOBJECT_STR, t->value};
+			}
+			else {
+				registers[result1] = (valueObject){VALUEOBJECT_INT, t->value};
+			}
+			return result1;
+			break;
+		case NODETYPE_NONE	:
+		case NODETYPE_BODY	:
+			interpret(t->ptr1);
+			interpret(t->ptr2);
+			break;
+		default :
+			yyerror("invalid node type : ");
+			printf("nodetype %d\n",t->nodetype);
+			exit(1);
+			break;
 	}
 }
 

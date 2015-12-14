@@ -49,6 +49,11 @@
 #define MEMSTRUCT_STR 2
 #define MEMSTRUCT_BIND 3
 
+#define VALUEOBJECT_EMPTY -1
+#define VALUEOBJECT_INT 1
+#define VALUEOBJECT_STR 2
+#define VALUEOBJECT_BIND 3
+
 #define IS_ARRAY_FALSE 0
 #define IS_ARRAY_TRUE 1
 
@@ -57,6 +62,8 @@
 
 #define PASS_BY_REF 1
 #define PASS_BY_VAL 0
+
+#define REGISTER_COUNT 15
 
 typedef union Constant {
        int intval;
@@ -79,7 +86,19 @@ typedef struct memstruct{
 	Constant value;
 }memstruct;
 
+typedef struct valueObject {
+       int type;
+       Constant value;
+}valueObject;
+
+valueObject registers[REGISTER_COUNT];
+
+int currentRegisterCount = -1;
+
 struct ASTNode* TreeCreate(struct TypeTable *type, int nodetype, char *name, Constant value, AST *arglist, AST *t1, AST *t2, AST *t3);
 struct ASTNode* TreeAppend(AST *t, AST *t1, AST *t2, AST *t3);
 struct memstruct interpret(AST *t);
 void setVariableType(AST *t, int isArray);
+int getRegister();
+void freeRegister();
+void freeAllRegisters();
