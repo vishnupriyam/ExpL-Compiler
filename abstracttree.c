@@ -134,7 +134,7 @@ AST* TreeCreate(struct TypeTable *type, int nodetype, char *name, Constant value
 }
 
 int getRegister(){
-	if(currentRegisterCount < 7){
+	if(currentRegisterCount < REGISTER_COUNT){
 		currentRegisterCount++;
 		return currentRegisterCount;
 	}
